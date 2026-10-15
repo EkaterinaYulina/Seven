@@ -323,7 +323,10 @@ svg.ic.dots { stroke-width: 2.6; }
 .page .tab[aria-selected="true"] { color: var(--ui-on-surface); font-weight: 600; }
 .page .tab[aria-selected="true"]::after { content: ""; position: absolute; left: var(--dim-space-sm); right: var(--dim-space-sm); bottom: 0; height: 2px; background: var(--ui-primary); }
 .page .tabs.main .tab { flex: 1 0 auto; padding: 0 var(--dim-space-sm); }                 /* разделы страницы: поровну на всю ширину, как в Настройках и Центре управления */
-.page .tabs.sub { height: 40px; } .page .tabs.sub .tab { height: 40px; font-size: 13px; }  /* вложенные вкладки внутри раздела */
+.page .fchips { display: flex; gap: var(--dim-space-sm); padding: var(--dim-space-md) var(--dim-gutter) var(--dim-space-sm); overflow-x: auto; scrollbar-width: none; }  /* фильтр внутри раздела: чипы, не вкладки */
+.page .fchips::-webkit-scrollbar { display: none; }
+.page .chip { flex: none; height: 32px; padding: 0 14px; border-radius: 16px; border: 1px solid var(--ui-outline); font-size: 13px; line-height: 16px; white-space: nowrap; }
+.page .chip[aria-pressed="true"] { background: var(--ui-primary-container); color: var(--ui-on-primary-container); border-color: transparent; font-weight: 500; }
 .page .body { flex: 1; overflow-y: auto; padding-bottom: var(--dim-gutter); }
 .page .body.fabpad { padding-bottom: 88px; }
 .page .sec { padding: var(--dim-gutter); border-bottom: 1px solid var(--ui-outline-subtle); }
@@ -1194,8 +1197,8 @@ const ccPage = () => {
     dev: () => S.empty ? emptyState('dev') : CCDEV.filter(d => S.devTab === 'all' || d[3] === S.devTab).map(d => `<button class="card2 hd" style="width:calc(100% - 32px);display:flex" data-go="devedit:${d[1]}"><div class="tx" style="flex:1;min-width:0"><div class="cap">${d[0]}</div><div class="nm">${d[1]}</div><div class="cap">${d[2]}</div></div><span style="display:flex;transform:rotate(-90deg)">${ICON('chev')}</span></button>`).join(''),
     wid: () => S.steps.length && S.wTab === 'scen' && !S.empty ? '' : emptyState('scen'),
   };
-  return { title: 'Центр управления', mainTabs: CCT.map(([k, n]) => `<button class="tab" role="tab" aria-selected="${S.cct === k}" data-go="cct:${k}">${n}</button>`).join(''), tabsHtml: S.cct === 'dev' && !S.empty ? [['all', 'Все'], ['wb', 'Wirenboard'], ['ha', 'Home Assistant (MQTT Discovery)']].map(([k, n]) => `<button class="tab" role="tab" aria-selected="${S.devTab === k}" data-go="dtab:${k}">${n}</button>`).join('') :
-      S.cct === 'wid' ? [['wid', 'Виджеты'], ['scen', 'Сценарии']].map(([k, n]) => `<button class="tab" role="tab" aria-selected="${S.wTab === k}" data-go="wtab:${k}">${n}</button>`).join('') : '',
+  return { title: 'Центр управления', mainTabs: CCT.map(([k, n]) => `<button class="tab" role="tab" aria-selected="${S.cct === k}" data-go="cct:${k}">${n}</button>`).join(''), filter: S.cct === 'dev' && !S.empty ? [['all', 'Все'], ['wb', 'Wirenboard'], ['ha', 'Home Assistant (MQTT Discovery)']].map(([k, n]) => `<button class="chip" aria-pressed="${S.devTab === k}" data-go="dtab:${k}">${n}</button>`).join('') :
+      S.cct === 'wid' ? [['wid', 'Виджеты'], ['scen', 'Сценарии']].map(([k, n]) => `<button class="chip" aria-pressed="${S.wTab === k}" data-go="wtab:${k}">${n}</button>`).join('') : '',
     body: S.cct === 'wid' && S.wTab === 'wid' ? emptyState('wid') : bodies[S.cct](),
     fab: S.cct === 'loc' ? `<button class="fab" data-go="dlg:open">${ICON('plus')}Создать комнату</button>` : S.cct === 'conn' ? (S.fab ? `<div class="scrim2" data-go="fab"></div><div class="speed"><button data-go="cc-integ">Home Assistant</button><button data-go="cc-broker">Брокер MQTT</button></div>` : '') + extFab('Добавить', 'plus', true) : S.cct === 'dev' ? fabGo('Добавить', 'note:Откроется добавление устройства.') : S.cct === 'wid' && S.wTab === 'scen' ? fabGo('Добавить сценарий', 'cc-scen') : '' };
 };
@@ -1242,9 +1245,8 @@ function drawPage(keepScroll = true) {
     (pg.sub ? `<div class="ttl2"><div class="t">${pg.title}</div><div class="s">${pg.sub}</div></div>` : `<div class="ttl">${pg.title}</div>`) +
     (pg.close ? `<button class="icon-btn" data-go="close" aria-label="Закрыть">${ICON('close')}</button>` : '') + `<span class="acts" id="acts">${pg.actions || ''}</span></div>` +
     (pg.mainTabs ? `<div class="tabs main" role="tablist">${pg.mainTabs}</div>` : '') +
-    (pg.tabsHtml ? `<div class="tabs${pg.mainTabs ? ' sub' : ''}" role="tablist">${pg.tabsHtml}</div>` : '') +
     (pg.tabs ? `<div class="tabs main" role="tablist">${TABS.map(([k, t]) => `<button class="tab" role="tab" aria-selected="${S.tab === k}" data-tab="${k}">${t}</button>`).join('')}</div>` : '') +
-    `<div class="body${pg.fab && pg.fab.includes('class="fab"') ? ' fabpad' : ''}">${pg.body}</div>` + (pg.foot ? `<div class="foot" id="foot">${pg.foot()}</div>` : '') + (pg.nav || '') + (pg.fab || '');
+    `<div class="body${pg.fab && pg.fab.includes('class="fab"') ? ' fabpad' : ''}">${pg.filter ? `<div class="fchips" role="group">${pg.filter}</div>` : ''}${pg.body}</div>` + (pg.foot ? `<div class="foot" id="foot">${pg.foot()}</div>` : '') + (pg.nav || '') + (pg.fab || '');
   el.querySelector('.body').scrollTop = top;
   syncKb();
   const sel = el.querySelector('.tab[aria-selected="true"]'); if (sel) sel.scrollIntoView({ inline: 'center', block: 'nearest' });
@@ -1381,8 +1383,6 @@ const GROUPS = [
     opts: [['voice', 'Голос'], ['device', 'Устройство'], ['conn', 'Подключение'], ['security', 'Безопасность'], ['data', 'Данные'], ['wallpaper', 'Обои'], ['display', 'Экран и сон'], ['export', 'Экспорт'], ['journal', 'Журнал']] },
   { label: 'Режим',    get: () => state.edit ? 'edit' : 'normal', set: v => setEdit(v === 'edit'),
     opts: [['normal', 'Обычный'], ['edit', 'Правка']] },
-  { label: 'Данные',   get: () => S.empty ? 'empty' : 'full', set: v => { S.empty = v === 'empty'; if (state.screen === 'page') drawPage(false); },
-    opts: [['full', 'Есть'], ['empty', 'Пусто']] },
   { label: 'Тема',     get: () => state.theme, set: v => { state.theme = v; document.documentElement.dataset.theme = v; },
     opts: [['light', 'Светлая'], ['dark', 'Тёмная']] },
   { label: 'Ползунок света', get: () => state.dimmer, set: v => { state.dimmer = v; render(); },
@@ -1399,6 +1399,8 @@ const GROUPS = [
   { label: 'Центр управления', cls: 'grid3', get: () => state.screen === 'page' ? (curPage === 'cc' ? S.cct + (S.cct === 'conn' && S.fab ? '-fab' : '') : curPage) : '',
     set: v => { if (v === 'dlg') { S.cct = 'loc'; S.dlg = true; S.rName = 'Гостиная'; goPage('cc', false); return; } S.dlg = false; if (v === 'cc-scen' ) S.steps = []; if (v === 'conn-fab') { S.cct = 'conn'; S.fab = true; goPage('cc', false); } else { S.fab = false; goPage(['loc','conn','dev','wid'].includes(v) ? 'cc-' + v : v, false); } },
     opts: [['loc', 'Локации'], ['conn', 'Подключения'], ['conn-fab', 'Подключения + меню'], ['dev', 'Список устройств'], ['wid', 'Виджеты'], ['cc-integ', 'Интеграция'], ['cc-broker', 'Брокер'], ['dlg', 'Диалог «Комната»'], ['cc-vdevs', 'Виртуальные устройства'], ['cc-vdev', 'Виртуальное устройство'], ['cc-devedit', 'Правка устройства'], ['cc-scen', 'Сценарий: шаги'], ['cc-pick', 'Сценарий: что включить']] },
+  { label: 'Пустые состояния',   get: () => S.empty ? 'empty' : 'full', set: v => { S.empty = v === 'empty'; if (state.screen === 'page') drawPage(false); },
+    opts: [['full', 'Есть данные'], ['empty', 'Пусто']] },
   { label: 'Экран стола', get: () => String(cur), set: v => { const n = +v; if (n !== cur) { cur = n; tiles = pagesData[cur]; undoStack = []; hideSnack(); render(); updateDots(); } }, opts: [['0', '1'], ['1', '2'], ['2', '3'], ['3', '4']] },
 ];
 const G = label => GROUPS.find(g => g.label === label);
@@ -1434,6 +1436,7 @@ if (q.get('badge')) G('Бейдж «убрать»').set(q.get('badge'));
 G('Вид ползунка').set(q.get('dstyle') || 'a');
 if (q.get('dimmer')) state.dimmer = q.get('dimmer');
 if (q.get('mic')) G('Микрофон').set(q.get('mic'));
+if (q.get('empty')) S.empty = q.get('empty') === '1';
 if (q.get('mode') === 'edit') state.edit = true;
 if (q.get('screen')) setScreen(q.get('screen'));
 if (q.get('page')) G('Настройки').set(q.get('page'));
