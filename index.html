@@ -45,9 +45,6 @@
   --lh-value: 24px; --lh-name: 18px; --lh-secondary: 20px;
 
   --tile-glass: 0.5;           /* opacity/tile-glass-default */
-  --shade-wash: #3F6B5538;     /* зелёный оттенок подложки шторки и листа поверх фона стола */
-  --glass: color-mix(in srgb, var(--c-tile) 72%, transparent);  /* плитка на подложке шторки/листа */
-  --glass-ring: transparent;
   --wallpaper-dim: 0.4;        /* «Затемнение» обоев по ТЗ, 40 % */
 
   /* только в прототипе, в токены не заведены */
@@ -88,9 +85,6 @@
   --ui-outline: var(--core-ink-3);  --ui-outline-subtle: var(--core-paper-14);
   --ui-slot-fill: var(--core-ink-40);
   --ui-error: var(--core-red-300);
-  --shade-wash: #0000004D;
-  --glass: color-mix(in srgb, var(--core-paper) 11%, transparent);
-  --glass-ring: var(--core-paper-14);
   /* в Button.png тёмный Primary залит светлым (ui/primary), а не olive: следуем компоненту */
   --btn-primary-bg: var(--ui-primary-container); --btn-primary-fg: var(--ui-on-primary-container);
 }
@@ -276,25 +270,23 @@ svg.ic.dots { stroke-width: 2.6; }
 
 /* ── Лист плитки (Seven/Sheet) и форма плитки ── */
 .desk[data-screen="sheet"] > .scrim { opacity: 1; pointer-events: auto; }
-.desk > .sheet { left: 0; right: 0; bottom: 0; z-index: 8; color: var(--ui-on-surface);
-  background: linear-gradient(var(--shade-wash), var(--shade-wash)), var(--desk-bg, var(--ui-surface-card));
-  border-radius: 20px 20px 0 0; padding: var(--dim-gap) var(--dim-space-sm) var(--dim-space-md);
+.desk > .sheet { left: 0; right: 0; bottom: 0; z-index: 8; background: var(--ui-surface-card); color: var(--ui-on-surface);
+  border-radius: var(--dim-gutter) var(--dim-gutter) 0 0; padding: var(--dim-space-sm) var(--dim-gutter) var(--dim-gutter);
   transform: translateY(100%); transition: transform .22s ease; }
 .desk[data-screen="sheet"] > .sheet { transform: none; }
 .sheet .h { display: grid; grid-template-columns: 48px 1fr 48px; align-items: center; min-height: 48px; }
 .sheet .h .t { text-align: center; font-size: 20px; line-height: 24px; font-weight: 500; }
-.sheet .big { text-align: center; font-size: 32px; line-height: 40px; font-weight: 500; padding: var(--dim-space-md); margin: var(--dim-gap) 0; border-radius: var(--dim-radius-tile); background: var(--glass); box-shadow: inset 0 0 0 1px var(--glass-ring); }
-.sheet .acts4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--dim-gap); }
-.sheet .act { height: var(--dim-tile); border-radius: var(--dim-radius-tile); background: var(--glass); box-shadow: inset 0 0 0 1px var(--glass-ring); color: var(--c-text-primary); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--dim-space-sm); font-size: var(--font-name); line-height: var(--lh-name); font-weight: 400; }
-.sheet .act:active { filter: brightness(.96); }
-.sheet .act[aria-pressed="true"] { background: color-mix(in srgb, var(--dim-fill-bg) 85%, transparent); }
+.sheet .big { text-align: center; font-size: 32px; line-height: 40px; font-weight: 500; padding-bottom: var(--dim-space-md); border-bottom: 1px solid var(--ui-outline-subtle); margin-bottom: var(--dim-space-md); }
+.sheet .acts4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--dim-space-sm); }
+.sheet .act { height: 76px; border-radius: var(--dim-radius-card); background: color-mix(in srgb, var(--ui-on-surface) 6%, transparent); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; font-size: 12px; line-height: 16px; font-weight: 500; }
+.sheet .act:active, .sheet .act[aria-pressed="true"] { background: color-mix(in srgb, var(--ui-on-surface) 14%, transparent); }
 #shBack { visibility: hidden; }
 .sheet[data-mode="size"] #shBack { visibility: visible; }
 .sheet[data-mode="size"] .big, .sheet[data-mode="size"] .acts4 { display: none; }
 .sheet[data-mode="size"] .sizes { display: flex; margin-top: var(--dim-space-md); }
-.sheet .sizes .sz { width: 104px; height: 104px; border-radius: var(--dim-radius-tile); background: var(--glass); box-shadow: inset 0 0 0 1px var(--glass-ring); color: var(--c-text-primary); border: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; font-size: var(--font-name); font-weight: 500; }
+.sheet .sizes .sz { width: 104px; height: 104px; border-radius: var(--dim-radius-card); background: color-mix(in srgb, var(--ui-on-surface) 6%, transparent); border: 2px solid transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; font-size: var(--font-name); font-weight: 500; }
 .sheet .sizes .sz i { display: block; border-radius: 4px; background: color-mix(in srgb, var(--ui-on-surface) 40%, transparent); }
-.sheet .sizes .sz[aria-pressed="true"] { background: color-mix(in srgb, var(--dim-fill-bg) 85%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ui-primary-container) 40%, transparent); }
+.sheet .sizes .sz[aria-pressed="true"] { border-color: var(--ui-primary-container); background: color-mix(in srgb, var(--ui-primary-container) 16%, transparent); }
 .sheet .sizes .sz[aria-pressed="true"] i { background: var(--ui-primary-container); }
 .sheet .sizes .sz.no { opacity: .38; }
 .sheet .act.danger { color: var(--ui-error); }
@@ -472,28 +464,25 @@ svg.ic.dots { stroke-width: 2.6; }
 .pick { display: block; width: calc(100% - 32px); margin: 0 var(--dim-gutter) var(--dim-space-sm); text-align: left; border-radius: var(--dim-radius-card); padding: var(--dim-space-md); background: color-mix(in srgb, var(--ui-on-surface) 8%, transparent); min-height: 72px; }
 .pick b { display: block; font-size: var(--font-name); line-height: 20px; font-weight: 600; } .pick span { display: block; font-size: var(--font-name); line-height: 20px; color: var(--c-text-secondary); }
 .grp { margin: var(--dim-space-md) var(--dim-gutter) var(--dim-space-sm); font-size: 20px; line-height: 24px; color: var(--ui-primary-container); }
-.shade { position: absolute; left: 0; right: 0; top: 0; z-index: 11; color: var(--ui-on-surface); border-radius: 0 0 20px 20px; padding: 0 var(--dim-space-sm) var(--dim-space-md);
-  background: linear-gradient(var(--shade-wash), var(--shade-wash)), var(--desk-bg, var(--ui-surface-card));
-  display: flex; flex-direction: column; gap: var(--dim-gap); transform: translateY(-105%); transition: transform .25s ease; box-shadow: 0 6px 24px #0004; }
+/* Шторка оформлена как лист плитки (Seven/Sheet): карточка, плоские тональные кнопки 76 px с иконкой над подписью */
+.shade { position: absolute; left: 0; right: 0; top: 0; z-index: 11; background: var(--ui-surface-card); color: var(--ui-on-surface); border-radius: 0 0 var(--dim-gutter) var(--dim-gutter);
+  padding: var(--dim-space-sm) var(--dim-gutter) var(--dim-gutter); transform: translateY(-105%); transition: transform .25s ease; box-shadow: 0 6px 24px #0004; }
 .desk[data-screen="shade"] > .shade { transform: none; } .desk[data-screen="shade"] > .scrim { opacity: 1; pointer-events: auto; }
-.shade .st { display: flex; align-items: center; gap: var(--dim-space-sm); height: 40px; padding: 0 var(--dim-space-xs, 4px); font-size: var(--font-name); }
+.shade .st { display: flex; align-items: center; gap: var(--dim-space-sm); min-height: 48px; padding-bottom: var(--dim-space-xs, 4px); margin-bottom: var(--dim-space-md); border-bottom: 1px solid var(--ui-outline-subtle); font-size: var(--font-name); }
 .shade .st i { width: 8px; height: 8px; border-radius: 50%; background: var(--ui-primary-container); }
 .shade .st .mc { margin-left: auto; display: flex; align-items: center; gap: 6px; font-size: var(--font-secondary); color: var(--c-text-secondary); } .shade .st .mc svg { width: 16px; height: 16px; }
-/* кнопки и ползунки — стеклянные плитки, как на столе */
-.shade .qs { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--dim-gap); }
-.shade .q, .shade .t { border-radius: var(--dim-radius-tile); background: var(--glass); box-shadow: inset 0 0 0 1px var(--glass-ring); color: var(--c-text-primary); }
-.shade .q { height: var(--dim-tile); padding: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--dim-gap); text-align: center; }
-.shade .q .n { margin-top: 2px; font-size: var(--font-name); line-height: var(--lh-name); white-space: nowrap; }
-.shade .q .s { min-height: 16px; font-size: 12px; line-height: 16px; font-weight: 500; color: var(--c-text-secondary); }
-.shade .q[aria-pressed="true"] .ic { color: var(--ui-primary-container); }
+.shade .qs { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--dim-space-sm); }
+.shade .q { height: 76px; padding: 0; border-radius: var(--dim-radius-card); background: color-mix(in srgb, var(--ui-on-surface) 6%, transparent); color: var(--ui-on-surface);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; text-align: center; font-size: 12px; line-height: 16px; font-weight: 500; }
+.shade .q .s { min-height: 14px; font-size: var(--font-secondary); line-height: 14px; font-weight: 400; color: var(--c-text-secondary); }
+.shade .q:active { background: color-mix(in srgb, var(--ui-on-surface) 14%, transparent); }
+.shade .q[aria-pressed="true"] { background: color-mix(in srgb, var(--ui-primary-container) 22%, transparent); }
+.shade .q[aria-pressed="true"] .ic { color: var(--ui-primary-container); } .shade .q[aria-pressed="true"] .s { color: var(--ui-on-surface); }
 .shade .q.warn .s, .shade .q.warn .ic { color: var(--ui-error); }
-.shade .q:active { filter: brightness(.96); }
-.shade .q[aria-pressed="true"], [data-theme="dark"] .shade .q[aria-pressed="true"] { background: color-mix(in srgb, var(--dim-fill-bg) 85%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ui-primary-container) 40%, transparent); }
-.shade .q[aria-pressed="true"] .s { color: var(--c-text-primary); }
-.shade .rw { display: flex; align-items: center; gap: var(--dim-space-md); padding: var(--dim-space-md); height: 72px; }
+.shade .rw { display: flex; align-items: center; gap: var(--dim-space-md); height: 56px; margin-top: var(--dim-space-sm); }
 .shade .rw .big { width: 56px; font-size: var(--font-value); line-height: var(--lh-value); font-weight: 400; font-variant-numeric: tabular-nums; }
-.shade .rw .dim.h { flex: 1; margin-top: 0; background: color-mix(in srgb, var(--ui-on-surface) 10%, transparent); }
-.shade .grab { width: 40px; height: 4px; border-radius: 2px; background: var(--ui-outline); margin: var(--dim-gap) auto 0; }
+.shade .rw .dim.h { flex: 1; margin-top: 0; }
+.shade .grab { width: 40px; height: 4px; border-radius: 2px; background: var(--ui-outline); margin: var(--dim-space-md) auto 0; }
 /* ── Поля ввода: одна геометрия для всех (56 / радиус 12 / рамка 1 → 2 в фокусе / текст 16) ── */
 .tf input, .fld, .dd, .page .search2, .launcher .search { height: 56px; min-height: 56px; border: 1px solid var(--ui-outline); border-radius: var(--dim-radius-card); font-size: 16px; line-height: 24px; background: transparent; color: var(--ui-on-surface); }
 .tf input, .fld, .dd { padding: 0 16px; } .tf.m input { padding-right: 56px; } .fld { padding-right: 4px; }
@@ -1341,7 +1330,7 @@ function syncShadeQuiet() {
 function drawShade() {
   $('#shade').innerHTML = `<div class="st">00:08 · 11.10.2026 <i></i> MQTT: на связи<span class="mc">${MIC_OFF()}</span></div>` +
     `<div class="qs">${SBTN('quiet', 'micoff', 'Тишина', S.quiet, S.quiet ? 'Вкл' : 'Выкл')}${SBTN('sleep', 'moon', 'Погасить')}${SBTN('wifi', S.wifi ? 'wifi' : 'wifioff', 'Wi-Fi', S.wifi, S.wifi ? 'Вкл' : 'Выкл', S.wifi ? '' : 'warn')}${SBTN('set', 'gear', 'Настройки')}</div>` +
-    `<div class="t rw"><span class="big"></span>${dimInner('h', 0, 'sun', false)}</div><div class="t rw"><span class="big"></span>${dimInner('h', 0, 'vol', false)}</div><div class="grab"></div>`;
+    `<div class="rw"><span class="big"></span>${dimInner('h', 0, 'sun', false)}</div><div class="rw"><span class="big"></span>${dimInner('h', 0, 'vol', false)}</div><div class="grab"></div>`;
   $('#shade').querySelectorAll('.dim').forEach((dm, i) => {
     const k = i ? 'vol' : 'br', big = dm.parentNode.querySelector('.big');
     let ready = false;
