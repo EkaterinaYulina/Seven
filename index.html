@@ -336,7 +336,7 @@ svg.ic.dots { stroke-width: 2.6; }
 .page .tab { flex: none; padding: 0 var(--dim-gutter); height: 48px; font-size: var(--font-name); color: var(--c-text-secondary); position: relative; white-space: nowrap; }
 .page .tab[aria-selected="true"] { color: var(--ui-on-surface); font-weight: 600; }
 .page .tab[aria-selected="true"]::after { content: ""; position: absolute; left: var(--dim-space-sm); right: var(--dim-space-sm); bottom: 0; height: 2px; background: var(--ui-primary); }
-.page .tabs.main .tab { flex: 1; padding: 0 var(--dim-space-sm); }                 /* разделы страницы: поровну на всю ширину, как в Настройках и Центре управления */
+.page .tabs.main .tab { flex: 1 0 auto; padding: 0 var(--dim-space-sm); }                 /* разделы страницы: поровну на всю ширину, как в Настройках и Центре управления */
 .page .tabs.sub { height: 40px; } .page .tabs.sub .tab { height: 40px; font-size: 13px; }  /* вложенные вкладки внутри раздела */
 .page .body { flex: 1; overflow-y: auto; padding-bottom: var(--dim-gutter); }
 .page .body.fabpad { padding-bottom: 88px; }
@@ -1079,7 +1079,7 @@ const S = { tab: 'voice', voice: true, speak: true, listen: 'always', lang: 'ru'
   confirm: 8, cancel: 10, manage: true, dimAfter: 30, dimBright: 10, dim: 40, glass: 50,
   exp: { panel: true, phone: false, pc: false }, ctrl: '', addr: '', port: '1883', haAddr: '', haPort: '8123', https: false, dev: { a: false, b: false }, jFilters: false, jq: '', jstat: { err: true, warn: true, ok: true } };
 let pageStack = [], curPage = null;
-const TABS = [['voice', 'Голос'], ['device', 'Устройство'], ['conn', 'Связь'], ['security', 'Защита'], ['data', 'Данные']];
+const TABS = [['voice', 'Голос'], ['device', 'Устройство'], ['conn', 'Подключение'], ['security', 'Безопасность'], ['data', 'Данные']];
 const CHECK = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 const sw = (k, on) => `<button class="sw" role="switch" aria-checked="${on}" data-sw="${k}"><span class="trk">${CHECK}</span><span class="lb">${on ? 'Вкл' : 'Выкл'}</span></button>`;
 const swRow = (k, on, t, d) => `<div class="sec"><div class="srow"><div class="tx"><h3 class="sh">${t}</h3><p class="sd">${d}</p></div>${sw(k, on)}</div></div>`;
