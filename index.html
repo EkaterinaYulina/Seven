@@ -337,6 +337,25 @@ svg.ic.dots { stroke-width: 2.6; }
 .page .srow { display: flex; align-items: flex-start; gap: var(--dim-gutter); }
 .page .srow > .tx { flex: 1; min-width: 0; }
 .page .srow .sd { margin-bottom: 0; }
+/* Группа строк: единый блок Настроек и Центра управления. Заголовок группы, строки внутри одного контейнера, действие — последняя строка */
+.page .gh { padding: var(--dim-gutter) var(--dim-gutter) var(--dim-space-sm); font-size: var(--font-name); line-height: 20px; font-weight: 500; color: var(--c-text-secondary); }
+.page .gd { margin: -4px var(--dim-gutter) var(--dim-space-sm); font-size: var(--font-name); line-height: 20px; color: var(--c-text-secondary); }
+.page .grp { margin: 0 var(--dim-gutter); border: 1px solid var(--ui-outline-subtle); border-radius: var(--dim-radius-card); background: color-mix(in srgb, var(--ui-on-surface) 4%, transparent); overflow: hidden; }
+.page .grp.nt { margin-top: var(--dim-gutter); }
+.page .grp + .gh, .page .grp + .grp { margin-top: 0; }
+.page .gr { display: flex; align-items: center; gap: var(--dim-space-md); width: 100%; min-height: 56px; box-sizing: border-box; padding: 8px var(--dim-space-md) 8px var(--dim-gutter); text-align: left; color: var(--ui-on-surface); border-top: 1px solid var(--ui-outline-subtle); }
+.page .gr:first-child { border-top: 0; }
+.page .gr > .tx { flex: 1; min-width: 0; }
+.page .gr .rt { display: block; font-size: 16px; line-height: 22px; }
+.page .gr .rd { display: block; font-size: var(--font-name); line-height: 20px; color: var(--c-text-secondary); }
+.page .gr .rc { display: block; font-size: 12px; line-height: 16px; color: var(--c-text-secondary); overflow-wrap: anywhere; }
+.page .gr.act { min-height: 48px; font-size: var(--font-name); font-weight: 500; }
+.page .gr.act .ic { width: 20px; height: 20px; }
+.page .gr .go { display: flex; color: var(--c-text-secondary); transform: rotate(-90deg); }
+.page .gr .mk { flex: none; width: 20px; height: 20px; border: 2px solid var(--ui-on-surface); border-radius: 50%; box-sizing: border-box; position: relative; }
+.page .gr[aria-checked="true"] .mk::after { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: var(--ui-on-surface); }
+.page .gr.ctr { justify-content: center; }
+.page .grp .stp { margin: 0; gap: var(--dim-space-md); } .page .grp .stp button { width: 48px; height: 48px; }
 .page .btn.wide { width: 100%; margin-top: var(--dim-space-sm); }
 .page .linkbtn { display: flex; margin: var(--dim-space-sm) 0 0 auto; }
 /* Switch: цветная дорожка 52×32, белый бегунок 24 с тенью, без подписи */
@@ -1074,6 +1093,12 @@ let pageStack = [], curPage = null;
 const TABS = [['voice', 'Голос'], ['device', 'Устройство'], ['conn', 'Подключение'], ['security', 'Безопасность'], ['data', 'Данные']];
 const CHECK = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 const sw = (k, on) => `<button class="sw" role="switch" aria-checked="${on}" data-sw="${k}"><span class="trk">${CHECK}</span><span class="lb">${on ? 'Вкл' : 'Выкл'}</span></button>`;
+const grp = (title, rows, desc = '') => (title ? `<div class="gh">${title}</div>` : '') + (desc ? `<p class="gd">${desc}</p>` : '') + `<div class="grp${title || desc ? '' : ' nt'}">${rows}</div>`;
+const grow = (t, d, end = '', o = {}) => { const in_ = `<span class="tx"><span class="rt">${t}</span>${d ? `<span class="rd">${d}</span>` : ''}${o.c ? `<span class="rc">${o.c}</span>` : ''}</span>${end}`; return o.attrs ? `<button class="gr" ${o.attrs}>${in_}</button>` : `<div class="gr">${in_}</div>`; };
+const rrow = (g, v, cur, t, d = '') => grow(t, d, '<span class="mk"></span>', { attrs: `role="radio" aria-checked="${v === cur}" data-radio="${g}" data-v="${v}"` });
+const nrow = (t, d, go, o = {}) => grow(t, d, `<span class="go">${ICON('chev')}</span>`, { attrs: `data-go="${go}"`, c: o.c });
+const arow = (t, go, ic = 'plus') => `<button class="gr act" data-go="${go}">${ICON(ic)}<span class="tx">${t}</span></button>`;
+const srow = (t, d, k, on) => grow(t, d, sw(k, on));
 const swRow = (k, on, t, d) => `<div class="sec"><div class="srow"><div class="tx"><h3 class="sh">${t}</h3><p class="sd">${d}</p></div>${sw(k, on)}</div></div>`;
 const radio = (g, v, cur, t, d = '') => `<button class="opt" role="radio" aria-checked="${v === cur}" data-radio="${g}" data-v="${v}"><span class="mk r"></span><span class="tx"><b>${t}</b>${d ? `<span>${d}</span>` : ''}</span></button>`;
 const check = (k, on, t) => `<button class="opt" role="checkbox" aria-checked="${on}" data-chk="${k}"><span class="mk c">${CHECK}</span><span class="tx"><b>${t}</b></span></button>`;
@@ -1087,24 +1112,20 @@ const SICON = { err: 'close', warn: 'info', ok: 'check' };
 
 const PAGES = {
   settings: () => ({ title: 'Настройки', tabs: true, body: ({
-    voice: () => swRow('voice', S.voice, 'Голосовое управление', 'Ассистент принимает голосовые команды') +
-      swRow('speak', S.speak, 'Озвучивать ответы', 'Ассистент отвечает голосом. Если нужной записи нет, ответ появится только на экране.') +
-      `<div class="sec"><h3 class="sh">Как слушать</h3>` +
-      radio('listen', 'always', S.listen, 'Всегда (по умолчанию)', 'Ассистент выполняет любую распознанную фразу') +
-      radio('listen', 'word', S.listen, 'По слову «Севен»', 'Ассистент выполняет только фразы со словом «Севен», например «Севен, включи свет»') + '</div>',
-    device: () => `<div class="sec"><h3 class="sh">Язык</h3><p class="sd">Язык меню и подсказок. Голосовые команды ассистент понимает только по-русски.</p>` +
-      radio('lang', 'ru', S.lang, 'Русский') + radio('lang', 'en', S.lang, 'English') + radio('lang', 'dev', S.lang, 'Как в системе: English') + '</div>' +
-      `<div class="sec"><h3 class="sh">Комната панели</h3><p class="sd">Если в команде нет комнаты, например «включи свет», ассистент управляет этой комнатой</p>` +
-      ROOMS.map(([v, t]) => radio('room', v, S.room, t)).join('') + `<button class="btn text linkbtn" data-go="note:Управление комнатами — это экран «Центр управления → Локации». В этот прототип не входит.">Управление комнатами</button></div>` +
-      `<div class="sec"><h3 class="sh">Обои экранов</h3><p class="sd">Фон, затемнение и прозрачность плиток</p><button class="btn secondary wide" data-go="wallpaper">Настроить обои</button></div>` +
-      `<div class="sec"><h3 class="sh">Экран и сон</h3><p class="sd">Затемнение и погашение экрана, яркость по освещённости, ночной режим</p><button class="btn secondary wide" data-go="display">Открыть настройки экрана</button></div>` +
-      `<div class="sec"><h3 class="sh">Лаунчер</h3><p class="sd">Сейчас домашний экран — «NSPanelPro». Seven запускается только из списка приложений.</p><p class="sd">Чтобы сделать Seven домашним, нажмите кнопку, выберите «Seven assistant» и «Всегда». Если система не спросит, откройте системные настройки → «Приложения по умолчанию» → «Домашнее приложение».</p><button class="btn secondary wide" data-go="note:Откроется системный выбор домашнего приложения.">Выбрать домашнее приложение</button></div>`,
-    conn: () => swRow('mqtt', S.mqtt, 'Панель в MQTT', 'Панель появится в брокере как устройство seven_panel_1756903f. Другие системы смогут менять яркость, громкость, экран и микрофон и читать датчики. Если связь оборвётся, брокер пометит панель как «не отвечает». При включении и выключении панель один раз переподключится к брокеру.') +
-      `<div class="sec"><h3 class="sh">Брокер для панели</h3>${radio('broker', 'b1', S.broker ? 'b1' : '', '192.168.23.141:1883')}</div>`,
-    security: () => `<div class="sec"><h3 class="sh">Время на подтверждение</h3><p class="sd">Сколько ассистент ждёт подтверждения команды. От 3 до 30 секунд.</p>${stepper('confirm', S.confirm, 'с', 3, 30)}</div>` +
-      `<div class="sec"><h3 class="sh">Время на отмену</h3><p class="sd">Сколько секунд после выполнения команду можно отменить. От 3 до 60 секунд.</p>${stepper('cancel', S.cancel, 'с', 3, 60)}</div>`,
-    data: () => `<div class="sec"><h3 class="sh">Экспорт и импорт</h3><p class="sd">Перенесите комнаты, виртуальные устройства, голосовые настройки, сценарии и экраны на другое устройство: файлом или через буфер обмена</p><button class="btn secondary wide" data-go="export">Открыть экспорт и импорт</button></div>` +
-      `<div class="sec"><h3 class="sh">Журнал команд</h3><p class="sd">Что ассистент услышал, как понял и что отправил устройствам</p><button class="btn secondary wide" data-go="journal">Открыть журнал</button></div>`,
+    voice: () => grp('', srow('Голосовое управление', 'Ассистент принимает голосовые команды', 'voice', S.voice) + srow('Озвучивать ответы', 'Ассистент отвечает голосом. Если нужной записи нет, ответ появится только на экране.', 'speak', S.speak)) +
+      grp('Как слушать', rrow('listen', 'always', S.listen, 'Всегда (по умолчанию)', 'Ассистент выполняет любую распознанную фразу') +
+        rrow('listen', 'word', S.listen, 'По слову «Севен»', 'Ассистент выполняет только фразы со словом «Севен», например «Севен, включи свет»')),
+    device: () => grp('Язык', rrow('lang', 'ru', S.lang, 'Русский') + rrow('lang', 'en', S.lang, 'English') + rrow('lang', 'dev', S.lang, 'Как в системе: English'), 'Язык меню и подсказок. Голосовые команды ассистент понимает только по-русски.') +
+      grp('Комната панели', ROOMS.map(([v, t]) => rrow('room', v, S.room, t)).join('') + nrow('Управление комнатами', '', 'note:Управление комнатами — это экран «Центр управления → Локации». В этот прототип не входит.'), 'Если в команде нет комнаты, например «включи свет», ассистент управляет этой комнатой') +
+      grp('Обои экранов', nrow('Настроить обои', '', 'wallpaper'), 'Фон, затемнение и прозрачность плиток') +
+      grp('Экран и сон', nrow('Открыть настройки экрана', '', 'display'), 'Затемнение и погашение экрана, яркость по освещённости, ночной режим') +
+      grp('Лаунчер', nrow('Выбрать домашнее приложение', '', 'note:Откроется системный выбор домашнего приложения.'), 'Сейчас домашний экран — «NSPanelPro». Seven запускается только из списка приложений. Чтобы сделать Seven домашним, нажмите кнопку, выберите «Seven assistant» и «Всегда». Если система не спросит, откройте системные настройки → «Приложения по умолчанию» → «Домашнее приложение».'),
+    conn: () => grp('', srow('Панель в MQTT', 'Панель появится в брокере как устройство seven_panel_1756903f. Другие системы смогут менять яркость, громкость, экран и микрофон и читать датчики. Если связь оборвётся, брокер пометит панель как «не отвечает». При включении и выключении панель один раз переподключится к брокеру.', 'mqtt', S.mqtt)) +
+      grp('Брокер для панели', rrow('broker', 'b1', S.broker ? 'b1' : '', '192.168.23.141:1883')),
+    security: () => grp('Время на подтверждение', `<div class="gr ctr">${stepper('confirm', S.confirm, 'с', 3, 30)}</div>`, 'Сколько ассистент ждёт подтверждения команды. От 3 до 30 секунд.') +
+      grp('Время на отмену', `<div class="gr ctr">${stepper('cancel', S.cancel, 'с', 3, 60)}</div>`, 'Сколько секунд после выполнения команду можно отменить. От 3 до 60 секунд.'),
+    data: () => grp('Экспорт и импорт', nrow('Открыть экспорт и импорт', '', 'export'), 'Перенесите комнаты, виртуальные устройства, голосовые настройки, сценарии и экраны на другое устройство: файлом или через буфер обмена') +
+      grp('Журнал команд', nrow('Открыть журнал', '', 'journal'), 'Что ассистент услышал, как понял и что отправил устройствам'),
   })[S.tab]() }),
   wallpaper: () => ({ title: 'Обои экранов', body:
     `<div class="sec"><div class="wp" id="wpPrev"><div class="wpdim"></div><div class="st"><span>Кухня</span><span>14:02</span></div>` +
@@ -1191,10 +1212,12 @@ const ccPage = () => {
     loc0: () => `<div class="card2"><button class="hd" data-go="exp"><div class="tx"><div class="nm">Гостиная</div><div class="ds">Панель находится здесь</div></div><span style="display:flex;transform:rotate(${S.roomOpen ? 180 : 0}deg)">${ICON('chev')}</span></button>` +
       (S.roomOpen ? `<div class="ex"><div class="ds">Устройств: 2 · Виртуальных: 1</div><div class="row" style="margin-top:8px"><button class="btn secondary" data-go="note:Откроется диалог «Комната».">Изменить</button><button class="btn text" data-go="note:Удаление комнаты запросит подтверждение.">Удалить</button></div></div>` : '') + '</div>' +
       `<div class="chiprow" style="padding-top:var(--dim-space-sm)"><button class="btn secondary" data-go="note:Виртуальные устройства: список в прототип не входит.">Виртуальные устройства</button></div>`,
-    loc: () => S.empty || !S.rooms.length ? emptyState('loc') : S.rooms.map((r, i) => `<div class="card2"><div class="row"><div class="tx" style="flex:1;min-width:0"><div class="nm" style="font-size:var(--font-name);line-height:20px">${r.n}</div><div class="ds">${r.alt ? 'Другие названия: ' + r.alt : 'Других названий нет'}</div><div class="ds">Виртуальных устройств: ${r.v} · Свойств: ${r.p}</div></div><div class="mv"><button data-go="mv:${i}:-1" ${i === 0 ? 'disabled' : ''} aria-label="Выше" style="transform:rotate(180deg)">${ICON('chev')}</button><button data-go="mv:${i}:1" ${i === S.rooms.length - 1 ? 'disabled' : ''} aria-label="Ниже">${ICON('chev')}</button></div></div><button class="btn secondary" style="margin-top:8px" data-go="cc-vdevs">${ICON('group')}Виртуальные устройства</button></div>`).join(''),
-    conn: () => S.empty || !S.conns.length ? emptyState('conn') : S.conns.map((c, i) => `<div class="card2"><div class="row"><div class="tx" style="flex:1;min-width:0"><div class="nm">${c.n}</div><div class="ds">${c.t}</div><div class="cap">${c.a}</div></div>${sw('cn' + i, c.on)}</div>` +
-      `<div class="row" style="margin-top:4px"><button class="btn text" data-go="add-controller">Добавить устройства</button></div></div>`)  .join(''),
-    dev: () => S.empty ? emptyState('dev') : CCDEV.filter(d => S.devTab === 'all' || d[3] === S.devTab).map(d => `<button class="card2 hd" style="width:calc(100% - 32px);display:flex" data-go="devedit:${d[1]}"><div class="tx" style="flex:1;min-width:0"><div class="cap">${d[0]}</div><div class="nm">${d[1]}</div><div class="cap">${d[2]}</div></div><span style="display:flex;transform:rotate(-90deg)">${ICON('chev')}</span></button>`).join(''),
+    loc: () => S.empty || !S.rooms.length ? emptyState('loc') : S.rooms.map((r, i) => grp(r.n,
+      grow(r.alt ? 'Другие названия: ' + r.alt : 'Других названий нет', `Виртуальных устройств: ${r.v} · Свойств: ${r.p}`, `<div class="mv"><button data-go="mv:${i}:-1" ${i === 0 ? 'disabled' : ''} aria-label="Выше" style="transform:rotate(180deg)">${ICON('chev')}</button><button data-go="mv:${i}:1" ${i === S.rooms.length - 1 ? 'disabled' : ''} aria-label="Ниже">${ICON('chev')}</button></div>`) +
+      arow('Виртуальные устройства', 'cc-vdevs', 'group'))).join(''),
+    conn: () => S.empty || !S.conns.length ? emptyState('conn') : S.conns.map((c, i) => grp(c.n, grow(c.t, '', sw('cn' + i, c.on), { c: c.a }) + arow('Добавить устройства', 'add-controller'))).join(''),
+    dev: () => { if (S.empty) return emptyState('dev'); const by = {}; CCDEV.filter(d => S.devTab === 'all' || d[3] === S.devTab).forEach(d => (by[d[0].split(' / ')[0]] = by[d[0].split(' / ')[0]] || []).push(d));
+      return Object.entries(by).map(([h, ds]) => grp(h, ds.map(d => grow(d[1], '', `<span class="go">${ICON('chev')}</span>`, { attrs: `data-go="devedit:${d[1]}"`, c: d[2] })).join(''))).join(''); },
     wid: () => S.steps.length && S.wTab === 'scen' && !S.empty ? '' : emptyState('scen'),
   };
   return { title: 'Центр управления', mainTabs: CCT.map(([k, n]) => `<button class="tab" role="tab" aria-selected="${S.cct === k}" data-go="cct:${k}">${n}</button>`).join(''), filter: S.cct === 'dev' && !S.empty ? [['all', 'Все'], ['wb', 'Wirenboard'], ['ha', 'Home Assistant (MQTT Discovery)']].map(([k, n]) => `<button class="chip" aria-pressed="${S.devTab === k}" data-go="dtab:${k}">${n}</button>`).join('') :
