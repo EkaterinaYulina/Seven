@@ -97,6 +97,14 @@ body { background: var(--core-mist); font-family: "Inter", system-ui, sans-serif
 .stage { display: flex; gap: 24px; justify-content: center; align-items: flex-start; flex-wrap: wrap; padding: 24px; }
 .frame { width: var(--dim-panel); }
 .controls { width: 440px; max-width: 100%; display: flex; flex-direction: column; gap: 16px; }
+/* Широкий экран: страница не прокручивается, левая часть (панель) стоит на месте,
+   прокручивается только колонка настроек справа. На узком — обычный поток. */
+@media (min-width: 1000px) and (min-height: 560px) {
+  html, body { height: 100%; overflow: hidden; }
+  .stage { height: 100vh; height: 100dvh; align-items: stretch; flex-wrap: nowrap; }
+  .frame { flex: none; align-self: flex-start; }
+  .controls { flex: none; overflow-y: auto; overscroll-behavior: contain; padding-right: 8px; scrollbar-gutter: stable; }
+}
 .controls h1 { font-size: 16px; font-weight: 500; }
 .controls .group > .lbl { font-size: 11px; color: var(--core-ink-2); margin-bottom: 4px; }
 .seg { display: flex; border: 1px solid var(--core-ink-3); border-radius: 8px; overflow: hidden; background: var(--core-cream); }
@@ -808,8 +816,27 @@ function bindDim(dim, t, tileEl) {
     if (!t.on) { t.on = true; tileEl.dataset.on = 'true'; tileEl.querySelector('[data-role="state"]').textContent = 'Включен'; }
     paint();
   };
-  dim.addEventListener('pointerdown', e => { if (state.edit) return; dim.setPointerCapture(e.pointerId); set(e); e.stopPropagation(); });
-  dim.addEventListener('pointermove', e => { if (dim.hasPointerCapture(e.pointerId)) set(e); });
+  if (h) {
+    dim.addEventListener('pointerdown', e => { if (state.edit) return; dim.setPointerCapture(e.pointerId); set(e); e.stopPropagation(); });
+    dim.addEventListener('pointermove', e => { if (dim.hasPointerCapture(e.pointerId)) set(e); });
+  } else {
+    /* вертикальный ползунок: тянет только вертикальный жест, горизонтальный уходит в свайп между экранами стола;
+       касание без движения ставит значение при отпускании */
+    let st = null;
+    dim.addEventListener('pointerdown', e => { if (!state.edit) st = { x: e.clientX, y: e.clientY, id: e.pointerId, mode: null }; });
+    dim.addEventListener('pointermove', e => {
+      if (!st || e.pointerId !== st.id) return;
+      if (!st.mode) {
+        const dx = e.clientX - st.x, dy = e.clientY - st.y;
+        if (Math.hypot(dx, dy) < 8) return;
+        if (Math.abs(dy) < Math.abs(dx)) { st.mode = 'pass'; return; }
+        st.mode = 'slide'; dim.setPointerCapture(e.pointerId); set({ clientX: st.x, clientY: st.y });
+      }
+      if (st.mode === 'slide') set(e);
+    });
+    const done = e => { if (st && e.pointerId === st.id) { if (!st.mode && e.type === 'pointerup') set(e); st = null; } };
+    dim.addEventListener('pointerup', done); dim.addEventListener('pointercancel', done);
+  }
   dim.addEventListener('click', e => e.stopPropagation());
   paint();
 }
@@ -911,7 +938,7 @@ function goDesk(dir, from = 0) {
 }
 (function swipe() {
   let x0 = null, y0 = 0, dx = 0, id = null;
-  grid.addEventListener('pointerdown', e => { if (state.edit || state.screen !== 'desk' || swipeBusy) return; x0 = e.clientX; y0 = e.clientY; dx = 0; id = e.pointerId; });
+  grid.addEventListener('pointerdown', e => { if (state.edit || state.screen !== 'desk' || swipeBusy) return; if (e.clientX - desk.getBoundingClientRect().left < 16) return; x0 = e.clientX; y0 = e.clientY; dx = 0; id = e.pointerId; });
   grid.addEventListener('pointermove', e => {
     if (x0 === null || e.pointerId !== id) return;
     const mx = e.clientX - x0, my = e.clientY - y0;
