@@ -589,16 +589,35 @@ svg.ic.dots { stroke-width: 2.6; }
 /* ── Единый стиль всего приложения: те же фон --desk-bg, стеклянные карточки и цвета текста, что на страницах.
       Относится к меню, приложениям, листу и форме плитки, шторке «Панель» и диалогам ── */
 .desk > .drawer, .desk > .launcher, .desk > .sheet, .desk > .form, .desk > .shade {
-  background: var(--desk-bg); --c-text-primary: var(--page-text); --ui-on-surface: var(--page-text);
+  --c-text-primary: var(--page-text); --ui-on-surface: var(--page-text);
   --c-text-secondary: var(--page-t2); --ui-on-surface-variant: var(--page-t2); --ui-outline-subtle: var(--glass-line); color: var(--page-text); }
+.desk > .launcher, .desk > .form { background: var(--desk-bg); }
+/* шторки и боковое меню: светлая плотная поверхность, как у плашек с переключателем (а не зелёный фон) */
+:root, [data-theme="light"] { --sheet-bg: color-mix(in srgb, #fff 62%, var(--g-mint-0)); }
+[data-theme="dark"] { --sheet-bg: color-mix(in srgb, #fff 9%, var(--g-mint-0)); }
+.desk > .drawer, .desk > .sheet, .desk > .shade { background: var(--sheet-bg); }
 .launcher .search { border: 0; box-shadow: inset 0 0 0 1px var(--glass-border); background: var(--glass-card); }
 .launcher .search:focus-within { border: 0; padding: 0 var(--dim-space-md); box-shadow: inset 0 0 0 2px var(--ui-primary-container); }
-.sheet .act, .sheet .sizes .sz, .shade .q, .form .vrow, .pick, .jrow { background: var(--glass-card); box-shadow: inset 0 0 0 1px var(--glass-border); }
-.sheet .sizes .sz[aria-pressed="true"] { box-shadow: none; }
+.form .vrow, .pick, .jrow { background: var(--glass-card); box-shadow: inset 0 0 0 1px var(--glass-border); }
 .form .pv .tile { background: var(--glass-card); box-shadow: inset 0 0 0 1px var(--glass-border); }
 .form .appbar { border-bottom: 0; }
 .btn.secondary, .form .szb { background: var(--glass-card); border-color: var(--glass-border); }
-.dlg .box { background: var(--desk-bg); box-shadow: inset 0 0 0 1px var(--glass-border), 0 6px 24px #0004; }
+.dlg .box { background: var(--sheet-bg); box-shadow: inset 0 0 0 1px var(--glass-border), 0 6px 24px #0004; }
+/* поля ввода: стеклянная заливка и контур, подпись внутри сверху (без «выемки» с белой подложкой) */
+.tf input, .fld, .dd, .page .search2 { background: var(--glass-card); border: 0; box-shadow: inset 0 0 0 1px var(--glass-border); }
+.tf input:focus, .fld:focus-within, .dd:focus-visible, .page .search2:focus-within { border: 0; padding-left: 16px; box-shadow: inset 0 0 0 2px var(--ui-primary); }
+.tf.m input:focus { padding-right: 56px; } .fld:focus-within { padding-right: 4px; } .page .search2:focus-within { padding-right: 16px; }
+.tf span { left: 16px; padding: 0; background: transparent; }
+.tf input:focus + span, .tf input:not(:placeholder-shown) + span { top: 7px; }
+.tf input:focus, .tf input:not(:placeholder-shown) { padding-top: 18px; }
+.btn.danger { background: var(--glass-card); }
+.desk > .bar { background: var(--glass-card); box-shadow: inset 0 1px 0 var(--glass-border); }
+/* тексты разделов страниц — на той же линии 24, что заголовок и вкладки */
+.page .sec { padding-left: calc(var(--dim-gutter) + 8px); padding-right: calc(var(--dim-gutter) + 8px); }
+.page .sec .tf, .page .sec .fld, .page .sec .frow { margin-left: -8px; margin-right: -8px; }
+.page .sec .frow .tf { margin: 0; }
+.page .sec .dd { width: calc(100% + 16px); margin-left: -8px; }
+.page .fil { padding: 0 calc(var(--dim-gutter) + 8px); }
 .fab { border-radius: var(--dim-radius-fab); box-shadow: 0 2px 6px rgba(0,0,0,.14); }
 </style>
 </head>
@@ -1201,7 +1220,7 @@ const PAGES = {
     return `<label class="search2">${ICON('search')}<input id="jq" type="text" placeholder="Поиск по фразе, комнате или устройству" value="${S.jq}" autocomplete="off"></label>` +
       `<button class="fil" data-go="jfil">Фильтры<span style="transform:rotate(${S.jFilters ? 180 : 0}deg);display:flex">${ICON('chev')}</span></button>` +
       (S.jFilters ? `<div class="chiprow">${[['err', 'Не понято'], ['warn', 'Нужно уточнение'], ['ok', 'Выполнено']].map(([k, t]) => `<button class="chip" aria-pressed="${S.jstat[k]}" data-jst="${k}">${t}</button>`).join('')}</div>` : '') +
-      `<p class="sd" style="margin:var(--dim-space-sm) var(--dim-gutter)">Записей: ${list.length} из ${JOURNAL.length}</p>` +
+      `<p class="sd" style="margin:var(--dim-space-sm) calc(var(--dim-gutter) + 8px)">Записей: ${list.length} из ${JOURNAL.length}</p>` +
       `<div class="chiprow"><button class="btn secondary" data-go="note:Журнал скопируется текстом.">Копировать как текст</button><button class="btn secondary" data-go="note:Журнал скопируется как JSON.">Копировать JSON</button></div>` +
       list.map(j => `<div class="jrow"><span class="stl ${j[0]}">${ICON(SICON[j[0]])}${j[1]}</span><div class="ph">${j[2]}</div><div class="dt">${j[3]}</div></div>`).join(''); })() }),
 };
@@ -1302,7 +1321,7 @@ Object.assign(PAGES, {
     foot: () => foot(`<button class="btn text" data-go="note:Проверка выполнит сценарий без отправки команд устройствам.">Проверить</button>`, nextBtn('note:Следующие шаги сценария в прототип не входят.', S.steps.length > 0)) }),
   'cc-pick': () => ({ title: 'Новый сценарий', sub: 'Что включить', close: true, body:
     `<div class="sec" style="border:0;padding-bottom:0"><p class="sd" style="color:var(--ui-on-surface)">Выберите, чем управляет шаг. Виртуальное устройство — сразу несколько свойств комнаты.</p></div><label class="search2" style="margin-top:0">${ICON('search')}<input type="text" placeholder="Поиск: название или комната" autocomplete="off"></label>` +
-    `<div class="grp">Гостиная</div>` + [['Свет', 'Виртуальное устройство — свойств: 3 · спросит подтверждение'], ['Бра', 'спросит подтверждение'], ['Громкость', '']].map(([n, d]) => `<button class="pick" data-go="pickstep:${n}"><b>${n}</b><span>${d || '&nbsp;'}</span></button>`).join('') }),
+    `<div class="gh">Гостиная</div>` + [['Свет', 'Виртуальное устройство — свойств: 3 · спросит подтверждение'], ['Бра', 'спросит подтверждение'], ['Громкость', '']].map(([n, d]) => `<button class="pick" data-go="pickstep:${n}"><b>${n}</b><span>${d || '&nbsp;'}</span></button>`).join('') }),
   'cc-integ': () => ({ title: 'Интеграция', sub: 'Home Assistant', actions: `<button class="btn text" ${S.iName.trim() && S.iAddr.trim() ? '' : 'disabled'} data-go="save:integ">Сохранить</button>`,
     body: `<div class="fgap">${tfm('iName', 'Название', S.iName)}${tfm('iAddr', 'Адрес (имя, IP или ссылка)', S.iAddr, 'Например, 192.168.1.10:8123')}${tfm('iToken', 'Токен доступа', S.iToken, 'Создайте его в профиле Home Assistant')}</div>` }),
   'cc-broker': () => ({ title: 'Брокер', sub: 'MQTT', actions: `<button class="btn text" ${S.bName.trim() && S.bAddr.trim() ? '' : 'disabled'} data-go="save:broker">Сохранить</button>`,
