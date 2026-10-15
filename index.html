@@ -572,7 +572,7 @@ svg.ic.dots { stroke-width: 2.6; }
   <symbol id="i-size" viewBox="0 0 24 24"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></symbol>
   <symbol id="i-move" viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M9 6l3-3 3 3M9 18l3 3 3-3M6 9l-3 3 3 3M18 9l3 3-3 3"/></symbol>
   <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></symbol>
-  <symbol id="i-micoff" viewBox="0 0 24 24"><path d="M3 12h18"/></symbol><symbol id="i-quietoff" viewBox="0 0 24 24"><path d="M4 10v4M8 6v12M12 3v18M16 7v10M20 10v4"/></symbol>
+  <symbol id="i-micoff" viewBox="0 0 24 24"><path opacity=".3" d="M11.9998 19.0006V22.0008M4.99902 9.99984V12C4.99902 13.8567 5.73661 15.6373 7.04951 16.9501C8.36241 18.263 10.1431 19.0006 11.9998 19.0006C13.8566 19.0006 15.6372 18.263 16.9501 16.9501C18.263 15.6373 19.0006 13.8567 19.0006 12V9.99984M11.9998 1.9992C13.6569 1.9992 15.0002 3.34245 15.0002 4.99944V12C15.0002 13.657 13.6569 15.0002 11.9998 15.0002C10.3428 15.0002 8.99948 13.657 8.99948 12V4.99944C8.99948 3.34245 10.3428 1.9992 11.9998 1.9992Z"/><path d="M10.4 9a1.6 1.6 0 1 0 3.2 0a1.6 1.6 0 1 0-3.2 0"/></symbol><symbol id="i-quietoff" viewBox="0 0 24 24"><path d="M4 10v4M8 6v12M12 3v18M16 7v10M20 10v4"/></symbol>
   <symbol id="i-voloff" viewBox="0 0 24 24"><path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z"/></symbol>
   <symbol id="i-wifioff" viewBox="0 0 24 24"><path opacity=".3" d="M2.5 9a14 14 0 0 1 19 0M5.5 12.5a9.5 9.5 0 0 1 13 0M8.7 16a5 5 0 0 1 6.6 0"/><path d="M10.4 19a1.6 1.6 0 1 0 3.2 0a1.6 1.6 0 1 0-3.2 0"/></symbol>
 </svg>
@@ -1327,7 +1327,7 @@ function syncShadeQuiet() {
 }
 function drawShade() {
   $('#shade').innerHTML = `<div class="st">00:08 · 11.10.2026 <i></i> MQTT: на связи<span class="mc">${MIC_OFF()}</span></div>` +
-    `<div class="qs">${SBTN('quiet', S.quiet ? 'micoff' : 'quietoff', 'Тишина', S.quiet, S.quiet ? 'Вкл' : 'Выкл')}${SBTN('sleep', 'moon', 'Погасить')}${SBTN('wifi', S.wifi ? 'wifi' : 'wifioff', 'Wi-Fi', S.wifi, S.wifi ? 'Вкл' : 'Выкл')}${SBTN('set', 'gear', 'Настройки')}</div>` +
+    `<div class="qs">${SBTN('quiet', S.quiet ? 'micoff' : 'mic', 'Тишина', S.quiet, S.quiet ? 'Вкл' : 'Выкл')}${SBTN('sleep', 'moon', 'Погасить')}${SBTN('wifi', S.wifi ? 'wifi' : 'wifioff', 'Wi-Fi', S.wifi, S.wifi ? 'Вкл' : 'Выкл')}${SBTN('set', 'gear', 'Настройки')}</div>` +
     `<div class="rw"><span class="big"></span>${dimInner('h', 0, 'sun', false)}</div><div class="rw"><span class="big"></span>${dimInner('h', 0, 'vol', false)}</div><div class="grab"></div>`;
   $('#shade').querySelectorAll('.dim').forEach((dm, i) => {
     const k = i ? 'vol' : 'br', big = dm.parentNode.querySelector('.big');
