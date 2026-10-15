@@ -29,10 +29,7 @@
 
   /* Фон стола: градиенты gradient/desk-*, 3 стопа (0 / 55 / 100 %), по диагонали ↘.
      Светлые пастельные; тёмные получены из тех же оттенков (L 13→22 %, насыщенность ×0,55). */
-  --g-sage-0: #E6EED9;      --g-sage-1: #CFE2C9;      --g-sage-2: #B2D4C2;
   --g-mint-0: #E9F3E1;      --g-mint-1: #CDE7D3;      --g-mint-2: #A9D6C4;
-  --g-pistachio-0: #F0F3D6; --g-pistachio-1: #D8E7B5; --g-pistachio-2: #B3D4A4;
-  --g-moss-0: #DDE6CF;      --g-moss-1: #BFD3B4;      --g-moss-2: #98B8A0;
 
   --dim-panel: 480px;   --dim-top-strip: 32px; --dim-tile: 90px; --dim-gap: 4px;
   --dim-touch-min: 48px; --dim-icon: 24px;
@@ -71,10 +68,7 @@
 }
 /* Semantic / Dark */
 [data-theme="dark"] {
-  --g-sage-0: #23281A;      --g-sage-1: #283324;      --g-sage-2: #2F4138;
   --g-mint-0: #202919;      --g-mint-1: #233427;      --g-mint-2: #2D433A;
-  --g-pistachio-0: #292B17; --g-pistachio-1: #30381F; --g-pistachio-2: #34432D;
-  --g-moss-0: #22271B;      --g-moss-1: #2A3225;      --g-moss-2: #323E35;
   --c-bg: var(--core-graphite);    --c-tile: var(--core-ink);
   --c-text-primary: var(--core-paper); --c-text-secondary: var(--core-stone);
   --ui-primary: var(--core-paper); --ui-on-primary: var(--core-graphite);
@@ -123,14 +117,11 @@ body { background: var(--core-mist); font-family: "Inter", system-ui, sans-serif
 .desk {
   position: relative; width: var(--dim-panel); height: var(--dim-panel);
   overflow: hidden; isolation: isolate;
-  --desk-bg: linear-gradient(135deg, var(--g-sage-0) 0%, var(--g-sage-1) 55%, var(--g-sage-2) 100%);
+  --desk-bg: linear-gradient(135deg, var(--g-mint-0) 0%, var(--g-mint-1) 55%, var(--g-mint-2) 100%);
   background: var(--desk-bg);
   color: var(--c-text-primary);
   user-select: none; -webkit-user-select: none; touch-action: none;
 }
-.desk[data-bg="mint"]      { --desk-bg: linear-gradient(135deg, var(--g-mint-0) 0%, var(--g-mint-1) 55%, var(--g-mint-2) 100%); }
-.desk[data-bg="pistachio"] { --desk-bg: linear-gradient(135deg, var(--g-pistachio-0) 0%, var(--g-pistachio-1) 55%, var(--g-pistachio-2) 100%); }
-.desk[data-bg="moss"]      { --desk-bg: linear-gradient(135deg, var(--g-moss-0) 0%, var(--g-moss-1) 55%, var(--g-moss-2) 100%); }
 /* обои: градиент «Глина → песочный» + затемнение */
 .desk.wallpaper { background: linear-gradient(135deg, var(--core-clay) 0%, var(--grad-clay-sand-mid) 58%, var(--core-sand) 100%); }
 .desk.wallpaper::before { content: ""; position: absolute; inset: 0; z-index: 0;
@@ -686,7 +677,7 @@ svg.ic.dots { stroke-width: 2.6; }
 
 <script>
 /* ───────── Состояние прототипа ───────── */
-const state = { edit: false, theme: 'light', bg: 'sage', dimmer: 'v', mic: 'off', showHit: false, screen: 'desk' };
+const state = { edit: false, theme: 'light', bg: 'mint', dimmer: 'v', mic: 'off', showHit: false, screen: 'desk' };
 const INITIAL = [
   { id: 'clock',       type: 'placeholder', col: 0, row: 0, w: 2, h: 1, icon: 'clock', title: 'Часы', subtitle: 'скоро' },
   { id: 'light-dimmer',type: 'switch',      col: 2, row: 0, w: 2, h: 2, icon: 'bulb',  name: 'Свет', on: false, level: 0.87 },
@@ -1386,7 +1377,7 @@ const GROUPS = [
   { label: 'Тема',     get: () => state.theme, set: v => { state.theme = v; document.documentElement.dataset.theme = v; },
     opts: [['light', 'Светлая'], ['dark', 'Тёмная']] },
   { label: 'Фон', cls: 'grid3', get: () => state.bg, set: v => { state.bg = v; desk.dataset.bg = v; desk.classList.toggle('wallpaper', v === 'wallpaper'); },
-    opts: [['sage', 'Шалфей ★'], ['mint', 'Мята'], ['pistachio', 'Фисташка'], ['moss', 'Мох'], ['wallpaper', 'Обои (тест)']] },
+    opts: [['mint', 'Мята'], ['wallpaper', 'Обои (тест)']] },
   { label: 'Ползунок света', get: () => state.dimmer, set: v => { state.dimmer = v; render(); },
     opts: [['old', 'Было'], ['h', 'Горизонтальный'], ['v', 'Вертикальный']] },
   { label: 'Вид ползунка', get: () => desk.dataset.dstyle || 'a', set: v => { desk.dataset.dstyle = v; },
