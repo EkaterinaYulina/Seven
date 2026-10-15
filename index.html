@@ -553,17 +553,15 @@ svg.ic.dots { stroke-width: 2.6; }
   font-size: var(--font-name); line-height: var(--lh-name); font-weight: 500; z-index: 5; }
 .snackbar.show { display: flex; }
 .snackbar button { height: var(--dim-touch-min); padding: 0 var(--dim-gutter); font-weight: 500; font-size: var(--font-name); }
-/* ── Страницы: воздушное стекло, палитра «Мята». Без live-blur (слабый CPU панели): полупрозрачная заливка + контур поверх статичного градиента.
+/* ── Страницы: воздушное стекло, палитра «Мята». Без live-blur (слабый CPU панели): полупрозрачная заливка + контур поверх статичного градиента (тот же --desk-bg, что и на главном экране).
       Скругления по дизайн-системе: карточка 12 (radius-card), чип/активная вкладка 8, FAB 16 (radius-fab). Выбранное — зелёный primary-container, как в main ── */
 :root, [data-theme="light"] {
-  --page-bg: radial-gradient(60% 50% at 10% 6%, #F1F8E0 0%, transparent 70%), radial-gradient(60% 55% at 95% 95%, #CDE7D3 0%, transparent 70%), #E9F3E1;
   --glass-card: rgba(255,255,255,.58); --glass-border: rgba(255,255,255,.9); --glass-line: rgba(20,40,29,.10);
   --page-text: #14281D; --page-t2: #3F5246; --glass-head: #3F5246; --page-thumb: var(--core-cream); --page-acc: #14281D; }
 [data-theme="dark"] {
-  --page-bg: radial-gradient(55% 45% at 10% 5%, rgba(143,211,174,.20) 0%, transparent 70%), radial-gradient(60% 55% at 95% 100%, rgba(70,160,125,.28) 0%, transparent 70%), #10150F;
   --glass-card: rgba(255,255,255,.08); --glass-border: rgba(255,255,255,.20); --glass-line: rgba(255,255,255,.11);
   --page-text: var(--core-paper); --page-t2: var(--core-stone); --glass-head: var(--core-stone); --page-thumb: var(--core-graphite); --page-acc: #DCE7AA; }
-.desk > .page { background: var(--page-bg); --c-text-primary: var(--page-text); --ui-on-surface: var(--page-text); --c-text-secondary: var(--page-t2); --ui-on-surface-variant: var(--page-t2); --ui-outline-subtle: var(--glass-line); color: var(--page-text); }
+.desk > .page { background: var(--desk-bg); --c-text-primary: var(--page-text); --ui-on-surface: var(--page-text); --c-text-secondary: var(--page-t2); --ui-on-surface-variant: var(--page-t2); --ui-outline-subtle: var(--glass-line); color: var(--page-text); }
 .page .appbar { height: 56px; border-bottom: 0; padding: 0 var(--dim-gutter) 0 calc(var(--dim-gutter) + 8px); gap: var(--dim-space-sm); }
 .page .appbar .ttl { font-size: 22px; line-height: 28px; font-weight: 500; margin-left: 0; }
 .page .appbar .ttl2 { margin-left: 0; }
