@@ -146,6 +146,11 @@ svg.ic.dots { stroke-width: 2.6; }
 .mic { width: var(--mic-circle); height: var(--mic-circle); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--ui-on-surface); }
 .mic[data-state="listening"] { background: var(--ui-primary-container); color: var(--ui-on-primary-container); }
 .mic[data-state="no-permission"] { background: var(--ui-error); color: var(--ui-on-primary); }
+.mic { position: relative; }
+.mic[data-muted="true"] { color: var(--ui-outline); }
+.mic[data-muted="true"]::after { content: ''; position: absolute; width: 64%; height: 2px; border-radius: 1px; background: currentColor; transform: rotate(-45deg); }
+.off { position: absolute; inset: 0; z-index: 60; background: #000; opacity: 0; pointer-events: none; transition: opacity .3s; }
+.off[data-on="true"] { opacity: 1; pointer-events: auto; }
 
 /* ── Сетка ── (DeskGrid). В правке снизу уступает место панели 64 */
 .grid { left: 0; right: 0; top: var(--dim-top-strip); bottom: 0; }
@@ -639,6 +644,7 @@ svg.ic.dots { stroke-width: 2.6; }
           <div class="r"><span class="fn">?123</span><span>,</span><span class="w">Русский</span><span>.</span><span class="go">›</span></div>
       </div>
       <section class="shade" id="shade" aria-label="Панель"></section>
+      <div class="off" id="off" data-on="false" aria-hidden="true"></div>
 
       <!-- EditBar -->
       <div class="bar" id="bar">
@@ -1133,7 +1139,7 @@ Object.assign(PAGES, {
 Object.assign(S, { cct: 'loc', roomOpen: true, fab: false, wTab: 'scen', devTab: 'all',
   conns: [{ n: 'wirenboard-AEYCHFJC', t: 'Wirenboard', a: '192.168.23.141:1883', on: true }, { n: 'Home Assistant', t: 'Home Assistant (MQTT Discovery)', a: '192.168.23.10:1883', on: true }],
   iName: '', iAddr: '', iToken: '', bName: '', bAddr: '', bPort: '1883', bUser: '', bPass: '' });
-Object.assign(S, { rooms: [{ n: 'Гостиная', alt: 'кухня', v: 1, p: 6 }], dlg: false, rName: '', vdName: 'Свет', vdAlt: '', steps: [], dName: 'Зуммер', dPlace: '', br: 85, vol: 53, quiet: false, sleep: false });
+Object.assign(S, { rooms: [{ n: 'Гостиная', alt: 'кухня', v: 1, p: 6 }], dlg: false, rName: '', vdName: 'Свет', vdAlt: '', steps: [], dName: 'Зуммер', dPlace: '', br: 85, vol: 53, quiet: false });
 const fld = (k, v, mic = true) => `<label class="fld"><input data-in="${k}" value="${v}" autocomplete="off">${mic ? `<button type="button" class="mi" data-go="note:Голосовой ввод в этот прототип не входит." aria-label="Голосовой ввод">${ICON('mic')}</button>` : ''}</label>`;
 const fabGo = (t, go) => `<button class="fab" data-go="${go}">${ICON('plus')}${t}</button>`;
 const CCT = [['loc', 'Локации', 'pin', 'Комнаты и виртуальные устройства'], ['conn', 'Подключения', 'signal', 'Контроллеры и интеграции'], ['dev', 'Устройства', 'bulb', 'Всё, что найдено у подключений'], ['wid', 'Виджеты', 'apps', 'Сценарии и виджеты']];
@@ -1278,14 +1284,41 @@ function syncKb() {
 }
 $('#page').addEventListener('focusin', () => { clearTimeout(kbT); syncKb(); });
 $('#page').addEventListener('focusout', () => { clearTimeout(kbT); kbT = setTimeout(syncKb, 300); });
+// «Тишина»: полный mute — микрофон выкл, громкость динамиков 0. Переключатель с памятью прежних значений.
+function setQuiet(on) {
+  if (on === S.quiet) return;
+  S.quiet = on;
+  const mic = $('#mic');
+  if (on) {
+    S.volBefore = S.vol; S.micBefore = state.mic;
+    S.vol = 0; state.mic = 'off'; mic.dataset.state = 'off'; mic.dataset.muted = 'true';
+  } else {
+    S.vol = S.volBefore || 53; state.mic = S.micBefore || 'off'; mic.dataset.state = state.mic; mic.removeAttribute('data-muted');
+  }
+  syncControls();
+}
+// «Погасить»: разовое действие, а не режим. Экран гаснет, яркость не меняется, касание по экрану включает его.
+function sleepScreen() {
+  setScreen('desk');
+  $('#off').dataset.on = 'true';
+  note('Экран погашен, яркость осталась ' + S.br + '%. Коснитесь экрана, чтобы включить.');
+}
+$('#off').addEventListener('pointerdown', e => { e.preventDefault(); $('#off').dataset.on = 'false'; note(''); });
 function drawShade() {
-  $('#shade').innerHTML = `<div class="st">00:08 · 11.10.2026 <i></i> MQTT: на связи</div><div class="qs"><button data-q="quiet" aria-pressed="${S.quiet}">${ICON('dnd')}Тишина</button><button data-q="sleep" aria-pressed="${S.sleep}">${ICON('moon')}Погасить</button><button data-q="wifi" aria-pressed="true">${ICON('wifi')}Wi-Fi</button><button data-q="set">${ICON('gear')}Настройки</button></div>` + `<div class="sdims">${dimInner('h', 0, 'sun')}${dimInner('h', 0, 'vol')}</div><div class="grab"></div>`;
+  $('#shade').innerHTML = `<div class="st">00:08 · 11.10.2026 <i></i> MQTT: на связи</div><div class="qs"><button data-q="quiet" aria-pressed="${S.quiet}">${ICON('dnd')}Тишина</button><button data-q="sleep">${ICON('moon')}Погасить</button><button data-q="wifi" aria-pressed="true">${ICON('wifi')}Wi-Fi</button><button data-q="set">${ICON('gear')}Настройки</button></div>` + `<div class="sdims">${dimInner('h', 0, 'sun')}${dimInner('h', 0, 'vol')}</div><div class="grab"></div>`;
   $('#shade').querySelectorAll('.dim').forEach((dm, i) => { const k = i ? 'vol' : 'br', aria = i ? 'Громкость' : 'Яркость';
-    const t = { level: (S[k] - 1) / 99, on: true, onChange() { S[k] = pctOf(t); } };
-    bindDim(dm, t, dm.parentNode); dm.setAttribute('aria-label', aria); });
+    let ready = false;
+    const t = { level: S[k] / 100, on: true, onChange() {
+      if (k === 'br') { S.br = pctOf(t); return; }
+      if (!ready) { if (S.quiet) dm.querySelectorAll('.pct').forEach(n => n.textContent = '0%'); return; }
+      // громкость подняли руками — «Тишина» выключается, микрофон возвращается
+      if (S.quiet && t.level > 0.01) { setQuiet(false); const b = $('#shade').querySelector('[data-q="quiet"]'); if (b) b.setAttribute('aria-pressed', 'false'); }
+      if (!S.quiet) S.vol = pctOf(t);
+    } };
+    bindDim(dm, t, dm.parentNode); ready = true; dm.setAttribute('aria-label', aria); });
 }
 drawShade();
-$('#shade').addEventListener('click', e => { const b = e.target.closest('[data-q]'); if (!b) return; const q = b.dataset.q; if (q === 'set') return goPage('voice', false); if (q === 'wifi') return note('Откроются настройки Wi-Fi системы.'); S[q] = !S[q]; drawShade(); });
+$('#shade').addEventListener('click', e => { const b = e.target.closest('[data-q]'); if (!b) return; const q = b.dataset.q; if (q === 'set') return goPage('voice', false); if (q === 'wifi') return note('Откроются настройки Wi-Fi системы.'); if (q === 'sleep') return sleepScreen(); setQuiet(!S.quiet); drawShade(); });
 $('.scrim').addEventListener('click', () => { if (state.screen === 'shade') setScreen('desk'); });
 const GROUPS = [
   { label: 'Экран', cls: 'grid3', get: () => state.screen, set: v => setScreen(v),
