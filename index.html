@@ -1,0 +1,1357 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Seven · Стол · прототип</title>
+<style>
+/* ─────────────────────────────────────────────────────────────
+   Токены. Имена повторяют seven-tokens.json / SevenDesignTokens.kt:
+   --core-* → SevenCore, --dim-* → SevenDimens, --font-* → SevenFontSize,
+   --c-* → SevenColors, --ui-* → SevenUiColors.
+   1 px = 1 dp (панель 160 dpi). Hex только в этом блоке.
+   ───────────────────────────────────────────────────────────── */
+:root {
+  --core-milk: #EEEDE6;   --core-cream: #FCFBF7;  --core-ink: #22261E;
+  --core-ink-2: #505348;  --core-graphite: #171A13; --core-paper: #ECEBE3;
+  --core-stone: #B4B7A8;  --core-ink-3: #787B6E;  --core-mist: #DEDDD3;
+  --core-scrim: #00000052;
+  --core-ink-10: #22261E1A; --core-paper-14: #ECEBE324;
+  --core-cream-40: #FCFBF766; --core-ink-40: #22261E66;
+  --core-red-700: #B3302F; --core-red-300: #F08A80;
+  --core-blue-700: #1F5FAE; --core-blue-300: #7FB2EE;
+  --core-green-600: #2F7D5B; --core-green-300: #8FD3AE; --core-green-200: #A9D6BC; --core-green-800: #3F6B55;
+  --core-olive: #515B20; --core-yellow-green: #DCE7AA;
+  --core-clay: #B98079; --core-sand: #C8B58E;
+  --core-panel-1: #F1EEE4; --core-panel-2: #EBE8D6; --core-panel-3: #E4D3AE;
+  /* средняя точка градиента «Глина → песочный» из палитры (58 %), отдельного токена нет */
+  --grad-clay-sand-mid: #C5A486;
+
+  /* Фон стола: градиенты gradient/desk-*, 3 стопа (0 / 55 / 100 %), по диагонали ↘.
+     Светлые пастельные; тёмные получены из тех же оттенков (L 13→22 %, насыщенность ×0,55). */
+  --g-sage-0: #E6EED9;      --g-sage-1: #CFE2C9;      --g-sage-2: #B2D4C2;
+  --g-mint-0: #E9F3E1;      --g-mint-1: #CDE7D3;      --g-mint-2: #A9D6C4;
+  --g-pistachio-0: #F0F3D6; --g-pistachio-1: #D8E7B5; --g-pistachio-2: #B3D4A4;
+  --g-moss-0: #DDE6CF;      --g-moss-1: #BFD3B4;      --g-moss-2: #98B8A0;
+
+  --dim-panel: 480px;   --dim-top-strip: 32px; --dim-tile: 90px; --dim-gap: 4px;
+  --dim-touch-min: 48px; --dim-icon: 24px;
+  --dim-gutter: 16px;   --dim-space-sm: 8px; --dim-space-md: 12px; --dim-space-xl: 24px;
+  --dim-radius-card: 12px; --dim-radius-tile: 12px;
+  --dim-bar: 64px;      /* wizard-footer / нижняя панель правки */
+
+  --font-value: 20px; --font-name: 14px; --font-secondary: 11px;
+  /* межстрочные сняты с макета, в токенах их нет (см. SevenTypography) */
+  --lh-value: 24px; --lh-name: 18px; --lh-secondary: 20px;
+
+  --tile-glass: 0.5;           /* opacity/tile-glass-default */
+  --wallpaper-dim: 0.4;        /* «Затемнение» обоев по ТЗ, 40 % */
+
+  /* только в прототипе, в токены не заведены */
+  --tile-slider-track: 4px; --tile-slider-thumb: 14px;
+  --page-dot: 6px; --page-dot-step: 10px; --mic-circle: 28px;
+  --badge: 24px;           /* красный × на плитке в правке; зона касания = touch-min */
+  --snackbar-h: 64px;      /* по Seven / Snackbar */
+}
+
+/* Semantic / Light */
+:root, [data-theme="light"] {
+  --c-bg: var(--core-milk);        --c-tile: var(--core-cream);
+  --c-text-primary: var(--core-ink); --c-text-secondary: var(--core-ink-2);
+  --ui-primary: var(--core-ink);   --ui-on-primary: var(--core-cream);
+  --ui-primary-container: var(--core-green-600); --ui-on-primary-container: var(--core-cream);
+  --dim-fill-bg: var(--core-green-200); --dim-fill-fg: var(--core-ink);
+  --ui-surface-card: var(--core-cream); --ui-surface-bar: var(--core-panel-1);
+  --ui-on-surface: var(--core-ink); --ui-on-surface-variant: var(--core-ink-2);
+  --ui-outline: var(--core-ink-3);  --ui-outline-subtle: var(--core-ink-10);
+  --ui-slot-fill: var(--core-cream-40);
+  --ui-error: var(--core-red-700);
+  /* Seven / Button, Primary: в светлой — primary-container (по Button.png) */
+  --btn-primary-bg: var(--ui-primary-container); --btn-primary-fg: var(--ui-on-primary-container);
+}
+/* Semantic / Dark */
+[data-theme="dark"] {
+  --g-sage-0: #23281A;      --g-sage-1: #283324;      --g-sage-2: #2F4138;
+  --g-mint-0: #202919;      --g-mint-1: #233427;      --g-mint-2: #2D433A;
+  --g-pistachio-0: #292B17; --g-pistachio-1: #30381F; --g-pistachio-2: #34432D;
+  --g-moss-0: #22271B;      --g-moss-1: #2A3225;      --g-moss-2: #323E35;
+  --c-bg: var(--core-graphite);    --c-tile: var(--core-ink);
+  --c-text-primary: var(--core-paper); --c-text-secondary: var(--core-stone);
+  --ui-primary: var(--core-paper); --ui-on-primary: var(--core-graphite);
+  --ui-primary-container: var(--core-green-300); --ui-on-primary-container: var(--core-graphite);
+  --dim-fill-bg: var(--core-green-800); --dim-fill-fg: var(--core-paper);
+  --ui-surface-card: var(--core-ink); --ui-surface-bar: var(--core-ink);
+  --ui-on-surface: var(--core-paper); --ui-on-surface-variant: var(--core-stone);
+  --ui-outline: var(--core-ink-3);  --ui-outline-subtle: var(--core-paper-14);
+  --ui-slot-fill: var(--core-ink-40);
+  --ui-error: var(--core-red-300);
+  /* в Button.png тёмный Primary залит светлым (ui/primary), а не olive: следуем компоненту */
+  --btn-primary-bg: var(--ui-primary-container); --btn-primary-fg: var(--ui-on-primary-container);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+body { background: var(--core-mist); font-family: "Inter", system-ui, sans-serif; color: var(--core-ink); }
+
+/* ── Обвязка прототипа (не часть продукта) ── */
+.stage { display: flex; gap: 24px; justify-content: center; align-items: flex-start; flex-wrap: wrap; padding: 24px; }
+.frame { width: var(--dim-panel); }
+.controls { width: 440px; max-width: 100%; display: flex; flex-direction: column; gap: 16px; }
+.controls h1 { font-size: 16px; font-weight: 500; }
+.controls .group > .lbl { font-size: 11px; color: var(--core-ink-2); margin-bottom: 4px; }
+.seg { display: flex; border: 1px solid var(--core-ink-3); border-radius: 8px; overflow: hidden; background: var(--core-cream); }
+.seg button { flex: 1; padding: 7px 4px; font-size: 12px; }
+.seg button + button { border-left: 1px solid var(--core-ink-3); }
+.seg.grid3 { display: grid; grid-template-columns: repeat(4, 1fr); }
+.seg.grid3 button:nth-child(4n+1) { border-left: 0; }
+.seg.grid3 button:nth-child(n+5) { border-top: 1px solid var(--core-ink-3); }
+.seg button[aria-pressed="true"] { background: var(--core-ink); color: var(--core-cream); }
+.controls label { font-size: 12px; display: flex; gap: 8px; align-items: center; cursor: pointer; }
+.controls .reset { align-self: flex-start; font-size: 12px; border: 1px solid var(--core-ink-3); border-radius: 8px; padding: 7px 12px; background: var(--core-cream); }
+.hint { font-size: 12px; line-height: 17px; color: var(--core-ink-2); }
+.note { margin-top: 8px; min-height: 34px; font-size: 12px; line-height: 17px; color: var(--core-ink-2); }
+
+/* ── Экран ── (DeskScreen) */
+.desk {
+  position: relative; width: var(--dim-panel); height: var(--dim-panel);
+  overflow: hidden; isolation: isolate;
+  --desk-bg: linear-gradient(135deg, var(--g-sage-0) 0%, var(--g-sage-1) 55%, var(--g-sage-2) 100%);
+  background: var(--desk-bg);
+  color: var(--c-text-primary);
+  user-select: none; -webkit-user-select: none; touch-action: none;
+}
+.desk[data-bg="mint"]      { --desk-bg: linear-gradient(135deg, var(--g-mint-0) 0%, var(--g-mint-1) 55%, var(--g-mint-2) 100%); }
+.desk[data-bg="pistachio"] { --desk-bg: linear-gradient(135deg, var(--g-pistachio-0) 0%, var(--g-pistachio-1) 55%, var(--g-pistachio-2) 100%); }
+.desk[data-bg="moss"]      { --desk-bg: linear-gradient(135deg, var(--g-moss-0) 0%, var(--g-moss-1) 55%, var(--g-moss-2) 100%); }
+/* обои: градиент «Глина → песочный» + затемнение */
+.desk.wallpaper { background: linear-gradient(135deg, var(--core-clay) 0%, var(--grad-clay-sand-mid) 58%, var(--core-sand) 100%); }
+.desk.wallpaper::before { content: ""; position: absolute; inset: 0; z-index: 0;
+  background: color-mix(in srgb, var(--core-graphite) calc(var(--wallpaper-dim) * 100%), transparent); }
+.desk > * { position: absolute; z-index: 1; }
+.desk.wallpaper .strip { background: color-mix(in srgb, var(--c-tile) calc(var(--tile-glass) * 100%), transparent); }
+
+svg.ic { width: var(--dim-icon); height: var(--dim-icon); flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+svg.ic.dots { stroke-width: 2.6; }
+
+/* ── Верхняя полоса ── (DeskTopStrip) */
+.strip { left: 0; right: 0; top: 0; height: var(--dim-top-strip); display: flex; align-items: center; }
+.strip .hit { width: var(--dim-touch-min); height: 100%; display: flex; align-items: center; justify-content: center; }
+.strip .room { margin-left: var(--dim-gutter); font-size: var(--font-name); line-height: var(--lh-name); font-weight: 500; color: var(--ui-on-surface); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.strip .spacer { flex: 1; }
+.strip .time { margin-right: var(--dim-space-sm); font-size: var(--font-name); line-height: var(--lh-name); color: var(--ui-on-surface); }
+.dots-pager { position: absolute; left: 0; right: 0; bottom: 16px; height: 6px; display: flex; justify-content: center; align-items: center; gap: 6px; z-index: 2; pointer-events: none; }
+.dots-pager i { width: 6px; height: 6px; border-radius: 3px; background: var(--ui-on-surface); opacity: .3; transition: width .22s ease, opacity .22s ease; }
+.dots-pager i.on { width: 20px; opacity: 1; }
+.desk.edit .dots-pager { display: none; }
+.mic { width: var(--mic-circle); height: var(--mic-circle); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--ui-on-surface); }
+.mic[data-state="listening"] { background: var(--ui-primary-container); color: var(--ui-on-primary-container); }
+.mic[data-state="no-permission"] { background: var(--ui-error); color: var(--ui-on-primary); }
+
+/* ── Сетка ── (DeskGrid). В правке снизу уступает место панели 64 */
+.grid { left: 0; right: 0; top: var(--dim-top-strip); bottom: 0; }
+.desk.edit .grid { bottom: var(--dim-bar); }
+
+.tile {
+  position: absolute; overflow: hidden;
+  border-radius: var(--dim-radius-tile);
+  background: color-mix(in srgb, var(--c-tile) calc(var(--tile-glass) * 100%), transparent);
+  padding: var(--dim-space-md); color: var(--c-text-primary);
+  display: flex; flex-direction: column;
+}
+.tile .name { font-size: var(--font-name); line-height: var(--lh-name); font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tile .value { font-size: var(--font-value); line-height: var(--lh-value); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tile .sec { font-size: var(--font-secondary); line-height: var(--lh-secondary); color: var(--c-text-secondary); white-space: nowrap; }
+.tile.value-tile { flex-direction: row; align-items: center; gap: var(--dim-space-sm); }
+.tile.value-tile .text { display: flex; flex-direction: column; gap: var(--dim-gap); min-width: 0; }
+.tile.switch-tile > .ic + .name { margin-top: var(--dim-gap); }
+
+/* мини-слайдер плитки (TileSlider) */
+.slider { position: relative; height: var(--dim-touch-min); margin-top: auto;
+  margin-bottom: calc(var(--dim-space-xl) - var(--dim-space-md)); touch-action: none; cursor: pointer; }
+.slider .track { position: absolute; left: 0; right: 0; top: 50%; height: var(--tile-slider-track); margin-top: calc(var(--tile-slider-track) / -2); border-radius: calc(var(--tile-slider-track) / 2); background: var(--ui-on-surface-variant); }
+.slider .thumb { position: absolute; top: 50%; width: var(--tile-slider-thumb); height: var(--tile-slider-thumb); margin: calc(var(--tile-slider-thumb) / -2) 0 0 calc(var(--tile-slider-thumb) / -2); border-radius: 50%; background: var(--ui-surface-card); border: 1px solid var(--ui-on-surface-variant); }
+
+
+/* ползунок яркости: «пилюля-заливка» (TileDimmer) */
+.tile.dim-v { flex-direction: row; gap: var(--dim-space-md); }
+.tile .col { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.tile .col > .ic + .name { margin-top: var(--dim-gap); }
+.tile .sp { flex: 1; }
+.tile .big { font-size: var(--font-value); line-height: var(--lh-value); font-weight: 500; font-variant-numeric: tabular-nums; }
+.dim { position: relative; overflow: hidden; border-radius: 999px; touch-action: none; cursor: pointer;
+  background: color-mix(in srgb, var(--dim-fill-bg) 24%, transparent); color: var(--c-text-secondary); flex: none; }
+.dim.h { height: 48px; margin-top: auto; }
+.dim.v { width: 56px; align-self: stretch; }
+.dim .content { position: absolute; left: 0; top: 0; pointer-events: none; }
+.dim.v .content { top: auto; bottom: 0; }
+.dim .content > .ic { position: absolute; width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.dim.h .content > .ic { left: 14px; top: 12px; }
+.dim.v .content > .ic { left: 16px; bottom: 16px; }
+.dim .content > .pct { position: absolute; right: 28px; top: 0; height: 48px; line-height: 48px; font-size: var(--font-name); font-weight: 500; font-variant-numeric: tabular-nums; }
+.dim-fill { position: absolute; left: 0; bottom: 0; overflow: hidden; border-radius: inherit;
+  background: var(--dim-fill-bg); color: var(--dim-fill-fg); transition: background .2s; }
+.dim.h .dim-fill { top: 0; }
+.dim.v .dim-fill { right: 0; }
+.dim-fill .content { color: var(--dim-fill-fg); }
+.dim .grip { position: absolute; border-radius: 2px; background: var(--core-cream); opacity: .9; box-shadow: 0 0 0 .5px #0002; pointer-events: none; }
+.dim.h .grip { right: 8px; top: 50%; width: 4px; height: 20px; margin-top: -10px; }
+.dim.v .grip { top: 8px; left: 50%; height: 4px; width: 20px; margin-left: -10px; }
+.dim.nogrip .grip { display: none; }
+
+/* варианты вида ползунка (превью): a — без заливки в «выкл», b — бледная заливка, c — цвет по яркости, d — светлая дорожка */
+.dim-fill { --dim-fill-lo: #E6EBB8; }
+[data-theme="dark"] .dim-fill { --dim-fill-lo: var(--core-olive); }
+.desk[data-dstyle="a"] .tile[data-on="false"] .dim-fill { background: transparent; }
+.desk[data-dstyle="a"] .tile[data-on="false"] .grip { display: none; }
+.desk[data-dstyle="b"] .tile[data-on="false"] .dim-fill { background: color-mix(in srgb, var(--dim-fill-bg) 40%, transparent); color: var(--dim-fill-fg); }
+.desk[data-dstyle="b"] .tile[data-on="false"] .dim-fill .content { color: var(--dim-fill-fg); }
+.desk[data-dstyle="c"] .tile[data-on="true"] .dim-fill { background: color-mix(in srgb, var(--dim-fill-bg) calc(var(--lvl) * 100%), var(--dim-fill-lo)); }
+.desk[data-dstyle="c"] .tile[data-on="false"] .dim-fill { background: transparent; }
+.desk[data-dstyle="c"] .tile[data-on="false"] .grip { display: none; }
+.desk[data-dstyle="d"] .dim { background: color-mix(in srgb, var(--core-cream) 55%, transparent); }
+[data-theme="dark"] .desk[data-dstyle="d"] .dim { background: color-mix(in srgb, var(--core-paper) 16%, transparent); }
+.desk[data-dstyle="d"] .tile[data-on="false"] .dim-fill { background: transparent; }
+.desk[data-dstyle="d"] .grip { opacity: 1; box-shadow: 0 1px 3px #0004; }
+.desk[data-dstyle="d"] .tile[data-on="false"] .grip { display: none; }
+.desk.edit .dim.v { margin-top: 24px; } /* бейдж не перекрывает пилюлю */
+.tile[data-on="false"] .dim-fill { background: color-mix(in srgb, var(--ui-outline) 45%, transparent); color: var(--c-text-secondary); }
+.tile[data-on="false"] .dim-fill .content { color: var(--c-text-secondary); }
+/* тёмная тема: плитки светлее фона + тонкий контур */
+[data-theme="dark"] .tile { background: color-mix(in srgb, var(--core-paper) 11%, transparent); box-shadow: inset 0 0 0 1px var(--core-paper-14); }
+
+/* ── Боковое меню (DrawerContent) и «Все приложения» (LauncherApps) ── */
+.desk > .scrim { inset: 0; z-index: 5; background: var(--core-scrim); opacity: 0; pointer-events: none; transition: opacity .2s; }
+.desk > .drawer { left: 0; top: 0; bottom: 0; width: 360px; z-index: 6; background: var(--ui-surface-card); color: var(--ui-on-surface);
+  border-radius: 0 var(--dim-radius-card) var(--dim-radius-card) 0; padding: var(--dim-space-md) var(--dim-space-md) var(--dim-space-md) 0;
+  display: flex; flex-direction: column; transform: translateX(-100%); transition: transform .22s ease; }
+.desk[data-screen="drawer"] > .scrim { opacity: 1; pointer-events: auto; }
+.desk[data-screen="drawer"] > .drawer { transform: none; }
+.drawer .head { padding: 0 0 var(--dim-space-md) var(--dim-space-xl); }
+.drawer .head .t { font-size: 20px; line-height: 24px; font-weight: 500; }
+.drawer .head .s { margin-top: 2px; font-size: var(--font-name); line-height: var(--lh-name); color: var(--c-text-secondary); }
+.drawer .item { height: 48px; margin-left: var(--dim-space-sm); border-radius: 999px; padding: 0 var(--dim-space-md) 0 var(--dim-space-md);
+  display: flex; align-items: center; gap: var(--dim-gutter); font-size: var(--font-name); line-height: var(--lh-name); cursor: pointer; text-align: left; width: calc(100% - var(--dim-space-sm)); }
+.drawer .item[aria-current="true"] { background: color-mix(in srgb, var(--ui-primary-container) 16%, transparent); font-weight: 500; }
+.drawer .item:active { background: color-mix(in srgb, var(--ui-on-surface) 8%, transparent); }
+.drawer .gap { flex: 1; }
+.desk > .launcher { inset: 0; z-index: 7; background: var(--ui-surface-card); color: var(--ui-on-surface); display: none; flex-direction: column; }
+.desk[data-screen="apps"] > .launcher, .desk[data-screen="kbd"] > .launcher { display: flex; }
+.launcher .top { height: 48px; display: flex; align-items: center; justify-content: flex-end; padding: 0 var(--dim-space-sm); flex: none; }
+.launcher .search { margin: 0 var(--dim-space-md); height: 48px; flex: none; border-radius: var(--dim-radius-card); border: 1px solid var(--ui-outline);
+  display: flex; align-items: center; gap: var(--dim-space-md); padding: 0 var(--dim-space-md); }
+.launcher .search:focus-within { border: 2px solid var(--ui-primary-container); padding: 0 calc(var(--dim-space-md) - 1px); }
+.launcher .search input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font: inherit; font-size: var(--font-name); color: var(--ui-on-surface); }
+.launcher .search input::placeholder { color: var(--c-text-secondary); }
+.launcher .apps { flex: 1; min-height: 0; overflow-y: auto; display: grid; grid-template-columns: repeat(4, 1fr); align-content: start; padding: var(--dim-space-md) var(--dim-space-sm); row-gap: var(--dim-space-md); }
+.launcher .app { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 11px; line-height: 14px; text-align: center; padding: 0 4px; }
+.launcher .app b { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 500; color: var(--ui-on-surface);
+  background: color-mix(in srgb, var(--hue) 45%, var(--ui-surface-card)); }
+.launcher .empty { grid-column: 1 / -1; text-align: center; color: var(--c-text-secondary); font-size: var(--font-name); padding-top: 24px; }
+.desk > .kbd.gk { position: absolute; left: 0; right: 0; bottom: 0; z-index: 20; }
+.desk.kb > .kbd.gk { display: flex; }
+.desk.kb > .page { bottom: 232px; }
+.desk.kb > .page .fab, .desk.kb > .page .speed { display: none; }
+/* клавиатура следует теме: светлая / тёмная */
+.desk { --kbd-bg: #DCDDD2; --kbd-key: #FCFBF7; --kbd-fn: #C9CBBE; --kbd-fg: #22261E; --kbd-dim: #787B6E; --kbd-edge: #0000001f; }
+[data-theme="dark"] .desk { --kbd-bg: #1E221A; --kbd-key: #3A3F34; --kbd-fn: #2B2F26; --kbd-fg: #ECEBE3; --kbd-dim: #B4B7A8; --kbd-edge: #00000066; }
+/* системная клавиатура Android: заглушка для оценки места, рисуется системой */
+.kbd { display: none; flex: none; height: 232px; background: var(--kbd-bg); color: var(--kbd-fg); padding: 8px 4px; flex-direction: column; gap: 6px; }
+.desk[data-screen="kbd"] .kbd { display: flex; }
+.kbd .r { display: flex; gap: 4px; flex: 1; }
+.kbd .r span { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 20px; border-radius: 8px; background: var(--kbd-key); box-shadow: 0 1px 0 var(--kbd-edge); }
+.kbd .r span.w { flex: 4; font-size: 12px; color: var(--kbd-dim); }
+.kbd .r span.go { background: var(--ui-primary-container); color: var(--ui-on-primary-container); box-shadow: none; }
+.kbd .r span.fn { background: var(--kbd-fn); }
+
+/* ── Лист плитки (Seven/Sheet) и форма плитки ── */
+.desk[data-screen="sheet"] > .scrim { opacity: 1; pointer-events: auto; }
+.desk > .sheet { left: 0; right: 0; bottom: 0; z-index: 8; background: var(--ui-surface-card); color: var(--ui-on-surface);
+  border-radius: var(--dim-gutter) var(--dim-gutter) 0 0; padding: var(--dim-space-sm) var(--dim-gutter) var(--dim-gutter);
+  transform: translateY(100%); transition: transform .22s ease; }
+.desk[data-screen="sheet"] > .sheet { transform: none; }
+.sheet .h { display: grid; grid-template-columns: 48px 1fr 48px; align-items: center; min-height: 48px; }
+.sheet .h .t { text-align: center; font-size: 20px; line-height: 24px; font-weight: 500; }
+.sheet .big { text-align: center; font-size: 32px; line-height: 40px; font-weight: 500; padding-bottom: var(--dim-space-md); border-bottom: 1px solid var(--ui-outline-subtle); margin-bottom: var(--dim-space-md); }
+.sheet .acts4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--dim-space-sm); }
+.sheet .act { height: 76px; border-radius: var(--dim-radius-card); background: color-mix(in srgb, var(--ui-on-surface) 6%, transparent); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; font-size: 12px; line-height: 16px; font-weight: 500; }
+.sheet .act:active, .sheet .act[aria-pressed="true"] { background: color-mix(in srgb, var(--ui-on-surface) 14%, transparent); }
+#shBack { visibility: hidden; }
+.sheet[data-mode="size"] #shBack { visibility: visible; }
+.sheet[data-mode="size"] .big, .sheet[data-mode="size"] .acts4 { display: none; }
+.sheet[data-mode="size"] .sizes { display: flex; margin-top: var(--dim-space-md); }
+.sheet .sizes .sz { width: 104px; height: 104px; border-radius: var(--dim-radius-card); background: color-mix(in srgb, var(--ui-on-surface) 6%, transparent); border: 2px solid transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; font-size: var(--font-name); font-weight: 500; }
+.sheet .sizes .sz i { display: block; border-radius: 4px; background: color-mix(in srgb, var(--ui-on-surface) 40%, transparent); }
+.sheet .sizes .sz[aria-pressed="true"] { border-color: var(--ui-primary-container); background: color-mix(in srgb, var(--ui-primary-container) 16%, transparent); }
+.sheet .sizes .sz[aria-pressed="true"] i { background: var(--ui-primary-container); }
+.sheet .sizes .sz.no { opacity: .38; }
+.sheet .act.danger { color: var(--ui-error); }
+.chip { height: var(--dim-touch-min); padding: 0 var(--dim-gutter); border-radius: var(--dim-radius-card); border: 1px solid var(--ui-outline); font-size: var(--font-name); display: inline-flex; align-items: center; gap: 4px; color: var(--ui-on-surface); }
+.chip[aria-pressed="true"] { background: color-mix(in srgb, var(--ui-primary-container) 16%, transparent); border-color: var(--ui-primary-container); }
+.sheet .sizes { display: none; flex-wrap: wrap; justify-content: center; gap: var(--dim-space-sm); margin-top: var(--dim-space-sm); }
+.sheet .sizes.open { display: flex; }
+.desk > .form { inset: 0; z-index: 9; background: var(--ui-surface-card); color: var(--ui-on-surface); display: none; flex-direction: column; }
+.desk[data-screen="tile"] > .form, .desk[data-screen="custom"] > .form { display: flex; }
+.form .appbar { height: 56px; flex: none; display: flex; align-items: center; padding: 0 var(--dim-space-sm) 0 var(--dim-space-sm); border-bottom: 1px solid var(--ui-outline-subtle); }
+.form .appbar .ttl { flex: 1; font-size: 20px; line-height: 24px; font-weight: 400; margin-left: var(--dim-space-sm); }
+.form .scroll { flex: 1; overflow-y: auto; }
+.form .top { display: flex; align-items: center; justify-content: space-between; height: 200px; padding: 0 var(--dim-gutter); border-bottom: 1px solid var(--ui-outline-subtle); }
+.form .pv { flex: 1; display: flex; align-items: center; justify-content: center; }
+.form .pv .tile { position: relative; background: color-mix(in srgb, var(--ui-on-surface) 8%, var(--ui-surface-card)); }
+.form .pv .empty-pv { font-size: var(--font-secondary); line-height: 20px; color: var(--c-text-secondary); margin: auto; }
+.form .szcol { display: flex; flex-direction: column; gap: var(--dim-space-sm); align-items: stretch; width: 60px; }
+.form .szcol .lbl { font-size: var(--font-name); font-weight: 500; text-align: center; }
+.form .szb { height: 44px; border-radius: var(--dim-radius-card); border: 1px solid var(--ui-outline); font-size: var(--font-secondary); color: var(--c-text-secondary); }
+.form .szb[aria-pressed="true"] { background: color-mix(in srgb, var(--ui-primary-container) 16%, transparent); border-color: var(--ui-primary-container); color: var(--ui-on-surface); }
+.form .sec-h { font-size: 20px; line-height: 24px; font-weight: 400; padding: var(--dim-gutter) var(--dim-gutter) var(--dim-space-sm); }
+.form .vrow { margin: 0 var(--dim-gutter) var(--dim-space-sm); border-radius: var(--dim-radius-card); background: color-mix(in srgb, var(--ui-on-surface) 8%, transparent); display: flex; align-items: center; padding: var(--dim-space-sm) var(--dim-space-xs, 4px) var(--dim-space-sm) var(--dim-space-md); }
+.form .vrow .tx { flex: 1; min-width: 0; font-size: var(--font-name); line-height: 20px; }
+.form .vrow .tx b { font-weight: 500; display: block; }
+.form .vrow .tx span { color: var(--c-text-secondary); }
+.form .vrow .ib { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: var(--c-text-secondary); }
+.form .vrow .ib:disabled { opacity: .35; }
+.form .vrow .ib.up svg { transform: rotate(180deg); }
+.form .padx { padding: 0 var(--dim-gutter); }
+.form .dd { width: 100%; height: 48px; border: 1px solid var(--ui-outline); border-radius: var(--dim-radius-card); padding: 0 var(--dim-space-md); display: flex; align-items: center; justify-content: space-between; text-align: left; font-size: var(--font-name); margin-bottom: var(--dim-gutter); }
+
+/* ── Настройки (Seven/Switch, Radio, Checkbox, Slider, Tabs, StatusLabel, SearchField) ── */
+.desk > .page { inset: 0; z-index: 10; background: var(--ui-surface-card); color: var(--ui-on-surface); display: none; flex-direction: column; }
+.desk[data-screen="page"] > .page { display: flex; }
+.page .appbar { height: 56px; flex: none; display: flex; align-items: center; padding: 0 var(--dim-space-sm); border-bottom: 1px solid var(--ui-outline-subtle); }
+.page .appbar .ttl { flex: 1; font-size: 20px; line-height: 24px; margin-left: var(--dim-space-sm); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.page .tabs { flex: none; display: flex; height: 48px; overflow-x: auto; border-bottom: 1px solid var(--ui-outline-subtle); scrollbar-width: none; }
+.page .tabs::-webkit-scrollbar { display: none; }
+.page .tab { flex: none; padding: 0 var(--dim-gutter); height: 48px; font-size: var(--font-name); color: var(--c-text-secondary); position: relative; white-space: nowrap; }
+.page .tab[aria-selected="true"] { color: var(--ui-on-surface); font-weight: 600; }
+.page .tab[aria-selected="true"]::after { content: ""; position: absolute; left: var(--dim-space-sm); right: var(--dim-space-sm); bottom: 0; height: 2px; background: var(--ui-primary); }
+.page .body { flex: 1; overflow-y: auto; padding-bottom: var(--dim-gutter); }
+.page .sec { padding: var(--dim-gutter); border-bottom: 1px solid var(--ui-outline-subtle); }
+.page .sec:last-child { border-bottom: 0; }
+.page .sh { font-size: 20px; line-height: 24px; font-weight: 400; margin: 0 0 4px; }
+.page .sh.sm { font-size: var(--font-name); line-height: 20px; font-weight: 600; }
+.page .sd { font-size: var(--font-name); line-height: 20px; color: var(--c-text-secondary); margin: 0 0 var(--dim-space-sm); }
+.page .srow { display: flex; align-items: flex-start; gap: var(--dim-gutter); }
+.page .srow > .tx { flex: 1; min-width: 0; }
+.page .srow .sd { margin-bottom: 0; }
+.page .btn.wide { width: 100%; margin-top: var(--dim-space-sm); }
+.page .linkbtn { display: flex; margin: var(--dim-space-sm) 0 0 auto; }
+/* Switch: цветная дорожка 52×32, белый бегунок 24 с тенью, без подписи */
+.sw { flex: none; width: 52px; height: 48px; display: flex; align-items: center; }
+.sw .trk { position: relative; width: 52px; height: 32px; border-radius: 16px; background: color-mix(in srgb, var(--ui-on-surface) 22%, transparent); transition: background .2s ease; }
+.sw .trk::after { content: ""; position: absolute; left: 4px; top: 4px; width: 24px; height: 24px; border-radius: 50%; background: var(--core-cream);
+  box-shadow: 0 1px 3px #0000004d, 0 0 0 .5px #0000001a; transition: transform .22s cubic-bezier(.3, 1.3, .5, 1), width .15s ease; }
+.sw[aria-checked="true"] .trk { background: var(--ui-primary-container); }
+.sw[aria-checked="true"] .trk::after { transform: translateX(20px); }
+.sw:active .trk::after { width: 28px; }
+.sw[aria-checked="true"]:active .trk::after { transform: translateX(16px); }
+.sw .trk svg, .sw .lb { display: none; }
+/* Radio / Checkbox */
+.opt { display: flex; align-items: flex-start; gap: var(--dim-space-md); min-height: 48px; padding: 14px 0 6px; width: 100%; text-align: left; }
+.opt .mk { flex: none; width: 20px; height: 20px; margin-top: 0; border: 2px solid var(--ui-on-surface); box-sizing: border-box; position: relative; }
+.opt .mk.r { border-radius: 50%; }
+.opt .mk.c { border-radius: 4px; }
+.opt[aria-checked="true"] .mk.r::after { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: var(--ui-on-surface); }
+.opt[aria-checked="true"] .mk.c { background: var(--ui-on-surface); }
+.opt .mk.c svg { position: absolute; inset: 1px; width: 14px; height: 14px; stroke: var(--ui-surface-card); stroke-width: 2.6; fill: none; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+.opt[aria-checked="true"] .mk.c svg { opacity: 1; }
+.opt .tx b { display: block; font-size: var(--font-name); line-height: 20px; font-weight: 600; }
+.opt .tx span { display: block; font-size: var(--font-name); line-height: 20px; color: var(--c-text-secondary); }
+/* Stepper (круглая tonal-кнопка) */
+.stp { display: flex; align-items: center; justify-content: center; gap: var(--dim-gutter); margin: var(--dim-space-sm) 0; }
+.stp button { width: 56px; height: 56px; border-radius: 50%; background: color-mix(in srgb, var(--ui-on-surface) 10%, transparent); display: flex; align-items: center; justify-content: center; }
+.stp button:disabled { opacity: .38; }
+.stp .v { min-width: 72px; text-align: center; font-size: 18px; font-weight: 500; font-variant-numeric: tabular-nums; }
+/* Slider: зона 48, track 8, thumb 28 */
+.sl2 { margin: var(--dim-space-sm) 0 var(--dim-space-md); }
+.sl2 .lr { display: flex; justify-content: space-between; font-size: var(--font-name); line-height: 20px; }
+.sl2 .lr b { font-weight: 500; font-variant-numeric: tabular-nums; }
+.sl2 .zone { position: relative; height: 48px; touch-action: none; cursor: pointer; }
+.sl2 .tr { position: absolute; left: 0; right: 0; top: 20px; height: 8px; border-radius: 4px; background: color-mix(in srgb, var(--ui-on-surface) 22%, transparent); }
+.sl2 .fl { position: absolute; left: 0; top: 20px; height: 8px; border-radius: 4px; background: var(--ui-primary); }
+.sl2 .th { position: absolute; top: 10px; width: 28px; height: 28px; margin-left: -14px; border-radius: 50%; background: var(--ui-surface-card); border: 2px solid var(--ui-primary); box-sizing: border-box; box-shadow: 0 1px 3px #0003; }
+.sl2 .mm { display: flex; justify-content: space-between; font-size: 11px; color: var(--c-text-secondary); margin-top: -8px; }
+/* Превью обоев */
+.wp { position: relative; height: 150px; border-radius: var(--dim-radius-card); overflow: hidden; border: 1px solid var(--ui-outline-subtle); }
+.wp .wpdim { position: absolute; inset: 0; background: color-mix(in srgb, var(--core-graphite) calc(var(--wallpaper-dim) * 100%), transparent); }
+.wp .st { position: absolute; left: 0; right: 0; top: 0; height: 24px; display: flex; justify-content: space-between; align-items: center; padding: 0 12px; font-size: 12px; color: #fff; }
+.wp .mt { position: absolute; top: 32px; height: 100px; border-radius: 8px; padding: 8px; font-size: 12px; line-height: 16px; color: var(--ui-on-surface); background: color-mix(in srgb, var(--c-tile) calc(var(--tile-glass) * 100%), transparent); }
+.wp .mt svg { width: 20px; height: 20px; }
+.wp .mt b { display: block; font-size: 14px; font-weight: 600; }
+/* StatusLabel */
+.stl { display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 8px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+.stl svg { width: 16px; height: 16px; }
+.stl.err { color: var(--ui-error); } .stl.warn { color: color-mix(in srgb, var(--ui-on-surface) 80%, #b8860b); } .stl.ok { color: var(--ui-on-surface); }
+.jrow { margin: 0 var(--dim-gutter) var(--dim-space-sm); padding: var(--dim-space-md); border-radius: var(--dim-radius-card); background: color-mix(in srgb, var(--ui-on-surface) 8%, transparent); }
+.jrow .stl { padding: 0; height: 20px; }
+.jrow .ph { font-weight: 600; font-size: var(--font-name); line-height: 20px; margin: 2px 0; }
+.jrow .dt { color: var(--c-text-secondary); font-size: var(--font-name); line-height: 20px; }
+.page .search2 { margin: var(--dim-gutter); min-height: 56px; border: 1px solid var(--ui-outline); border-radius: var(--dim-radius-card); display: flex; align-items: center; gap: var(--dim-space-md); padding: 0 var(--dim-space-md); }
+.page .search2:focus-within { border: 2px solid var(--ui-primary); padding: 0 calc(var(--dim-space-md) - 1px); }
+.page .search2 input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font: inherit; font-size: var(--font-name); color: var(--ui-on-surface); }
+.page .fil { display: flex; align-items: center; justify-content: space-between; padding: 0 var(--dim-gutter); height: 48px; width: 100%; font-weight: 600; font-size: var(--font-name); }
+.page .chiprow { display: flex; flex-wrap: wrap; gap: var(--dim-space-sm); padding: 0 var(--dim-gutter) var(--dim-space-sm); }
+
+/* ── Мастера: поля, подвал, шапка из двух строк, шаги ── */
+.page .appbar .ttl2 { flex: 1; min-width: 0; margin-left: var(--dim-space-sm); }
+.page .appbar .ttl2 .t { font-size: 16px; line-height: 20px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.page .appbar .ttl2 .s { font-size: var(--font-name); line-height: 18px; color: var(--c-text-secondary); }
+.page .foot { flex: none; height: 72px; display: flex; align-items: center; justify-content: flex-end; gap: var(--dim-space-sm); padding: 0 var(--dim-gutter); background: var(--ui-surface-bar); border-top: 1px solid var(--ui-outline-subtle); }
+.step { padding: var(--dim-space-sm) var(--dim-gutter) 0; }
+.step .lb { font-size: var(--font-name); line-height: 20px; margin-bottom: 6px; }
+.step .pbar { height: 4px; border-radius: 2px; background: color-mix(in srgb, var(--ui-on-surface) 14%, transparent); overflow: hidden; }
+.step .pbar i { display: block; height: 100%; background: var(--ui-primary); border-radius: 2px; }
+.tf { position: relative; display: block; }
+.tf input { width: 100%; height: 56px; border: 1px solid var(--ui-outline); border-radius: var(--dim-radius-card); background: transparent; padding: 0 var(--dim-gutter); font: inherit; font-size: 16px; color: var(--ui-on-surface); outline: 0; }
+.tf input:focus { border: 2px solid var(--ui-primary); padding: 0 15px; }
+.tf span { position: absolute; left: 12px; top: 17px; padding: 0 4px; font-size: 16px; line-height: 22px; color: var(--c-text-secondary); background: var(--ui-surface-card); pointer-events: none; transition: all .15s ease; }
+.tf input:focus + span, .tf input:not(:placeholder-shown) + span { top: -9px; font-size: 12px; line-height: 16px; }
+.tf input:focus + span { color: var(--ui-primary); }
+.frow { display: flex; gap: var(--dim-space-md); align-items: center; margin-top: var(--dim-space-md); }
+.dev { display: flex; align-items: flex-start; justify-content: space-between; }
+.dev .opt { width: auto; flex: 1; }
+.dev .tx b { font-weight: 400; font-size: 16px; line-height: 22px; }
+.dev .tx span { line-height: 20px; }
+.dev .btn { margin-top: 4px; }
+
+
+/* ── Центр управления: нижняя навигация, FAB, карточки ── */
+.bn { flex: none; height: 72px; display: flex; background: var(--ui-surface-bar); border-top: 1px solid var(--ui-outline-subtle); }
+.bn button { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 12px; line-height: 16px; color: var(--c-text-secondary); }
+.bn button .pill { width: 56px; height: 32px; border-radius: 16px; display: flex; align-items: center; justify-content: center; }
+.bn button[aria-selected="true"] { color: var(--ui-on-surface); font-weight: 600; }
+.bn button[aria-selected="true"] .pill { background: var(--ui-primary-container); color: var(--ui-on-primary-container); }
+.fab { position: absolute; right: var(--dim-gutter); bottom: 88px; z-index: 3; height: 56px; padding: 0 20px; border-radius: 16px; display: flex; align-items: center; gap: var(--dim-space-sm);
+  background: var(--ui-primary-container); color: var(--ui-on-primary-container); font-size: var(--font-name); font-weight: 500; box-shadow: 0 2px 8px #0003; }
+.fab .ic { width: 24px; height: 24px; }
+.fab .ic { transition: transform .2s ease; } .fab[aria-expanded="true"] .ic { transform: rotate(45deg); }
+.speed { position: absolute; right: var(--dim-gutter); bottom: 152px; z-index: 3; display: flex; flex-direction: column; align-items: flex-end; gap: var(--dim-space-sm); }
+.speed button { height: 48px; padding: 0 20px; border-radius: 12px; background: var(--ui-surface-card); color: var(--ui-on-surface); border: 1px solid var(--ui-outline); font-size: var(--font-name); font-weight: 500; box-shadow: 0 2px 8px #0003; }
+.scrim2 { position: absolute; inset: 0; z-index: 2; background: color-mix(in srgb, var(--core-graphite) 32%, transparent); }
+.card2 { margin: 0 var(--dim-gutter) var(--dim-space-sm); border: 1px solid var(--ui-outline-subtle); border-radius: var(--dim-radius-card); padding: var(--dim-space-md); background: color-mix(in srgb, var(--ui-on-surface) 4%, transparent); }
+.card2 .hd, button.card2 { text-align: left; } .card2 .hd { display: flex; align-items: center; gap: var(--dim-space-md); width: 100%; text-align: left; min-height: 48px; }
+.card2 .hd .tx { flex: 1; min-width: 0; }
+.card2 .cap { font-size: 12px; line-height: 16px; color: var(--c-text-secondary); overflow-wrap: anywhere; }
+.card2 .nm { font-size: 16px; line-height: 22px; font-weight: 600; }
+.card2 .ds { font-size: var(--font-name); line-height: 20px; color: var(--c-text-secondary); }
+.card2 .ex { padding-top: var(--dim-space-sm); border-top: 1px solid var(--ui-outline-subtle); margin-top: var(--dim-space-sm); }
+.card2 .row { display: flex; align-items: center; gap: var(--dim-space-md); }
+.empty { padding: 48px var(--dim-gutter); text-align: center; color: var(--c-text-secondary); font-size: var(--font-name); line-height: 20px; }
+.empty b { display: block; color: var(--ui-on-surface); font-size: 16px; line-height: 22px; font-weight: 600; margin-bottom: 4px; }
+.page .acts { display: flex; align-items: center; }
+.tf.m input { padding-right: 56px; }
+.tf .mi { position: absolute; right: 4px; top: 4px; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; color: var(--c-text-secondary); }
+.fgap { display: flex; flex-direction: column; gap: var(--dim-gutter); padding: var(--dim-gutter); }
+.fgap .hp { font-size: 12px; line-height: 16px; color: var(--c-text-secondary); margin: -10px 0 0 var(--dim-space-md); }
+
+.bn button { gap: 0; } .bn button .pill { width: 64px; }
+.btn.danger { background: var(--ui-surface-card); color: var(--ui-error); border-color: var(--ui-error); }
+.lab { display: block; font-size: var(--font-name); line-height: 20px; font-weight: 600; margin: 0 0 6px; }
+.fld { display: flex; align-items: center; height: 56px; border: 1px solid var(--ui-outline); border-radius: var(--dim-radius-card); padding: 0 4px 0 var(--dim-gutter); }
+.fld:focus-within { border: 2px solid var(--ui-primary); padding: 0 3px 0 15px; }
+.fld input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font: inherit; font-size: 16px; color: var(--ui-on-surface); }
+.fld .mi { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; color: var(--c-text-secondary); }
+.fld.dd { justify-content: space-between; padding-right: var(--dim-gutter); color: var(--c-text-secondary); }
+.dlg { position: absolute; inset: 0; z-index: 6; background: color-mix(in srgb, var(--core-graphite) 40%, transparent); display: flex; align-items: flex-start; justify-content: center; padding-top: 24px; }
+.dlg .box { width: calc(100% - 64px); background: var(--ui-surface-card); border-radius: 28px; padding: 24px; box-shadow: 0 6px 24px #0004; }
+.dlg h2 { margin: 0 0 var(--dim-gutter); font-size: 22px; line-height: 28px; font-weight: 400; }
+.dlg .ac { display: flex; justify-content: flex-end; gap: var(--dim-space-sm); margin-top: var(--dim-gutter); }
+.mv { display: flex; flex-direction: column; } .mv button { width: 40px; height: 32px; display: flex; align-items: center; justify-content: center; color: var(--c-text-secondary); } .mv button:disabled { opacity: .38; }
+.hint { display: flex; gap: 8px; align-items: center; font-weight: 600; margin-bottom: var(--dim-space-sm); } .hint svg { width: 20px; height: 20px; }
+.pick { display: block; width: calc(100% - 32px); margin: 0 var(--dim-gutter) var(--dim-space-sm); text-align: left; border-radius: var(--dim-radius-card); padding: var(--dim-space-md); background: color-mix(in srgb, var(--ui-on-surface) 8%, transparent); min-height: 72px; }
+.pick b { display: block; font-size: var(--font-name); line-height: 20px; font-weight: 600; } .pick span { display: block; font-size: var(--font-name); line-height: 20px; color: var(--c-text-secondary); }
+.grp { margin: var(--dim-space-md) var(--dim-gutter) var(--dim-space-sm); font-size: 20px; line-height: 24px; color: var(--ui-primary-container); }
+.shade { position: absolute; left: 0; right: 0; top: 0; z-index: 11; background: var(--ui-surface-card); color: var(--ui-on-surface); border-radius: 0 0 24px 24px; padding: 8px 8px 12px; transform: translateY(-105%); transition: transform .25s ease; box-shadow: 0 6px 24px #0004; }
+.desk[data-screen="shade"] > .shade { transform: none; } .desk[data-screen="shade"] > .scrim { opacity: 1; pointer-events: auto; }
+.shade .st { display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 8px; font-size: var(--font-name); } .shade .st i { width: 8px; height: 8px; border-radius: 50%; background: var(--ui-primary-container); }
+.shade .qs { display: flex; gap: 6px; margin: 4px 0 8px; } .shade .qs button { flex: 1; min-width: 0; height: 48px; border-radius: 12px; background: color-mix(in srgb, var(--ui-on-surface) 8%, transparent); display: flex; align-items: center; justify-content: center; gap: 4px; padding: 0 6px; font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; } .shade .qs button[aria-pressed="true"] { background: var(--ui-primary-container); color: var(--ui-on-primary-container); }
+.shade .sdims { display: flex; flex-direction: column; gap: 12px; padding: 0 8px; } .shade .sdims .dim.h { margin-top: 0; }
+.shade .sr { display: flex; align-items: center; gap: 12px; padding: 0 8px; } .shade .sr .zone { flex: 1; position: relative; height: 48px; touch-action: none; } .shade .sr b { width: 48px; text-align: right; font-weight: 500; font-variant-numeric: tabular-nums; font-size: var(--font-name); }
+.shade .sr .tr { position: absolute; left: 0; right: 0; top: 18px; height: 12px; border-radius: 6px; background: color-mix(in srgb, var(--ui-on-surface) 14%, transparent); } .shade .sr .fl { position: absolute; left: 0; top: 18px; height: 12px; border-radius: 6px; background: var(--ui-primary-container); } .shade .sr .th { position: absolute; top: 10px; width: 6px; height: 28px; margin-left: -3px; border-radius: 3px; background: var(--ui-on-surface); }
+.shade .grab { width: 40px; height: 4px; border-radius: 2px; background: var(--ui-outline); margin: 4px auto 0; }
+/* ── Поля ввода: одна геометрия для всех (56 / радиус 12 / рамка 1 → 2 в фокусе / текст 16) ── */
+.tf input, .fld, .dd, .page .search2, .launcher .search { height: 56px; min-height: 56px; border: 1px solid var(--ui-outline); border-radius: var(--dim-radius-card); font-size: 16px; line-height: 24px; background: transparent; color: var(--ui-on-surface); }
+.tf input, .fld, .dd { padding: 0 16px; } .tf.m input { padding-right: 56px; } .fld { padding-right: 4px; }
+.page .search2, .launcher .search { padding: 0 16px; gap: 12px; margin: 0 var(--dim-gutter); }
+.launcher .search { margin: 0 var(--dim-gutter); }
+.page .search2 input, .launcher .search input, .fld input { font-size: 16px; }
+.dd { width: 100%; display: flex; align-items: center; justify-content: space-between; text-align: left; }
+.fld.dd { padding-right: 16px; }
+.tf input:focus, .fld:focus-within, .dd:focus-visible, .page .search2:focus-within, .launcher .search:focus-within { border: 2px solid var(--ui-primary); padding-left: 15px; }
+.tf.m input:focus { padding-right: 55px; } .fld:focus-within { padding-right: 3px; } .page .search2:focus-within, .launcher .search:focus-within { padding-right: 15px; }
+/* ── Режим правки ── (TileEditOverlay) */
+.film { position: absolute; inset: 0; }                /* «плёнка»: гасит нажатия на содержимое */
+.badge-hit { position: absolute; top: 0; right: 0; width: var(--dim-touch-min); height: var(--dim-touch-min);
+  display: flex; align-items: center; justify-content: center; }
+.badge { width: var(--badge); height: var(--badge); border-radius: 50%; background: var(--ui-surface-card); color: var(--ui-on-surface); box-shadow: 0 0 0 1px var(--ui-outline-subtle), 0 1px 3px #0003; display: flex; align-items: center; justify-content: center; }
+.badge .ic { width: var(--badge); height: var(--badge); stroke-width: 2.2; }
+.desk[data-badge="green"] .badge { background: var(--ui-primary-container); color: var(--ui-on-primary-container); box-shadow: 0 1px 3px #0003; }
+.slot { position: absolute; border-radius: var(--dim-radius-tile); background: var(--ui-slot-fill);
+  border: 1px solid var(--ui-outline-subtle); color: var(--ui-outline);
+  display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.show-hit .badge-hit { outline: 1px dashed var(--ui-outline); background: color-mix(in srgb, var(--ui-outline) 14%, transparent); }
+
+/* ── Нижняя панель правки ── (EditBar) */
+.bar { left: 0; right: 0; bottom: 0; height: var(--dim-bar); display: none; align-items: center;
+  padding: 0 var(--dim-space-sm) 0 var(--dim-gutter); gap: var(--dim-space-sm); background: var(--ui-surface-bar); }
+.desk.edit .bar { display: flex; }
+.bar .spacer { flex: 1; }
+
+/* Seven / Button: 48 dp, min 90, отступы 16/12, радиус 12 */
+.btn { height: var(--dim-touch-min); min-width: 90px; padding: 0 var(--dim-gutter); border-radius: var(--dim-radius-card);
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--dim-space-sm);
+  font-size: var(--font-name); line-height: var(--lh-name); font-weight: 500; border: 1px solid transparent; }
+.btn.primary { background: var(--btn-primary-bg); color: var(--btn-primary-fg); }
+.btn.secondary { background: var(--ui-surface-card); color: var(--ui-on-surface); border-color: var(--ui-outline); }
+.btn.text { color: var(--ui-on-surface); }
+.btn:active:not(:disabled) { background: var(--ui-surface-card); border-color: var(--ui-on-surface); color: var(--ui-on-surface); }
+.btn:disabled { background: transparent; border: 1px solid transparent; color: color-mix(in srgb, var(--ui-on-surface) 38%, transparent); cursor: default; }
+.btn.primary:disabled, .btn.secondary:disabled { background: color-mix(in srgb, var(--ui-on-surface) 10%, transparent); }
+.btn .ic { margin-left: -4px; }
+.btn.secondary[aria-pressed="true"] { border-color: var(--ui-on-surface); background: color-mix(in srgb, var(--ui-on-surface) 8%, var(--ui-surface-card)); }
+.sheet .chips .btn svg.ic { margin-left: 0; }
+.icon-btn { width: var(--dim-touch-min); height: var(--dim-touch-min); display: flex; align-items: center; justify-content: center; color: var(--ui-on-surface); border-radius: var(--dim-radius-card); }
+
+/* ── Snackbar ── (Seven / Snackbar: инверсная поверхность, 4 с) */
+.snackbar { left: var(--dim-gap); right: var(--dim-gap); bottom: calc(var(--dim-bar) + var(--dim-gap)); height: var(--snackbar-h);
+  display: none; align-items: center; justify-content: space-between; padding-left: var(--dim-gutter);
+  background: var(--ui-primary); color: var(--ui-on-primary); border-radius: var(--dim-radius-card);
+  font-size: var(--font-name); line-height: var(--lh-name); font-weight: 500; z-index: 5; }
+.snackbar.show { display: flex; }
+.snackbar button { height: var(--dim-touch-min); padding: 0 var(--dim-gutter); font-weight: 500; font-size: var(--font-name); }
+</style>
+</head>
+<body>
+
+<!-- Иконки Seven (проект: 1 меню, 2 микрофон, 3 ×, 17 лампа, 28 часы).
+     Нет в наборе, нарисованы здесь в той же грамматике (24 px, штрих 1,8, скруглённые концы):
+     plus, more, thermometer, signal (CO₂), drop. Замените своими. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4.00098 6.9992H19.9994M4.00098 12H19.9994M4.00098 17.0008H19.9994"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><path d="M11.9998 19.0006V22.0008M4.99902 9.99984V12C4.99902 13.8567 5.73661 15.6373 7.04951 16.9501C8.36241 18.263 10.1431 19.0006 11.9998 19.0006C13.8566 19.0006 15.6372 18.263 16.9501 16.9501C18.263 15.6373 19.0006 13.8567 19.0006 12V9.99984M11.9998 1.9992C13.6569 1.9992 15.0002 3.34245 15.0002 4.99944V12C15.0002 13.657 13.6569 15.0002 11.9998 15.0002C10.3428 15.0002 8.99948 13.657 8.99948 12V4.99944C8.99948 3.34245 10.3428 1.9992 11.9998 1.9992Z"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6L18 18"/></symbol>
+  <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M15 14.0002C15.2 13.0001 15.7 12.3 16.5 11.5C17.5 10.5999 18 9.29978 18 7.99968C18 6.40825 17.3679 4.88201 16.2426 3.7567C15.1174 2.63139 13.5913 1.9992 12 1.9992C10.4087 1.9992 8.88258 2.63139 7.75736 3.7567C6.63214 4.88201 6 6.40825 6 7.99968C6 8.99976 6.2 10.1999 7.5 11.5C8.2 12.2 8.8 13.0001 9 14.0002M9 18.0005H15M10 22.0008H14"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><path d="M11.9998 5.99952V12L16.0001 14.0002M22.0006 12C22.0006 17.5233 17.5231 22.0008 11.9998 22.0008C6.47653 22.0008 1.99902 17.5233 1.99902 12C1.99902 6.47671 6.47653 1.9992 11.9998 1.9992C17.5231 1.9992 22.0006 6.47671 22.0006 12Z"/></symbol>
+  <!-- нарисованы здесь -->
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M6.5 12h11"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+  <symbol id="i-apps" viewBox="0 0 24 24"><path d="M4.5 4.5h5v5h-5zM14.5 4.5h5v5h-5zM4.5 14.5h5v5h-5zM14.5 14.5h5v5h-5z"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h8M18 7h2M4 17h2M12 17h8"/><circle cx="15" cy="7" r="2.5"/><circle cx="9" cy="17" r="2.5"/></symbol>
+  <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M4 20l1-4.2L16.2 4.6a1.6 1.6 0 0 1 2.2 0l1 1a1.6 1.6 0 0 1 0 2.2L8.2 19z"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="6.5"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></symbol>
+  <symbol id="i-cc" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.4-4.4"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12H19M12 5V19"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><path d="M12 5.5h.01M12 12h.01M12 18.5h.01"/></symbol>
+  <symbol id="i-thermometer" viewBox="0 0 24 24"><path d="M14 14.76V4a2 2 0 0 0-4 0v10.76a4 4 0 1 0 4 0z"/></symbol>
+  <symbol id="i-signal" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.48M7.76 16.24a6 6 0 0 1 0-8.48M19.07 4.93a10 10 0 0 1 0 14.14M4.93 19.07a10 10 0 0 1 0-14.14"/></symbol>
+  <symbol id="i-group" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"/><circle cx="5.5" cy="9.5" r="2"/><circle cx="18.5" cy="9.5" r="2"/><path d="M6.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5M2 17c0-2 1.5-3.5 3.5-3.5M22 17c0-2-1.5-3.5-3.5-3.5"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M3.5 6.5l1.8 1.8L9 4.5M3.5 15.5l1.8 1.8L9 13.5M12.5 7h8M12.5 17h8"/></symbol>
+  <symbol id="i-vol" viewBox="0 0 24 24"><path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5zM15.5 9a4 4 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></symbol>
+  <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M2.5 9a14 14 0 0 1 19 0M5.5 12.5a9.5 9.5 0 0 1 13 0M8.7 16a5 5 0 0 1 6.6 0M12 19.5h.01"/></symbol>
+  <symbol id="i-dnd" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M7.5 12h9"/></symbol>
+  <symbol id="i-size" viewBox="0 0 24 24"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></symbol>
+  <symbol id="i-move" viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M9 6l3-3 3 3M9 18l3 3 3-3M6 9l-3 3 3 3M18 9l3 3-3 3"/></symbol>
+  <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></symbol>
+</svg>
+
+<div class="stage">
+  <div class="frame">
+    <div class="desk" id="desk">
+      <!-- DeskTopStrip -->
+      <div class="strip">
+        <div class="hit" aria-label="Меню"><svg class="ic"><use href="#i-menu"/></svg></div>
+        <div class="room">Гостиная</div>
+        <div class="spacer"></div>
+        <div class="time">21:39</div>
+        <div class="hit" aria-label="Микрофон">
+          <div class="mic" id="mic" data-state="off"><svg class="ic"><use href="#i-mic"/></svg></div>
+        </div>
+      </div>
+
+      <!-- DeskGrid: плитки и пустые клетки рисует render() -->
+      <div class="grid" id="grid"></div>
+      <div class="dots-pager" id="pager" aria-label="Экран 1 из 4"></div>
+
+      <!-- Боковое меню -->
+      <div class="scrim" id="scrim"></div>
+      <nav class="drawer" id="drawer" aria-label="Меню">
+        <div class="head"><div class="t">Seven assistant</div><div class="s">Комната панели: Гостиная</div></div>
+        <button class="item" aria-current="true" data-go="room"><svg class="ic"><use href="#i-pin"/></svg>Гостиная</button>
+        <div class="gap"></div>
+        <button class="item" data-go="apps"><svg class="ic"><use href="#i-apps"/></svg>Все приложения</button>
+        <button class="item" data-go="shade"><svg class="ic"><use href="#i-sliders"/></svg>Панель</button>
+        <button class="item" data-go="edit"><svg class="ic"><use href="#i-pencil"/></svg>Править экраны</button>
+        <button class="item" data-go="settings"><svg class="ic"><use href="#i-gear"/></svg>Настройки</button>
+        <button class="item" data-go="cc"><svg class="ic"><use href="#i-cc"/></svg>Центр управления</button>
+      </nav>
+
+      <!-- Все приложения -->
+      <section class="launcher" id="launcher" aria-label="Все приложения">
+        <div class="top"><button class="btn text" id="btnHideApps">Скрыть</button></div>
+        <label class="search"><svg class="ic"><use href="#i-search"/></svg><input id="appSearch" type="text" placeholder="Поиск приложения" autocomplete="off"></label>
+        <div class="apps" id="apps"></div>
+        <div class="kbd" aria-hidden="true">
+          <div class="r"><span>й</span><span>ц</span><span>у</span><span>к</span><span>е</span><span>н</span><span>г</span><span>ш</span><span>щ</span><span>з</span><span>х</span></div>
+          <div class="r"><span>ф</span><span>ы</span><span>в</span><span>а</span><span>п</span><span>р</span><span>о</span><span>л</span><span>д</span><span>ж</span><span>э</span></div>
+          <div class="r"><span class="fn">⇧</span><span>я</span><span>ч</span><span>с</span><span>м</span><span>и</span><span>т</span><span>ь</span><span>б</span><span>ю</span><span class="fn">⌫</span></div>
+          <div class="r"><span class="fn">?123</span><span>,</span><span class="w">Русский</span><span>.</span><span class="go">⌕</span></div>
+        </div>
+      </section>
+
+      <!-- Лист плитки -->
+      <section class="sheet" id="sheet" aria-label="Плитка">
+        <div class="h"><button class="icon-btn" id="shBack" aria-label="Назад"><svg class="ic"><use href="#i-back"/></svg></button><div class="t" id="shTitle"></div><button class="icon-btn x" id="shClose" aria-label="Закрыть"><svg class="ic"><use href="#i-close"/></svg></button></div>
+        <div class="big" id="shValue"></div>
+        <div class="acts4">
+          <button class="act" data-sh="settings"><svg class="ic"><use href="#i-sliders"/></svg>Настроить</button>
+          <button class="act" data-sh="size" id="chSize" aria-pressed="false"><svg class="ic"><use href="#i-size"/></svg>Размер</button>
+          <button class="act" data-sh="move"><svg class="ic"><use href="#i-move"/></svg>Переместить</button>
+          <button class="act danger" data-sh="remove"><svg class="ic"><use href="#i-trash"/></svg>Убрать</button>
+        </div>
+        <div class="sizes" id="shSizes"></div>
+      </section>
+
+      <!-- Форма плитки -->
+      <section class="form" id="form" aria-label="Плитка">
+        <div class="appbar"><button class="icon-btn" id="fmBack" aria-label="Назад"><svg class="ic"><use href="#i-back"/></svg></button><div class="ttl" id="fmTitle"></div><button class="btn text" id="fmDone">Готово</button></div>
+        <div class="scroll">
+          <div class="top"><div class="pv" id="fmPv"></div><div class="szcol"><div class="lbl">Размер</div><div id="fmSizes" style="display:flex;flex-direction:column;gap:8px"></div></div></div>
+          <div class="sec-h" style="padding-bottom:4px">Показывать</div>
+          <div class="padx" style="font-size:12px;line-height:17px;color:var(--c-text-secondary);margin-bottom:8px">Добавьте значения датчиков и состояния устройств</div>
+          <div id="fmRows"></div>
+          <div class="padx"><button class="btn secondary" id="fmAdd"><svg class="ic" style="width:20px;height:20px"><use href="#i-plus"/></svg>Добавить значение</button></div>
+          <div class="sec-h">По нажатию</div>
+          <div class="padx"><button class="dd"><span>Авто: переключить или подробности</span><svg class="ic"><use href="#i-chev"/></svg></button></div>
+        </div>
+      </section>
+
+      <section class="page" id="page" aria-label="Настройки"></section>
+      <div class="kbd gk" id="gkbd" aria-hidden="true">
+          <div class="r"><span>й</span><span>ц</span><span>у</span><span>к</span><span>е</span><span>н</span><span>г</span><span>ш</span><span>щ</span><span>з</span><span>х</span></div>
+          <div class="r"><span>ф</span><span>ы</span><span>в</span><span>а</span><span>п</span><span>р</span><span>о</span><span>л</span><span>д</span><span>ж</span><span>э</span></div>
+          <div class="r"><span class="fn">⇧</span><span>я</span><span>ч</span><span>с</span><span>м</span><span>и</span><span>т</span><span>ь</span><span>б</span><span>ю</span><span class="fn">⌫</span></div>
+          <div class="r"><span class="fn">?123</span><span>,</span><span class="w">Русский</span><span>.</span><span class="go">›</span></div>
+      </div>
+      <section class="shade" id="shade" aria-label="Панель"></section>
+
+      <!-- EditBar -->
+      <div class="bar" id="bar">
+        <button class="btn primary" id="btnDone">Готово</button>
+        <button class="btn secondary" id="btnAdd"><svg class="ic"><use href="#i-plus"/></svg>Виджет</button>
+        <span class="spacer"></span>
+        <button class="btn text" id="btnUndo" disabled>Вернуть</button>
+        <button class="icon-btn" id="btnMore" aria-label="Ещё"><svg class="ic dots"><use href="#i-more"/></svg></button>
+      </div>
+
+      <!-- Snackbar -->
+      <div class="snackbar" id="snackbar"><span>Плитка убрана</span><button id="snackUndo">Вернуть</button></div>
+    </div>
+    <div class="note" id="note"></div>
+  </div>
+
+  <div class="controls" id="controls">
+    <h1>Прототип · Стол</h1>
+    <div class="hint">Долгое нажатие на плитку или пустое место открывает правку. × убирает плитку, «Вернуть» возвращает. «Готово» выходит из правки. Слайдер тянется в обычном режиме.</div>
+  </div>
+</div>
+
+<script>
+/* ───────── Состояние прототипа ───────── */
+const state = { edit: false, theme: 'light', bg: 'sage', dimmer: 'v', mic: 'off', showHit: false, screen: 'desk' };
+const INITIAL = [
+  { id: 'clock',       type: 'placeholder', col: 0, row: 0, w: 2, h: 1, icon: 'clock', title: 'Часы', subtitle: 'скоро' },
+  { id: 'light-dimmer',type: 'switch',      col: 2, row: 0, w: 2, h: 2, icon: 'bulb',  name: 'Свет', on: false, level: 0.87 },
+  { id: 'light',       type: 'switch',      col: 4, row: 0, w: 1, h: 1, icon: 'bulb',  name: 'Свет', on: false },
+  { id: 'temperature', type: 'value',       col: 0, row: 1, w: 2, h: 1, icon: 'thermometer', name: 'Температура', value: '26,2 °C' },
+  { id: 'co2',         type: 'value',       col: 0, row: 2, w: 2, h: 1, icon: 'signal',      name: 'Уровень CO₂', value: '464 ppm' },
+  { id: 'humidity',    type: 'value',       col: 2, row: 2, w: 2, h: 1, icon: 'drop',        name: 'Влажность',   value: '35,4 % RH' },
+];
+const EXTRA = [
+  [ { id: 'p2-chandelier', type: 'switch', col: 0, row: 0, w: 1, h: 1, icon: 'bulb', name: 'Люстра', on: true },
+    { id: 'p2-sconce', type: 'switch', col: 1, row: 0, w: 1, h: 1, icon: 'bulb', name: 'Бра', on: false },
+    { id: 'p2-floor', type: 'switch', col: 2, row: 0, w: 2, h: 2, icon: 'bulb', name: 'Торшер', on: true, level: 0.4 },
+    { id: 'p2-kitchen', type: 'switch', col: 0, row: 1, w: 2, h: 1, icon: 'bulb', name: 'Кухня', on: false } ],
+  [ { id: 'p3-t', type: 'value', col: 0, row: 0, w: 2, h: 1, icon: 'thermometer', name: 'Спальня', value: '22,8 °C' },
+    { id: 'p3-h', type: 'value', col: 2, row: 0, w: 2, h: 1, icon: 'drop', name: 'Влажность', value: '41 % RH' } ],
+  [] ];
+const PAGE_COUNT = 4; let cur = 0;
+const makePages = () => [structuredClone(INITIAL), ...structuredClone(EXTRA)];
+let pagesData = makePages();
+let tiles = pagesData[0];
+let undoStack = [];           // {tile, index}
+
+const $ = s => document.querySelector(s);
+const desk = $('#desk'), grid = $('#grid');
+const ICON = (id, cls = '') => `<svg class="ic ${cls}" aria-hidden="true"><use href="#i-${id}"/></svg>`;
+const cssPx = n => parseFloat(getComputedStyle(document.documentElement).getPropertyValue(n));
+
+/* ───────── DeskGrid: те же формулы, что в DeskGrid.kt ───────── */
+function metrics() {
+  const W = grid.clientWidth, H = grid.clientHeight, gap = cssPx('--dim-gap'), tile = cssPx('--dim-tile');
+  const columns = Math.max(1, Math.floor((W - gap) / (tile + gap)));
+  const rows = Math.max(1, Math.floor((H - gap) / (tile + gap)));
+  const cell = (W - gap * (columns + 1)) / columns;
+  return { gap, columns, rows, cell };
+}
+function place(el, m, col, row, w, h) {
+  el.style.left   = (m.gap + (m.cell + m.gap) * col) + 'px';
+  el.style.top    = (m.gap + (m.cell + m.gap) * row) + 'px';
+  el.style.width  = (m.cell * w + m.gap * (w - 1)) + 'px';
+  el.style.height = (m.cell * h + m.gap * (h - 1)) + 'px';
+}
+
+/* ───────── Плитки (ValueTile / PlaceholderTile / SwitchTile) ───────── */
+function tileInner(t) {
+  if (t.type === 'value')
+    return `${ICON(t.icon)}<div class="text"><div class="name">${t.name}</div><div class="value">${t.value}</div></div>`;
+  if (t.type === 'placeholder')
+    return `${ICON(t.icon)}<div class="sec">${t.title}</div><div class="sec">${t.subtitle}</div>`;
+  return switchInner(t);
+}
+const pctOf = t => Math.max(1, Math.round(t.level * 100));
+function dimInner(o, t, ic = 'sun') {
+  const c = ICON(ic) + (o === 'h' ? '<span class="pct"></span>' : '');
+  return `<div class="dim ${o}"><div class="content base">${c}</div><div class="dim-fill"><div class="content over">${c}</div><i class="grip"></i></div></div>`;
+}
+function switchInner(t) {
+  const stateRow = `<div class="sec" data-role="state">${t.on ? 'Включен' : 'Выключен'}</div>`;
+  if (t.level == null) return `${ICON(t.icon)}<div class="name">${t.name}</div>${stateRow}`;
+  if (state.dimmer === 'old') return `${ICON(t.icon)}<div class="name">${t.name}</div>${stateRow}<div class="slider"><div class="track"></div><div class="thumb"></div></div>`;
+  if (state.dimmer === 'h') return `${ICON(t.icon)}<div class="name">${t.name}</div>${stateRow}${dimInner('h', t)}`;
+  return `<div class="col">${ICON(t.icon)}<div class="name">${t.name}</div>${stateRow}<div class="sp"></div><div class="big" data-role="pct"></div></div>${dimInner('v', t)}`;
+}
+function tileEl(t, m) {
+  const el = document.createElement('div');
+  el.className = `tile ${t.type}-tile` + (t.level != null && state.dimmer === 'v' ? ' dim-v' : '');
+  el.dataset.on = String(!!t.on);
+  el.dataset.id = t.id;
+  el.innerHTML = tileInner(t) + (state.edit
+    ? `<div class="film"></div><button class="badge-hit" data-act="remove" aria-label="Убрать плитку"><span class="badge">${ICON('minus')}</span></button>`
+    : '');
+  place(el, m, t.col, t.row, t.w, t.h);
+  return el;
+}
+
+function render() {
+  desk.classList.toggle('edit', state.edit);
+  const m = metrics();
+  grid.replaceChildren();
+  const busy = new Set();
+  tiles.forEach(t => {
+    for (let r = t.row; r < t.row + t.h; r++) for (let c = t.col; c < t.col + t.w; c++) busy.add(r + ':' + c);
+    const el = tileEl(t, m);
+    grid.appendChild(el);
+    const sl = el.querySelector('.slider');
+    if (sl) bindSlider(sl, t);
+    const dm = el.querySelector('.dim');
+    if (dm) bindDim(dm, t, el);
+  });
+  if (state.edit) {
+    for (let r = 0; r < m.rows; r++) for (let c = 0; c < m.columns; c++) {
+      if (busy.has(r + ':' + c)) continue;
+      const s = document.createElement('button');
+      s.className = 'slot'; s.dataset.act = 'slot'; s.setAttribute('aria-label', 'Добавить плитку');
+      s.innerHTML = ICON('plus');
+      place(s, m, c, r, 1, 1);
+      grid.appendChild(s);
+    }
+  }
+  $('#btnUndo').disabled = undoStack.length === 0;
+  syncControls();
+}
+
+/* ───────── TileSlider: значение 0..1, ползунок не выходит за дорожку ───────── */
+function bindDim(dim, t, tileEl) {
+  const h = dim.classList.contains('h');
+  const W = dim.clientWidth, H = dim.clientHeight, D = h ? H : W, L = h ? W : H;
+  dim.querySelectorAll('.content').forEach(c => { c.style.width = W + 'px'; c.style.height = H + 'px'; });
+  const fill = dim.querySelector('.dim-fill');
+  const paint = () => {
+    const len = D + t.level * (L - D);
+    if (h) fill.style.width = len + 'px'; else fill.style.height = len + 'px';
+    dim.classList.toggle('nogrip', t.level < 0.08);
+    const txt = pctOf(t) + '%';
+    dim.querySelectorAll('.pct').forEach(n => n.textContent = txt);
+    const big = tileEl.querySelector('[data-role="pct"]'); if (big) big.textContent = txt;
+    dim.style.setProperty('--lvl', t.level); fill.style.setProperty('--lvl', t.level);
+    dim.setAttribute('aria-valuenow', pctOf(t)); if (t.onChange) t.onChange();
+  };
+  dim.setAttribute('role', 'slider'); dim.setAttribute('aria-label', 'Яркость'); dim.setAttribute('aria-valuemin', 1); dim.setAttribute('aria-valuemax', 100);
+  const set = e => {
+    const r = dim.getBoundingClientRect();
+    const p = h ? e.clientX - r.left : r.bottom - e.clientY;
+    t.level = Math.min(1, Math.max(0, (p - D / 2) / (L - D)));
+    if (!t.on) { t.on = true; tileEl.dataset.on = 'true'; tileEl.querySelector('[data-role="state"]').textContent = 'Включен'; }
+    paint();
+  };
+  dim.addEventListener('pointerdown', e => { if (state.edit) return; dim.setPointerCapture(e.pointerId); set(e); e.stopPropagation(); });
+  dim.addEventListener('pointermove', e => { if (dim.hasPointerCapture(e.pointerId)) set(e); });
+  dim.addEventListener('click', e => e.stopPropagation());
+  paint();
+}
+function bindSlider(slider, t) {
+  const thumb = slider.querySelector('.thumb'), r = cssPx('--tile-slider-thumb') / 2;
+  const draw = () => { thumb.style.left = (r + t.level * (slider.clientWidth - 2 * r)) + 'px'; };
+  const set = x => { t.level = Math.min(1, Math.max(0, (x - r) / (slider.clientWidth - 2 * r))); draw(); };
+  slider.addEventListener('pointerdown', e => {
+    slider.setPointerCapture(e.pointerId);
+    set(e.clientX - slider.getBoundingClientRect().left);
+    e.stopPropagation();                    // слайдер забирает жест
+  });
+  slider.addEventListener('pointermove', e => {
+    if (slider.hasPointerCapture(e.pointerId)) set(e.clientX - slider.getBoundingClientRect().left);
+  });
+  slider.addEventListener('click', e => e.stopPropagation());
+  draw();
+}
+
+/* ───────── Режимы ───────── */
+function setEdit(on) {
+  if (state.edit === on) return;
+  state.edit = on;
+  if (!on) { undoStack = []; hideSnack(); }
+  render();
+  note(on ? 'Правка: плитки не нажимаются, на каждой красный ×, пустые клетки показывают «+».' : '');
+}
+
+/* долгое нажатие по плитке или пустому месту открывает правку */
+let lpTimer = null, lpStart = null, lpFired = false;
+grid.addEventListener('pointerdown', e => {
+  lpFired = false;                       // флаг живёт только до следующего касания
+  if (state.edit) return;
+  lpStart = { x: e.clientX, y: e.clientY };
+  lpTimer = setTimeout(() => { lpFired = true; setEdit(true); }, 500);
+});
+grid.addEventListener('pointermove', e => {
+  if (lpTimer && Math.hypot(e.clientX - lpStart.x, e.clientY - lpStart.y) > 8) { clearTimeout(lpTimer); lpTimer = null; }
+});
+['pointerup', 'pointercancel', 'pointerleave'].forEach(ev => grid.addEventListener(ev, () => { clearTimeout(lpTimer); lpTimer = null; }));
+
+grid.addEventListener('click', e => {
+  if (lpFired) { lpFired = false; return; }
+  const act = e.target.closest('[data-act]');
+  if (state.edit) {
+    if (!act) { const te = e.target.closest('.tile'); if (te) openSheet(te.dataset.id); return; }
+    if (act.dataset.act === 'remove') removeTile(act.closest('.tile').dataset.id);
+    if (act.dataset.act === 'slot') { openForm(null); note('Галерея «Добавить на экран» в прототип не входит, открыта «Новая плитка».'); }
+    return;
+  }
+  const el = e.target.closest('.tile');
+  if (!el) return;
+  const t = tiles.find(x => x.id === el.dataset.id);
+  if (t && t.type === 'switch') { t.on = !t.on; el.dataset.on = String(t.on); el.querySelector('[data-role="state"]').textContent = t.on ? 'Включен' : 'Выключен'; }
+});
+
+/* удаление и возврат */
+let snackTimer = null;
+function removeTile(id) {
+  const index = tiles.findIndex(t => t.id === id);
+  if (index < 0) return;
+  undoStack.push({ tile: tiles[index], index });
+  tiles.splice(index, 1);
+  render(); showSnack();
+}
+function undo() {
+  const last = undoStack.pop();
+  if (!last) return;
+  tiles.splice(last.index, 0, last.tile);
+  hideSnack(); render();
+}
+function showSnack() { const s = $('#snackbar'); s.classList.add('show'); clearTimeout(snackTimer); snackTimer = setTimeout(hideSnack, 4000); }
+function hideSnack() { $('#snackbar').classList.remove('show'); clearTimeout(snackTimer); }
+$('#snackUndo').onclick = undo;
+$('#btnUndo').onclick = undo;
+$('#btnDone').onclick = () => setEdit(false);
+$('#btnAdd').onclick = () => { openForm(null); note('Галерея «Добавить на экран» в прототип не входит, открыта «Новая плитка».'); };
+$('#btnMore').onclick = () => note('Меню «⋮» в прототип не входит.');
+
+function note(text) { $('#note').textContent = text; }
+
+/* ───────── PageDots + свайп между экранами стола ───────── */
+function updateDots() {
+  const el = $('#pager');
+  if (el.children.length !== PAGE_COUNT) { el.replaceChildren(); for (let i = 0; i < PAGE_COUNT; i++) el.appendChild(document.createElement('i')); }
+  [...el.children].forEach((d, i) => d.classList.toggle('on', i === cur));
+  el.setAttribute('aria-label', `Экран ${cur + 1} из ${PAGE_COUNT}`);
+}
+updateDots();
+let swiping = false, swipeBusy = false;
+function goDesk(dir, from = 0) {
+  const n = cur + dir; if (n < 0 || n >= PAGE_COUNT || swipeBusy) return false;
+  swipeBusy = true; const W = grid.clientWidth;
+  grid.animate([{ transform: `translateX(${from}px)` }, { transform: `translateX(${-dir * W}px)` }], { duration: 150, easing: 'ease-in', fill: 'forwards' }).finished.then(() => {
+    cur = n; tiles = pagesData[cur]; undoStack = []; hideSnack(); render(); updateDots();
+    return grid.animate([{ transform: `translateX(${dir * W}px)` }, { transform: 'none' }], { duration: 200, easing: 'ease-out' }).finished;
+  }).finally(() => { grid.getAnimations().forEach(a => a.cancel()); grid.style.transform = ''; swipeBusy = false; });
+  return true;
+}
+(function swipe() {
+  let x0 = null, y0 = 0, dx = 0, id = null;
+  grid.addEventListener('pointerdown', e => { if (state.edit || state.screen !== 'desk' || swipeBusy) return; x0 = e.clientX; y0 = e.clientY; dx = 0; id = e.pointerId; });
+  grid.addEventListener('pointermove', e => {
+    if (x0 === null || e.pointerId !== id) return;
+    const mx = e.clientX - x0, my = e.clientY - y0;
+    if (!swiping) { if (Math.abs(mx) > 12 && Math.abs(mx) > Math.abs(my) * 1.5) { swiping = true; grid.setPointerCapture(id); clearTimeout(lpTimer); lpTimer = null; } else return; }
+    const edge = (cur === 0 && mx > 0) || (cur === PAGE_COUNT - 1 && mx < 0);
+    dx = edge ? mx * 0.25 : mx; grid.style.transform = `translateX(${dx}px)`;
+  });
+  const end = () => {
+    if (x0 === null) return; const was = swiping; x0 = null;
+    if (!was) return;
+    swiping = false; lpFired = true; setTimeout(() => lpFired = false, 0);
+    const W = grid.clientWidth, dir = dx < -W * 0.2 ? 1 : dx > W * 0.2 ? -1 : 0;
+    if (dir && goDesk(dir, dx)) return;
+    grid.animate([{ transform: `translateX(${dx}px)` }, { transform: 'none' }], { duration: 160, easing: 'ease-out' }); grid.style.transform = '';
+  };
+  grid.addEventListener('pointerup', end); grid.addEventListener('pointercancel', end);
+  addEventListener('keydown', e => { if (state.screen !== 'desk' || state.edit || e.target.closest('input')) return; if (e.key === 'ArrowRight') goDesk(1); if (e.key === 'ArrowLeft') goDesk(-1); });
+})();
+
+/* ───────── Меню и «Все приложения» ───────── */
+const APPS = [['Настройки','#8FD3AE'],['Часы','#E6EBB8'],['Камера','#B98079'],['Файлы','#C8B58E'],['Браузер','#7FB2EE'],['Калькулятор','#A9D6BC'],
+  ['Галерея','#F08A80'],['Музыка','#C8B58E'],['Календарь','#7FB2EE'],['Контакты','#8FD3AE'],['Сообщения','#E6EBB8'],['Погода','#7FB2EE'],
+  ['Заметки','#E6EBB8'],['Карты','#8FD3AE'],['Телефон','#A9D6BC'],['Диктофон','#B98079']];
+function drawApps(f = '') {
+  const list = APPS.filter(a => a[0].toLowerCase().includes(f.trim().toLowerCase()));
+  $('#apps').innerHTML = list.length
+    ? list.map(a => `<div class="app"><b style="--hue:${a[1]}">${a[0][0]}</b><span>${a[0]}</span></div>`).join('')
+    : '<div class="empty">Ничего не найдено</div>';
+}
+drawApps();
+$('#appSearch').addEventListener('input', e => drawApps(e.target.value));
+function setScreen(v) {
+  if (v === 'sheet' && !sheetId) { setEdit(true); openSheet('temperature'); return; }
+  if ((v === 'tile' || v === 'custom') && !form) { setEdit(true); openForm(v === 'tile' ? 'temperature' : null); return; }
+  if (v === 'page' && !curPage) { goPage('voice', false); return; }
+  if (v !== 'page') { curPage = null; pageStack = []; }
+  if (v !== 'sheet') sheetId = null;
+  if (v !== 'tile' && v !== 'custom') form = null;
+  state.screen = v; desk.dataset.screen = v; if (v !== 'page') desk.classList.remove('kb');
+  if (v === 'kbd') $('#appSearch').focus(); else $('#appSearch').blur();
+  if (v !== 'apps' && v !== 'kbd') { $('#appSearch').value = ''; drawApps(); }
+  syncControls();
+}
+desk.querySelector('.strip .hit').addEventListener('click', () => setScreen('drawer'));
+$('#scrim').addEventListener('click', () => setScreen('desk'));
+$('#btnHideApps').addEventListener('click', () => setScreen('desk'));
+$('#appSearch').addEventListener('focus', () => { if (state.screen === 'apps') setScreen('kbd'); });
+$('#appSearch').addEventListener('keydown', e => { if (e.key === 'Escape') setScreen('apps'); });
+$('#drawer').addEventListener('click', e => {
+  const b = e.target.closest('.item'); if (!b) return;
+  const go = b.dataset.go;
+  if (go === 'room') return setScreen('desk');
+  if (go === 'apps') return setScreen('apps');
+  if (go === 'edit') { setScreen('desk'); return setEdit(true); }
+  if (go === 'settings') return goPage('voice', false);
+  if (go === 'cc') return goPage('cc-loc', false);
+  if (go === 'shade') return setScreen('shade');
+  setScreen('desk');
+  note({ shade: 'Панель: шторка с яркостью и громкостью. В этот прототип не входит.', settings: 'Откроются «Настройки». В этот прототип не входят.', cc: 'Откроется «Центр управления». В этот прототип не входит.' }[go]);
+});
+/* свайп от левого края открывает меню */
+let edgeX = null;
+desk.addEventListener('pointerdown', e => { const r = desk.getBoundingClientRect(); edgeX = (state.screen === 'desk' && !state.edit && e.clientX - r.left < 16) ? e.clientX : null; });
+desk.addEventListener('pointermove', e => { if (edgeX !== null && e.clientX - edgeX > 40) { edgeX = null; clearTimeout(lpTimer); lpTimer = null; setScreen('drawer'); } });
+
+/* ───────── Лист плитки и форма плитки ───────── */
+const SIZES = [['1×1', 1, 1], ['2×1', 2, 1], ['2×2', 2, 2]];
+let sheetId = null, form = null;
+function fits(t, w, h) {
+  const m = metrics();
+  if (t.col + w > m.columns || t.row + h > m.rows) return false;
+  return !tiles.some(o => o !== t && o.col < t.col + w && t.col < o.col + o.w && o.row < t.row + h && t.row < o.row + o.h);
+}
+function openSheet(id) {
+  const t = tiles.find(x => x.id === id); if (!t) return;
+  sheetId = id;
+  const name = t.name || t.title || 'Плитка', val = t.value || (t.type === 'switch' ? (t.on ? 'Включен' : 'Выключен') : t.subtitle || '');
+  $('#shTitle').textContent = name; $('#shValue').textContent = val; 
+  
+  $('#shSizes').innerHTML = SIZES.map(([l, w, h]) => `<button class="sz ${fits(t, w, h) ? '' : 'no'}" data-w="${w}" data-h="${h}" aria-pressed="${t.w === w && t.h === h}"><i style="width:${w * 24}px;height:${h * 24}px"></i>${l}</button>`).join('');
+  setMode('main', name);
+  setScreen('sheet');
+}
+function setMode(m, name) { $('#sheet').dataset.mode = m; $('#shTitle').textContent = m === 'size' ? 'Размер' : (name || $('#shTitle').dataset.n); if (name) $('#shTitle').dataset.n = name; }
+$('#shBack').onclick = () => setMode('main');
+$('#shClose').onclick = () => setScreen('desk');
+$('#sheet').addEventListener('click', e => {
+  const b = e.target.closest('[data-sh],[data-w]'); if (!b) return;
+  const t = tiles.find(x => x.id === sheetId);
+  if (b.dataset.w) {
+    const w = +b.dataset.w, h = +b.dataset.h;
+    if (!fits(t, w, h)) { note('Плитка такого размера здесь не помещается: место занято.'); return; }
+    t.w = w; t.h = h; setScreen('desk'); render(); return;
+  }
+  const a = b.dataset.sh;
+  if (a === 'size') setMode('size');
+  if (a === 'settings') openForm(sheetId);
+  if (a === 'move') { setScreen('desk'); note('Перенос плиток в этот прототип не входит.'); }
+  if (a === 'remove') { const id = sheetId; setScreen('desk'); removeTile(id); }
+});
+function openForm(id) {
+  const t = id ? tiles.find(x => x.id === id) : null;
+  form = { id, w: t ? t.w : 1, h: t ? t.h : 1, rows: t && t.type === 'value' ? [{ name: t.name, st: 'Крупно' }] : [], t };
+  setScreen(t ? 'tile' : 'custom');
+  drawForm();
+}
+function drawForm() {
+  $('#fmTitle').textContent = form.t ? 'Плитка' : 'Новая плитка';
+  $('#fmSizes').innerHTML = SIZES.map(([l, w, h]) => `<button class="szb" data-w="${w}" data-h="${h}" aria-pressed="${form.w === w && form.h === h}">${l}</button>`).join('');
+  const m = metrics(), pw = m.cell * form.w + m.gap * (form.w - 1), ph = m.cell * form.h + m.gap * (form.h - 1);
+  const r0 = form.rows[0];
+  $('#fmPv').innerHTML = `<div class="tile ${form.t && form.t.type === 'value' ? 'value-tile' : ''}" style="width:${pw}px;height:${ph}px">` +
+    (r0 ? `${ICON(form.t && form.t.icon || 'thermometer')}<div class="text"><div class="name">${r0.name}</div><div class="value">${form.t && form.t.value || '—'}</div></div>` : '<span class="empty-pv">Пока пусто</span>') + '</div>';
+  $('#fmRows').innerHTML = form.rows.map((r, i) => `<div class="vrow" data-i="${i}"><div class="tx"><b>${r.name}</b><span>${r.st}</span></div>` +
+    `<button class="ib up" data-act="up" ${i === 0 ? 'disabled' : ''} aria-label="Выше">${ICON('chev')}</button>` +
+    `<button class="ib" data-act="down" ${i === form.rows.length - 1 ? 'disabled' : ''} aria-label="Ниже">${ICON('chev')}</button>` +
+    `<button class="ib" data-act="del" aria-label="Убрать значение">${ICON('close')}</button></div>`).join('');
+}
+$('#fmSizes').addEventListener('click', e => { const b = e.target.closest('[data-w]'); if (!b) return; form.w = +b.dataset.w; form.h = +b.dataset.h; drawForm(); });
+$('#fmRows').addEventListener('click', e => {
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  const i = +b.closest('.vrow').dataset.i, a = b.dataset.act, r = form.rows;
+  if (a === 'del') r.splice(i, 1);
+  if (a === 'up' && i > 0) [r[i - 1], r[i]] = [r[i], r[i - 1]];
+  if (a === 'down' && i < r.length - 1) [r[i + 1], r[i]] = [r[i], r[i + 1]];
+  drawForm();
+});
+$('#fmAdd').onclick = () => { form.rows.push({ name: 'Значение ' + (form.rows.length + 1), st: 'Обычно' }); drawForm(); };
+const closeForm = () => setScreen('desk');
+$('#fmBack').onclick = closeForm;
+$('#fmDone').onclick = () => {
+  if (form.t && (form.w !== form.t.w || form.h !== form.t.h)) {
+    if (!fits(form.t, form.w, form.h)) { note('Плитка такого размера здесь не помещается: место занято.'); return; }
+    form.t.w = form.w; form.t.h = form.h;
+  }
+  closeForm(); render();
+};
+
+/* ───────── Настройки: страницы ───────── */
+const S = { tab: 'voice', voice: true, speak: true, listen: 'always', lang: 'ru', room: 'living', mqtt: false, broker: false,
+  confirm: 8, cancel: 10, manage: true, dimAfter: 30, dimBright: 10, dim: 40, glass: 50,
+  exp: { panel: true, phone: false, pc: false }, ctrl: '', addr: '', port: '1883', haAddr: '', haPort: '8123', https: false, dev: { a: false, b: false }, jFilters: false, jq: '', jstat: { err: true, warn: true, ok: true } };
+let pageStack = [], curPage = null;
+const TABS = [['voice', 'Голос'], ['device', 'Устройство'], ['conn', 'Подключение'], ['security', 'Безопасность'], ['data', 'Данные']];
+const CHECK = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const sw = (k, on) => `<button class="sw" role="switch" aria-checked="${on}" data-sw="${k}"><span class="trk">${CHECK}</span><span class="lb">${on ? 'Вкл' : 'Выкл'}</span></button>`;
+const swRow = (k, on, t, d) => `<div class="sec"><div class="srow"><div class="tx"><h3 class="sh">${t}</h3><p class="sd">${d}</p></div>${sw(k, on)}</div></div>`;
+const radio = (g, v, cur, t, d = '') => `<button class="opt" role="radio" aria-checked="${v === cur}" data-radio="${g}" data-v="${v}"><span class="mk r"></span><span class="tx"><b>${t}</b>${d ? `<span>${d}</span>` : ''}</span></button>`;
+const check = (k, on, t) => `<button class="opt" role="checkbox" aria-checked="${on}" data-chk="${k}"><span class="mk c">${CHECK}</span><span class="tx"><b>${t}</b></span></button>`;
+const stepper = (k, v, unit, min, max) => `<div class="stp"><button data-step="${k}" data-d="-1" ${v <= min ? 'disabled' : ''} aria-label="Меньше">${ICON('minus')}</button><span class="v">${v} ${unit}</span><button data-step="${k}" data-d="1" ${v >= max ? 'disabled' : ''} aria-label="Больше">${ICON('plus')}</button></div>`;
+const STEP = { confirm: [1, 3, 30, 'с'], cancel: [1, 3, 60, 'с'], dimAfter: [5, 10, 300, 'с'], dimBright: [5, 0, 100, '%'] };
+const slider = (k, label, v, unit, mn, mx) => `<div class="sl2" data-sl="${k}" data-min="${mn}" data-max="${mx}"><div class="lr"><span>${label}</span><b>${v} ${unit}</b></div><div class="zone" role="slider" aria-valuenow="${v}" aria-valuemin="${mn}" aria-valuemax="${mx}"><div class="tr"></div><div class="fl" style="width:${(v - mn) / (mx - mn) * 100}%"></div><div class="th" style="left:${(v - mn) / (mx - mn) * 100}%"></div></div><div class="mm"><span>${mn} ${unit}</span><span>${mx} ${unit}</span></div></div>`;
+const ROOMS = [['none', 'Не выбрано'], ['living', 'Гостиная']];
+const JOURNAL = [['err', 'Не понято', 'не надо делать', '10.10 23:22:38'], ['warn', 'Нужно уточнение', 'включи', '10.10 23:20:05'],
+  ['ok', 'Выполнено', 'включи свет в гостиной', '10.10 23:18:41'], ['ok', 'Выполнено', 'какая температура', '10.10 22:57:12']];
+const SICON = { err: 'close', warn: 'info', ok: 'check' };
+
+const PAGES = {
+  settings: () => ({ title: 'Настройки', tabs: true, body: ({
+    voice: () => swRow('voice', S.voice, 'Голосовое управление', 'Ассистент принимает голосовые команды') +
+      swRow('speak', S.speak, 'Озвучивать ответы', 'Ассистент отвечает голосом. Если нужной записи нет, ответ появится только на экране.') +
+      `<div class="sec"><h3 class="sh">Как слушать</h3>` +
+      radio('listen', 'always', S.listen, 'Всегда (по умолчанию)', 'Ассистент выполняет любую распознанную фразу') +
+      radio('listen', 'word', S.listen, 'По слову «Севен»', 'Ассистент выполняет только фразы со словом «Севен», например «Севен, включи свет»') + '</div>',
+    device: () => `<div class="sec"><h3 class="sh">Язык</h3><p class="sd">Язык меню и подсказок. Голосовые команды ассистент понимает только по-русски.</p>` +
+      radio('lang', 'ru', S.lang, 'Русский') + radio('lang', 'en', S.lang, 'English') + radio('lang', 'dev', S.lang, 'Как в системе: English') + '</div>' +
+      `<div class="sec"><h3 class="sh">Комната панели</h3><p class="sd">Если в команде нет комнаты, например «включи свет», ассистент управляет этой комнатой</p>` +
+      ROOMS.map(([v, t]) => radio('room', v, S.room, t)).join('') + `<button class="btn text linkbtn" data-go="note:Управление комнатами — это экран «Центр управления → Локации». В этот прототип не входит.">Управление комнатами</button></div>` +
+      `<div class="sec"><h3 class="sh">Обои экранов</h3><p class="sd">Фон, затемнение и прозрачность плиток</p><button class="btn secondary wide" data-go="wallpaper">Настроить обои</button></div>` +
+      `<div class="sec"><h3 class="sh">Экран и сон</h3><p class="sd">Затемнение и погашение экрана, яркость по освещённости, ночной режим</p><button class="btn secondary wide" data-go="display">Открыть настройки экрана</button></div>` +
+      `<div class="sec"><h3 class="sh">Лаунчер</h3><p class="sd">Сейчас домашний экран — «NSPanelPro». Seven запускается только из списка приложений.</p><p class="sd">Чтобы сделать Seven домашним, нажмите кнопку, выберите «Seven assistant» и «Всегда». Если система не спросит, откройте системные настройки → «Приложения по умолчанию» → «Домашнее приложение».</p><button class="btn secondary wide" data-go="note:Откроется системный выбор домашнего приложения.">Выбрать домашнее приложение</button></div>`,
+    conn: () => swRow('mqtt', S.mqtt, 'Панель в MQTT', 'Панель появится в брокере как устройство seven_panel_1756903f. Другие системы смогут менять яркость, громкость, экран и микрофон и читать датчики. Если связь оборвётся, брокер пометит панель как «не отвечает». При включении и выключении панель один раз переподключится к брокеру.') +
+      `<div class="sec"><h3 class="sh">Брокер для панели</h3>${radio('broker', 'b1', S.broker ? 'b1' : '', '192.168.23.141:1883')}</div>`,
+    security: () => `<div class="sec"><h3 class="sh">Время на подтверждение</h3><p class="sd">Сколько ассистент ждёт подтверждения команды. От 3 до 30 секунд.</p>${stepper('confirm', S.confirm, 'с', 3, 30)}</div>` +
+      `<div class="sec"><h3 class="sh">Время на отмену</h3><p class="sd">Сколько секунд после выполнения команду можно отменить. От 3 до 60 секунд.</p>${stepper('cancel', S.cancel, 'с', 3, 60)}</div>`,
+    data: () => `<div class="sec"><h3 class="sh">Экспорт и импорт</h3><p class="sd">Перенесите комнаты, виртуальные устройства, голосовые настройки, сценарии и экраны на другое устройство: файлом или через буфер обмена</p><button class="btn secondary wide" data-go="export">Открыть экспорт и импорт</button></div>` +
+      `<div class="sec"><h3 class="sh">Журнал команд</h3><p class="sd">Что ассистент услышал, как понял и что отправил устройствам</p><button class="btn secondary wide" data-go="journal">Открыть журнал</button></div>`,
+  })[S.tab]() }),
+  wallpaper: () => ({ title: 'Обои экранов', body:
+    `<div class="sec"><div class="wp" id="wpPrev"><div class="wpdim"></div><div class="st"><span>Кухня</span><span>14:02</span></div>` +
+    `<div class="mt" style="left:8px;width:92px">${ICON('bulb')}<b>Свет</b>Включен</div><div class="mt" style="left:108px;width:92px"><b>22,5 °C</b>Кухня</div></div>` +
+    slider('dim', 'Затемнение', S.dim, '%', 0, 80) + slider('glass', 'Прозрачность плиток', S.glass, '%', 0, 100) + '</div>' +
+    `<div class="sec"><h3 class="sh sm">Где применять</h3><p class="sd">Экраны этой панели</p><button class="dd"><span>Все комнаты (по умолчанию)</span>${ICON('chev')}</button></div>` }),
+  display: () => ({ title: 'Экран и сон', body:
+    swRow('manage', S.manage, 'Управлять экраном', 'Если выключить, экран всегда горит. Если включить, он затемняется и гаснет по настройкам ниже.') +
+    `<div class="sec"><h3 class="sh sm">Затемнять через</h3><p class="sd">Первое касание затемнённого экрана только будит его</p>${stepper('dimAfter', S.dimAfter, 'с', 10, 300)}` +
+    `<h3 class="sh sm" style="margin-top:var(--dim-gutter)">Яркость в затемнении</h3>${stepper('dimBright', S.dimBright, '%', 0, 100)}</div>` }),
+  export: () => ({ title: 'Экспорт и импорт', body:
+    `<div class="sec"><h3 class="sh">Экспорт</h3><p class="sd">В файл config.json попадут комнаты, виртуальные устройства, голосовые настройки, сценарии и экраны. Пароли, настройки брокеров и будильники в него не попадут.</p>` +
+    `<h3 class="sh sm" style="margin-top:var(--dim-space-md)">Экраны профилей</h3>` + check('panel', S.exp.panel, 'Панель (это устройство)') + check('phone', S.exp.phone, 'Телефон') + check('pc', S.exp.pc, 'Компьютер') +
+    `<p class="sd" style="margin-top:var(--dim-space-md)">В файле: комнат 1, виртуальных устройств 1, свойств 51, сценариев 0, экранов 1 (виджетов 6)</p>` +
+    `<button class="btn primary wide" data-go="note:Файл config.json сохранится на панель. В этот прототип не входит.">Сохранить в файл</button><button class="btn secondary wide" data-go="note:Конфигурация скопируется в буфер обмена.">Копировать в буфер</button></div>` +
+    `<div class="sec"><h3 class="sh">Импорт</h3><p class="sd">Загрузите config.json из файла или буфера обмена. Перед заменой данных приложение покажет, что изменится.</p><button class="btn secondary wide" data-go="note:Откроется выбор файла.">Выбрать файл</button><button class="btn secondary wide" data-go="note:Конфигурация будет вставлена из буфера обмена.">Вставить из буфера</button></div>` }),
+  journal: () => ({ title: 'Журнал команд', actions: `<button class="icon-btn" data-go="note:Настройки журнала в прототип не входят." aria-label="Настройки журнала">${ICON('gear')}</button><button class="icon-btn" data-go="note:Очистка журнала запросит подтверждение. В прототип не входит." aria-label="Очистить журнал">${ICON('trash')}</button>`, body: (() => {
+    const list = JOURNAL.filter(j => S.jstat[j[0]] && (j[2] + ' ' + j[1]).toLowerCase().includes(S.jq.toLowerCase()));
+    return `<label class="search2">${ICON('search')}<input id="jq" type="text" placeholder="Поиск по фразе, комнате или устройству" value="${S.jq}" autocomplete="off"></label>` +
+      `<button class="fil" data-go="jfil">Фильтры<span style="transform:rotate(${S.jFilters ? 180 : 0}deg);display:flex">${ICON('chev')}</span></button>` +
+      (S.jFilters ? `<div class="chiprow">${[['err', 'Не понято'], ['warn', 'Нужно уточнение'], ['ok', 'Выполнено']].map(([k, t]) => `<button class="chip" aria-pressed="${S.jstat[k]}" data-jst="${k}">${t}</button>`).join('')}</div>` : '') +
+      `<p class="sd" style="margin:var(--dim-space-sm) var(--dim-gutter)">Записей: ${list.length} из ${JOURNAL.length}</p>` +
+      `<div class="chiprow"><button class="btn secondary" data-go="note:Журнал скопируется текстом.">Копировать как текст</button><button class="btn secondary" data-go="note:Журнал скопируется как JSON.">Копировать JSON</button></div>` +
+      list.map(j => `<div class="jrow"><span class="stl ${j[0]}">${ICON(SICON[j[0]])}${j[1]}</span><div class="ph">${j[2]}</div><div class="dt">${j[3]}</div></div>`).join(''); })() }),
+};
+
+const tf = (k, label, v, extra = '') => `<label class="tf" ${extra}><input data-in="${k}" placeholder=" " value="${v}" autocomplete="off"><span>${label}</span></label>`;
+const stepBar = n => `<div class="step"><div class="lb">Шаг ${n} из 6</div><div class="pbar"><i style="width:${n / 6 * 100}%"></i></div></div>`;
+const foot = (...b) => b.join('');
+const nextBtn = (go, ok = true) => `<button class="btn primary" data-go="${go}" ${ok ? '' : 'disabled'}>Далее</button>`;
+const DEVS = [['a', 'NSPanel Pro', 'NsPro-1001e0aed1', 13], ['b', '_TZE200_znlqjmih TS0601', 'NsPro_0x804b50fffee0fc86', 15]];
+Object.assign(PAGES, {
+  'add-controller': () => ({ title: 'Добавление оборудования', sub: 'Контроллер', body:
+    `<div class="sec"><h3 class="sh sm">Найдено в сети</h3>` + radio('ctrl', 'wb', S.ctrl, 'wirenboard-AEYCHFJC', '192.168.23.141 · MAC …02:cc · добавлен') + radio('ctrl', 'manual', S.ctrl, 'Указать вручную') +
+    (S.ctrl === 'manual' ? `<div class="frow">${tf('addr', 'Адрес брокера (имя или IP)', S.addr, 'style="flex:1"')}${tf('port', 'Порт', S.port, 'style="width:112px"')}</div>` : '') + '</div>',
+    foot: () => nextBtn('add-devices', S.ctrl === 'wb' || (S.ctrl === 'manual' && S.addr.trim() !== '')) }),
+  'add-ha': () => ({ title: 'Добавить Home Assistant', sub: 'Сервер', body:
+    `<div class="sec"><h3 class="sh sm">Найдено в сети</h3><p class="sd">Серверы Home Assistant в сети не найдены. Укажите адрес вручную.</p>` + radio('ha', 'manual', 'manual', 'Указать вручную') +
+    `<div class="frow">${tf('haAddr', 'Адрес (имя, IP или ссылка)', S.haAddr, 'style="flex:1"')}</div>` +
+    `<div class="frow">${tf('haPort', 'Порт', S.haPort, 'style="width:112px"')}<div class="srow" style="flex:1;align-items:center"><div class="tx" style="font-size:var(--font-name);line-height:20px">Защищённое соединение (HTTPS)</div>${sw('https', S.https)}</div></div></div>`,
+    foot: () => nextBtn('add-devices', S.haAddr.trim() !== '') }),
+  'add-devices': () => ({ title: 'Добавление оборудования', sub: 'Устройства', close: true, body:
+    `<div class="sec"><p class="sd" style="color:var(--ui-on-surface)">Можно не выбирать устройства: соединение сохранится, устройства добавите позже</p><h3 class="sh sm" style="margin-top:var(--dim-space-md)">Home Assistant · Home Assistant (MQTT Discovery)</h3>` +
+    DEVS.map(([k, n, id, c]) => `<div class="dev"><button class="opt" role="checkbox" aria-checked="${S.dev[k]}" data-chk2="${k}"><span class="mk c">${CHECK}</span><span class="tx"><b>${n}</b><span>${id}</span><span>часть добавлена</span><span>Новых свойств: ${c}</span></span></button><button class="btn text" data-go="note:Откроется список свойств устройства.">Свойства</button></div>`).join('') + '</div>',
+    foot: () => nextBtn('note:Мастер завершён: оборудование добавится в «Центр управления → Подключения». В прототип этот экран не входит.') }),
+  w1: () => ({ title: 'Мастер настройки', sub: 'Приветствие', body: stepBar(1) +
+    `<div class="sec"><h3 class="sh">Добро пожаловать в «Севен»</h3><p class="sd">Настроим приложение за несколько шагов. Любой шаг можно пропустить; пока вы не нажмёте «Готово» на последнем шаге, ничего не сохраняется.</p>` +
+    `<h3 class="sh sm" style="margin-top:var(--dim-gutter)">Комната панели</h3><p class="sd">Команды без названия комнаты («включи свет») относятся к комнате, где висит панель. Выберите её или создайте.</p>` +
+    `<h3 class="sh sm" style="margin-top:var(--dim-space-sm)">Ваши комнаты</h3>${radio('room', 'living', S.room, 'Гостиная')}<button class="btn secondary" style="margin-top:var(--dim-space-sm)" data-go="note:Откроется диалог «Комната».">Создать комнату</button></div>`,
+    foot: () => foot(`<button class="btn text" data-go="w2">Пропустить</button>`, nextBtn('w2')) }),
+  w2: () => ({ title: 'Мастер настройки', sub: 'Контроллеры', close: true, body: stepBar(2) +
+    `<div class="sec"><p class="sd" style="color:var(--ui-on-surface)">Добавьте контроллер, найденный в сети (например, Wirenboard), или пропустите шаг: позже его можно добавить в Центре управления. Контроллер сохраняется сразу, не дожидаясь «Готово».</p>` +
+    `<h3 class="sh sm" style="margin-top:var(--dim-space-md)">Контроллеры в приложении</h3></div>` +
+    `<div class="jrow"><div class="ph">wirenboard-AEYCHFJC</div><div class="dt" style="color:var(--ui-on-surface)">Wirenboard</div></div><div class="jrow"><div class="ph">Home Assistant</div><div class="dt" style="color:var(--ui-on-surface)">Home Assistant (MQTT Discovery)</div></div>` +
+    `<div class="sec" style="border:0"><button class="btn secondary wide" data-go="add-controller">Добавить контроллер</button></div>`,
+    foot: () => foot(`<button class="btn text" data-go="note:Шаги 3–6 мастера в прототип не входят.">Пропустить</button>`, nextBtn('note:Шаги 3–6 мастера в прототип не входят.')) }),
+});
+
+/* ───────── Центр управления ───────── */
+Object.assign(S, { cct: 'loc', roomOpen: true, fab: false, wTab: 'scen', devTab: 'all',
+  conns: [{ n: 'wirenboard-AEYCHFJC', t: 'Wirenboard', a: '192.168.23.141:1883', on: true }, { n: 'Home Assistant', t: 'Home Assistant (MQTT Discovery)', a: '192.168.23.10:1883', on: true }],
+  iName: '', iAddr: '', iToken: '', bName: '', bAddr: '', bPort: '1883', bUser: '', bPass: '' });
+Object.assign(S, { rooms: [{ n: 'Гостиная', alt: 'кухня', v: 1, p: 6 }], dlg: false, rName: '', vdName: 'Свет', vdAlt: '', steps: [], dName: 'Зуммер', dPlace: '', br: 85, vol: 53, quiet: false, sleep: false });
+const fld = (k, v, mic = true) => `<label class="fld"><input data-in="${k}" value="${v}" autocomplete="off">${mic ? `<button type="button" class="mi" data-go="note:Голосовой ввод в этот прототип не входит." aria-label="Голосовой ввод">${ICON('mic')}</button>` : ''}</label>`;
+const fabGo = (t, go) => `<button class="fab" data-go="${go}">${ICON('plus')}${t}</button>`;
+const CCT = [['loc', 'Локации', 'pin', 'Комнаты и виртуальные устройства'], ['conn', 'Подключения', 'signal', 'Контроллеры и интеграции'], ['dev', 'Устройства', 'bulb', 'Всё, что найдено у подключений'], ['wid', 'Виджеты', 'apps', 'Сценарии и виджеты']];
+const CCDEV = [['wirenboard-AEYCHFJC / wb-mr6c_105', 'Реле 1', 'wb-mr6c_105/K1', 'wb'], ['wirenboard-AEYCHFJC / wb-msw-v3_21', 'Датчик движения', 'wb-msw-v3_21/Motion', 'wb'],
+  ['Home Assistant / NsPro-1001e0aed1', 'NSPanel Pro', 'NsPro-1001e0aed1', 'ha'], ['Home Assistant / NsPro_0x804b50fffee0fc86', '_TZE200_znlqjmih TS0601', 'NsPro_0x804b50fffee0fc86', 'ha']];
+const ccNav = () => `<nav class="bn" role="tablist">${CCT.map(([k, t, ic]) => `<button role="tab" aria-selected="${S.cct === k}" data-go="cct:${k}" aria-label="${t}"><span class="pill">${ICON(ic)}</span></button>`).join('')}</nav>`;
+const extFab = (t, ic = 'plus', exp) => `<button class="fab" data-go="${exp ? 'fab' : 'note:' + t}" ${exp ? `aria-expanded="${S.fab}"` : ''}>${ICON(ic)}${S.fab && exp ? 'Добавить' : t}</button>`;
+const tfm = (k, label, v, hp = '', pw = false) => `<div><label class="tf m"><input data-in="${k}" placeholder=" " value="${v}" ${pw ? 'type="password"' : ''} autocomplete="off"><span>${label}</span><button type="button" class="mi" data-go="note:Голосовой ввод в этот прототип не входит." aria-label="Голосовой ввод">${ICON('mic')}</button></label>${hp ? `<div class="hp" style="margin-top:4px">${hp}</div>` : ''}</div>`;
+const ccPage = () => {
+  const t = CCT.find(x => x[0] === S.cct);
+  const bodies = {
+    loc0: () => `<div class="card2"><button class="hd" data-go="exp"><div class="tx"><div class="nm">Гостиная</div><div class="ds">Панель находится здесь</div></div><span style="display:flex;transform:rotate(${S.roomOpen ? 180 : 0}deg)">${ICON('chev')}</span></button>` +
+      (S.roomOpen ? `<div class="ex"><div class="ds">Устройств: 2 · Виртуальных: 1</div><div class="row" style="margin-top:8px"><button class="btn secondary" data-go="note:Откроется диалог «Комната».">Изменить</button><button class="btn text" data-go="note:Удаление комнаты запросит подтверждение.">Удалить</button></div></div>` : '') + '</div>' +
+      `<div class="chiprow" style="padding-top:var(--dim-space-sm)"><button class="btn secondary" data-go="note:Виртуальные устройства: список в прототип не входит.">Виртуальные устройства</button></div>`,
+    loc: () => S.rooms.map((r, i) => `<div class="card2"><div class="row"><div class="tx" style="flex:1;min-width:0"><div class="nm" style="font-size:var(--font-name);line-height:20px">${r.n}</div><div class="ds">${r.alt ? 'Другие названия: ' + r.alt : 'Других названий нет'}</div><div class="ds">Виртуальных устройств: ${r.v} · Свойств: ${r.p}</div></div><div class="mv"><button data-go="mv:${i}:-1" ${i === 0 ? 'disabled' : ''} aria-label="Выше" style="transform:rotate(180deg)">${ICON('chev')}</button><button data-go="mv:${i}:1" ${i === S.rooms.length - 1 ? 'disabled' : ''} aria-label="Ниже">${ICON('chev')}</button></div></div><button class="btn secondary" style="margin-top:8px" data-go="cc-vdevs">${ICON('group')}Виртуальные устройства</button></div>`).join(''),
+    conn: () => S.conns.map((c, i) => `<div class="card2"><div class="row"><div class="tx" style="flex:1;min-width:0"><div class="nm">${c.n}</div><div class="ds">${c.t}</div><div class="cap">${c.a}</div></div>${sw('cn' + i, c.on)}</div>` +
+      `<div class="row" style="margin-top:4px"><button class="btn text" data-go="add-controller">Добавить устройства</button></div></div>`).join('') +
+      `<div class="chiprow" style="padding-top:var(--dim-space-sm)"><button class="btn secondary" data-go="cc-integ">${ICON('plus')}Добавить интеграцию</button></div>`,
+    dev: () => CCDEV.filter(d => S.devTab === 'all' || d[3] === S.devTab).map(d => `<button class="card2 hd" style="width:calc(100% - 32px);display:flex" data-go="devedit:${d[1]}"><div class="tx" style="flex:1;min-width:0"><div class="cap">${d[0]}</div><div class="nm">${d[1]}</div><div class="cap">${d[2]}</div></div><span style="display:flex;transform:rotate(-90deg)">${ICON('chev')}</span></button>`).join(''),
+    wid: () => S.steps.length && S.wTab === 'scen' ? '' : `<div class="empty"><b>Сценариев пока нет</b>Сценарий выполняет несколько действий одной командой</div>`,
+  };
+  return { title: 'Центр управления', sub: t[3], tabsHtml: S.cct === 'dev' ? [['all', 'Все'], ['wb', 'Wirenboard'], ['ha', 'Home Assistant (MQTT Discovery)']].map(([k, n]) => `<button class="tab" role="tab" aria-selected="${S.devTab === k}" data-go="dtab:${k}">${n}</button>`).join('') :
+      S.cct === 'wid' ? [['wid', 'Виджеты'], ['scen', 'Сценарии']].map(([k, n]) => `<button class="tab" role="tab" aria-selected="${S.wTab === k}" data-go="wtab:${k}">${n}</button>`).join('') : '',
+    actions: S.cct === 'dev' ? `<button class="icon-btn" data-go="note:Откроется добавление устройства." aria-label="Добавить">${ICON('plus')}</button>` : '',
+    body: S.cct === 'wid' && S.wTab === 'wid' ? `<div class="empty"><b>Виджетов пока нет</b>Добавьте виджет на экран через режим правки</div>` : bodies[S.cct](),
+    nav: ccNav(),
+    fab: S.cct === 'loc' ? `<button class="fab" data-go="dlg:open">${ICON('plus')}Создать комнату</button>` : S.cct === 'conn' ? (S.fab ? `<div class="scrim2" data-go="fab"></div><div class="speed"><button data-go="cc-integ">Home Assistant</button><button data-go="cc-broker">Брокер MQTT</button></div>` : '') + extFab('Добавить', 'plus', true) : S.cct === 'wid' && S.wTab === 'scen' ? fabGo('Добавить сценарий', 'cc-scen') : '' };
+};
+const dlgHtml = () => !S.dlg ? '' : `<div class="dlg"><div class="box"><h2>Комната</h2><div style="position:relative"><label class="tf m"><input data-in="rName" placeholder=" " value="${S.rName}" autocomplete="off"><span>Название</span><button type="button" class="mi" data-go="note:Голосовой ввод в этот прототип не входит." aria-label="Голосовой ввод">${ICON('mic')}</button></label></div><div class="ac"><button class="btn text" data-go="dlg:no">Отмена</button><button class="btn primary" id="dlgOk" data-go="dlg:ok" ${S.rName.trim() ? '' : 'disabled'}>Сохранить</button></div></div></div>`;
+Object.assign(PAGES, {
+  cc: () => { const r = ccPage(); r.fab = (r.fab || '') + dlgHtml(); return r; },
+
+  'cc-vdevs': () => ({ title: 'Виртуальные устройства: Гостиная', body:
+    `<div class="card2"><div class="nm" style="font-size:var(--font-name);line-height:20px">${S.vdName}</div><div class="ds">Других названий нет</div><div class="ds">Участников: 3</div><button class="btn secondary" style="margin-top:8px" data-go="cc-vdev">${ICON('list')}Настроить</button></div>` +
+    `<div class="card2" style="background:none;border-color:var(--ui-outline)"><div class="hint">${ICON('info')}Подсказка</div><p class="sd">Название виртуального устройства произносят в команде: «включи свет на кухне». Примеры названий: «свет», «шторы», «все лампы».</p><p class="sd">Если в другой комнате есть виртуальное устройство с таким же названием, фраза «выключи свет» выключит их все. Назовите устройства по-разному, чтобы управлять ими по отдельности.</p></div><div style="height:72px"></div>`,
+    fab: fabGo('Создать виртуальное устройство', 'cc-vdev') }),
+  'cc-vdev': () => ({ title: 'Виртуальное устройство', sub: 'Устройство', body:
+    `<div class="fgap"><p class="sd" style="margin:0;color:var(--ui-on-surface)">Виртуальное устройство собирает свойства из разного оборудования и работает как одно: «включи свет», «шторы на 30 %». Каналы нужны, только если у устройства несколько разных функций.</p>` +
+    `<div><span class="lab">Название</span>${fld('vdName', S.vdName)}</div><div><span class="lab">Другие названия через запятую</span>${fld('vdAlt', S.vdAlt)}</div><div><span class="lab" style="font-weight:400">Комната</span><div class="fld dd"><span style="color:var(--ui-on-surface)">Гостиная</span>${ICON('chev')}</div></div></div>`,
+    foot: () => foot(`<button class="btn text" data-go="note:Проверка покажет, какие свойства услышит ассистент.">Проверить</button>`, `<button class="btn primary" data-go="back" ${S.vdName.trim() ? '' : 'disabled'}>Сохранить</button>`) }),
+  'cc-devedit': () => ({ title: 'Редактирование устройства', actions: `<button class="icon-btn" data-go="back" aria-label="Сохранить" ${S.dName.trim() ? '' : 'disabled'} style="${S.dName.trim() ? '' : 'opacity:.38'}">${ICON('check')}</button>`, body:
+    `<div class="fgap">${tfm('dName', 'Наименование', S.dName).replace(' m"', ' m"')}${tfm('dPlace', 'Место размещения', S.dPlace)}<button class="btn danger" style="align-self:center" data-go="note:Удаление устройства запросит подтверждение.">Удалить</button></div>` }),
+  'cc-scen': () => ({ title: 'Новый сценарий', sub: 'Шаги сценария', body:
+    `<div class="sec" style="border:0"><p class="sd" style="color:var(--ui-on-surface)">Шаги идут сверху вниз. «Вместе с предыдущим» — в то же время, что шаг выше; иначе перед шагом можно сделать паузу.</p>` +
+    (S.steps.length ? '' : `<p class="sd" style="color:var(--ui-on-surface)">Шагов пока нет. Добавьте первый: выберите, что включить или выключить.</p>`) + '</div>' +
+    S.steps.map((x, i) => `<div class="jrow"><div class="ph">${i + 1}. Включить: ${x}</div><div class="dt">Спросит подтверждение</div></div>`).join('') +
+    `<div class="sec" style="border:0"><button class="btn secondary wide" data-go="cc-pick">${ICON('plus')}Добавить шаг</button></div>`,
+    foot: () => foot(`<button class="btn text" data-go="note:Проверка выполнит сценарий без отправки команд устройствам.">Проверить</button>`, nextBtn('note:Следующие шаги сценария в прототип не входят.', S.steps.length > 0)) }),
+  'cc-pick': () => ({ title: 'Новый сценарий', sub: 'Что включить', close: true, body:
+    `<div class="sec" style="border:0;padding-bottom:0"><p class="sd" style="color:var(--ui-on-surface)">Выберите, чем управляет шаг. Виртуальное устройство — сразу несколько свойств комнаты.</p></div><label class="search2" style="margin-top:0">${ICON('search')}<input type="text" placeholder="Поиск: название или комната" autocomplete="off"></label>` +
+    `<div class="grp">Гостиная</div>` + [['Свет', 'Виртуальное устройство — свойств: 3 · спросит подтверждение'], ['Бра', 'спросит подтверждение'], ['Громкость', '']].map(([n, d]) => `<button class="pick" data-go="pickstep:${n}"><b>${n}</b><span>${d || '&nbsp;'}</span></button>`).join('') }),
+  'cc-integ': () => ({ title: 'Интеграция', sub: 'Home Assistant', actions: `<button class="btn text" ${S.iName.trim() && S.iAddr.trim() ? '' : 'disabled'} data-go="save:integ">Сохранить</button>`,
+    body: `<div class="fgap">${tfm('iName', 'Название', S.iName)}${tfm('iAddr', 'Адрес (имя, IP или ссылка)', S.iAddr, 'Например, 192.168.1.10:8123')}${tfm('iToken', 'Токен доступа', S.iToken, 'Создайте его в профиле Home Assistant')}</div>` }),
+  'cc-broker': () => ({ title: 'Брокер', sub: 'MQTT', actions: `<button class="btn text" ${S.bName.trim() && S.bAddr.trim() ? '' : 'disabled'} data-go="save:broker">Сохранить</button>`,
+    body: `<div class="fgap">${tfm('bName', 'Название', S.bName)}<div class="frow" style="margin:0">${tfm('bAddr', 'Адрес брокера (имя или IP)', S.bAddr)}<div style="width:112px">${tfm('bPort', 'Порт', S.bPort)}</div></div>${tfm('bUser', 'Логин', S.bUser, 'Если брокер не требует вход, оставьте пустым')}${tfm('bPass', 'Пароль', S.bPass, '', true)}</div>` }),
+});
+function goPage(name, push = true) {
+  if (name.startsWith('cc-') && ['loc','conn','dev','wid'].includes(name.slice(3))) { S.cct = name.slice(3); name = 'cc'; }
+  const m = { voice: 'settings', device: 'settings', conn: 'settings', security: 'settings', data: 'settings' };
+  if (m[name]) { S.tab = name; name = 'settings'; }
+  if (push && curPage && curPage !== name && state.screen === 'page') pageStack.push(curPage);
+  if (!push) pageStack = [];
+  curPage = name; setScreen('page'); drawPage();
+}
+function drawPage(keepScroll = true) {
+  const pg = PAGES[curPage](), el = $('#page'), old = el.querySelector('.body'), top = keepScroll && old ? old.scrollTop : 0;
+  el.innerHTML = `<div class="appbar"><button class="icon-btn" data-go="back" aria-label="Назад">${ICON('back')}</button>` +
+    (pg.sub ? `<div class="ttl2"><div class="t">${pg.title}</div><div class="s">${pg.sub}</div></div>` : `<div class="ttl">${pg.title}</div>`) +
+    (pg.close ? `<button class="icon-btn" data-go="close" aria-label="Закрыть">${ICON('close')}</button>` : '') + `<span class="acts" id="acts">${pg.actions || ''}</span></div>` +
+    (pg.tabsHtml ? `<div class="tabs" role="tablist">${pg.tabsHtml}</div>` : '') +
+    (pg.tabs ? `<div class="tabs" role="tablist">${TABS.map(([k, t]) => `<button class="tab" role="tab" aria-selected="${S.tab === k}" data-tab="${k}">${t}</button>`).join('')}</div>` : '') +
+    `<div class="body">${pg.body}</div>` + (pg.foot ? `<div class="foot" id="foot">${pg.foot()}</div>` : '') + (pg.nav || '') + (pg.fab || '');
+  el.querySelector('.body').scrollTop = top;
+  syncKb();
+  const sel = el.querySelector('.tab[aria-selected="true"]'); if (sel) sel.scrollIntoView({ inline: 'center', block: 'nearest' });
+  syncWp(); syncControls();
+}
+function syncWp() {
+  desk.style.setProperty('--wallpaper-dim', S.dim / 100); desk.style.setProperty('--tile-glass', S.glass / 100);
+  const wp = $('#wpPrev'); if (wp) wp.style.backgroundImage = getComputedStyle(desk).backgroundImage;
+}
+$('#page').addEventListener('click', e => {
+  const t = e.target.closest('[data-tab],[data-sw],[data-radio],[data-chk],[data-chk2],[data-step],[data-go],[data-jst]'); if (!t) return;
+  if (t.dataset.tab) { S.tab = t.dataset.tab; return drawPage(false); }
+  if (t.dataset.sw) { const k = t.dataset.sw; if (k.startsWith('cn')) S.conns[+k.slice(2)].on = !S.conns[+k.slice(2)].on; else S[k] = !S[k]; return drawPage(); }
+  if (t.dataset.radio) { const g = t.dataset.radio; S[g] = g === 'broker' ? true : t.dataset.v; return drawPage(); }
+  if (t.dataset.chk2) { S.dev[t.dataset.chk2] = !S.dev[t.dataset.chk2]; return drawPage(); }
+  if (t.dataset.chk) { S.exp[t.dataset.chk] = !S.exp[t.dataset.chk]; return drawPage(); }
+  if (t.dataset.step) { const k = t.dataset.step, [st, mn, mx] = STEP[k]; S[k] = Math.min(mx, Math.max(mn, S[k] + st * +t.dataset.d)); return drawPage(); }
+  if (t.dataset.jst) { S.jstat[t.dataset.jst] = !S.jstat[t.dataset.jst]; return drawPage(); }
+  const g = t.dataset.go;
+  if (g === 'back') { const p = pageStack.pop(); if (p) { curPage = p; drawPage(false); syncControls(); } else { setScreen('desk'); } return; }
+  if (g === 'close') { if (curPage === 'cc-pick') { const p = pageStack.pop(); curPage = p || 'cc-scen'; return drawPage(false); } return setScreen('desk'); }
+  if (g.startsWith('cct:')) { S.cct = g.slice(4); S.fab = false; return drawPage(false); }
+  if (g.startsWith('dtab:')) { S.devTab = g.slice(5); return drawPage(false); }
+  if (g.startsWith('wtab:')) { S.wTab = g.slice(5); return drawPage(false); }
+  if (g.startsWith('mv:')) { const [, i, d] = g.split(':'); const a = S.rooms, j = +i + +d; [a[+i], a[j]] = [a[j], a[+i]]; return drawPage(); }
+  if (g === 'dlg:open') { S.dlg = true; S.rName = ''; return drawPage(); }
+  if (g === 'dlg:no') { S.dlg = false; return drawPage(); }
+  if (g === 'dlg:ok') { S.rooms.push({ n: S.rName.trim(), alt: '', v: 0, p: 0 }); S.dlg = false; S.rName = ''; return drawPage(); }
+  if (g.startsWith('devedit:')) { S.dName = g.slice(8); S.dPlace = ''; return goPage('cc-devedit'); }
+  if (g.startsWith('pickstep:')) { S.steps.push(g.slice(9)); const p = pageStack.pop(); curPage = p || 'cc-scen'; return drawPage(false); }
+  if (g === 'exp') { S.roomOpen = !S.roomOpen; return drawPage(); }
+  if (g === 'fab') { S.fab = !S.fab; return drawPage(); }
+  if (g.startsWith('save:')) {
+    if (g === 'save:integ') { S.conns.push({ n: S.iName, t: 'Home Assistant', a: S.iAddr, on: true }); S.iName = S.iAddr = S.iToken = ''; }
+    else { S.conns.push({ n: S.bName, t: 'Брокер MQTT', a: S.bAddr + ':' + S.bPort, on: true }); S.bName = S.bAddr = S.bUser = S.bPass = ''; S.bPort = '1883'; }
+    S.fab = false; S.cct = 'conn'; const p = pageStack.pop(); curPage = p || 'cc'; drawPage(false); return note('Подключение сохранено');
+  }
+  if (g === 'jfil') { S.jFilters = !S.jFilters; return drawPage(); }
+  if (g.startsWith('note:')) return note(g.slice(5));
+  goPage(g);
+});
+$('#page').addEventListener('input', e => {
+  if (e.target.dataset.in) { S[e.target.dataset.in] = e.target.value; const pg = PAGES[curPage](); if (pg.foot) $('#foot').innerHTML = pg.foot(); if (pg.actions && $('#acts')) $('#acts').innerHTML = pg.actions; const ok = $('#dlgOk'); if (ok) ok.disabled = !S.rName.trim(); return; }
+  if (e.target.id !== 'jq') return;
+  S.jq = e.target.value; const pos = e.target.selectionStart; drawPage(); const i = $('#jq'); i.focus(); i.setSelectionRange(pos, pos);
+});
+/* слайдеры обоев: двигаем DOM напрямую, чтобы не терять захват указателя */
+$('#page').addEventListener('pointerdown', e => {
+  const zone = e.target.closest('.sl2 .zone'); if (!zone) return;
+  const box = zone.closest('.sl2'), k = box.dataset.sl, mn = +box.dataset.min, mx = +box.dataset.max;
+  zone.setPointerCapture(e.pointerId);
+  const upd = ev => {
+    const r = zone.getBoundingClientRect(), f = Math.min(1, Math.max(0, (ev.clientX - r.left) / r.width));
+    const v = Math.round(mn + f * (mx - mn)); S[k] = v;
+    zone.querySelector('.fl').style.width = f * 100 + '%'; zone.querySelector('.th').style.left = f * 100 + '%';
+    box.querySelector('.lr b').textContent = v + ' %'; zone.setAttribute('aria-valuenow', v); syncWp();
+  };
+  upd(e);
+  const mv = ev => upd(ev), up = () => { zone.removeEventListener('pointermove', mv); zone.removeEventListener('pointerup', up); };
+  zone.addEventListener('pointermove', mv); zone.addEventListener('pointerup', up);
+});
+
+/* ───────── Панель управления прототипом ───────── */
+/* экранная клавиатура: появляется при фокусе в поле, страница сжимается над ней */
+let kbT = 0;
+function syncKb() {
+  const a = document.activeElement, on = !!(a && a.tagName === 'INPUT' && a.closest('#page'));
+  desk.classList.toggle('kb', on);
+  if (on) requestAnimationFrame(() => a.scrollIntoView({ block: 'center', behavior: 'instant' }));
+}
+$('#page').addEventListener('focusin', () => { clearTimeout(kbT); syncKb(); });
+$('#page').addEventListener('focusout', () => { clearTimeout(kbT); kbT = setTimeout(syncKb, 300); });
+function drawShade() {
+  $('#shade').innerHTML = `<div class="st">00:08 · 11.10.2026 <i></i> MQTT: на связи</div><div class="qs"><button data-q="quiet" aria-pressed="${S.quiet}">${ICON('dnd')}Тишина</button><button data-q="sleep" aria-pressed="${S.sleep}">${ICON('moon')}Погасить</button><button data-q="wifi" aria-pressed="true">${ICON('wifi')}Wi-Fi</button><button data-q="set">${ICON('gear')}Настройки</button></div>` + `<div class="sdims">${dimInner('h', 0, 'sun')}${dimInner('h', 0, 'vol')}</div><div class="grab"></div>`;
+  $('#shade').querySelectorAll('.dim').forEach((dm, i) => { const k = i ? 'vol' : 'br', aria = i ? 'Громкость' : 'Яркость';
+    const t = { level: (S[k] - 1) / 99, on: true, onChange() { S[k] = pctOf(t); } };
+    bindDim(dm, t, dm.parentNode); dm.setAttribute('aria-label', aria); });
+}
+drawShade();
+$('#shade').addEventListener('click', e => { const b = e.target.closest('[data-q]'); if (!b) return; const q = b.dataset.q; if (q === 'set') return goPage('voice', false); if (q === 'wifi') return note('Откроются настройки Wi-Fi системы.'); S[q] = !S[q]; drawShade(); });
+$('.scrim').addEventListener('click', () => { if (state.screen === 'shade') setScreen('desk'); });
+const GROUPS = [
+  { label: 'Экран', cls: 'grid3', get: () => state.screen, set: v => setScreen(v),
+    opts: [['desk', 'Стол'], ['drawer', 'Меню'], ['apps', 'Приложения'], ['kbd', 'Поиск + клавиатура'], ['shade', 'Панель'], ['sheet', 'Лист плитки'], ['tile', 'Плитка'], ['custom', 'Новая плитка']] },
+  { label: 'Настройки', cls: 'grid3', get: () => state.screen === 'page' ? (curPage === 'settings' ? S.tab : curPage) : '', set: v => goPage(v, false),
+    opts: [['voice', 'Голос'], ['device', 'Устройство'], ['conn', 'Подключение'], ['security', 'Безопасность'], ['data', 'Данные'], ['wallpaper', 'Обои'], ['display', 'Экран и сон'], ['export', 'Экспорт'], ['journal', 'Журнал']] },
+  { label: 'Режим',    get: () => state.edit ? 'edit' : 'normal', set: v => setEdit(v === 'edit'),
+    opts: [['normal', 'Обычный'], ['edit', 'Правка']] },
+  { label: 'Тема',     get: () => state.theme, set: v => { state.theme = v; document.documentElement.dataset.theme = v; },
+    opts: [['light', 'Светлая'], ['dark', 'Тёмная']] },
+  { label: 'Фон', cls: 'grid3', get: () => state.bg, set: v => { state.bg = v; desk.dataset.bg = v; desk.classList.toggle('wallpaper', v === 'wallpaper'); },
+    opts: [['sage', 'Шалфей ★'], ['mint', 'Мята'], ['pistachio', 'Фисташка'], ['moss', 'Мох'], ['wallpaper', 'Обои (тест)']] },
+  { label: 'Ползунок света', get: () => state.dimmer, set: v => { state.dimmer = v; render(); },
+    opts: [['old', 'Было'], ['h', 'Горизонтальный'], ['v', 'Вертикальный']] },
+  { label: 'Вид ползунка', get: () => desk.dataset.dstyle || 'a', set: v => { desk.dataset.dstyle = v; },
+    opts: [['a', '1 Без заливки'], ['b', '2 Бледная'], ['c', '3 По яркости'], ['d', '4 Светлая']] },
+  { label: 'Бейдж «убрать»', get: () => desk.dataset.badge || 'neutral', set: v => { desk.dataset.badge = v; },
+    opts: [['neutral', 'Нейтральный'], ['green', 'Зелёный']] },
+  { label: 'Микрофон', get: () => state.mic, set: v => { state.mic = v; $('#mic').dataset.state = v; },
+    opts: [['off', 'Выкл'], ['listening', 'Слушает'], ['no-permission', 'Нет доступа']] },
+  { label: 'Мастера', cls: 'grid3', get: () => state.screen === 'page' && curPage !== 'settings' ? (curPage === 'add-controller' && S.ctrl === 'manual' ? 'add-controller-m' : curPage) : '',
+    set: v => { if (v === 'add-controller-m') { S.ctrl = 'manual'; goPage('add-controller', false); } else { if (v === 'add-controller') S.ctrl = ''; goPage(v, false); } },
+    opts: [['add-controller', 'Контроллер'], ['add-controller-m', 'Ручной ввод'], ['add-ha', 'Home Assistant'], ['add-devices', 'Устройства'], ['w1', 'Первый запуск 1'], ['w2', 'Первый запуск 2']] },
+  { label: 'Центр управления', cls: 'grid3', get: () => state.screen === 'page' ? (curPage === 'cc' ? S.cct + (S.cct === 'conn' && S.fab ? '-fab' : '') : curPage) : '',
+    set: v => { if (v === 'dlg') { S.cct = 'loc'; S.dlg = true; S.rName = 'Гостиная'; goPage('cc', false); return; } S.dlg = false; if (v === 'cc-scen' ) S.steps = []; if (v === 'conn-fab') { S.cct = 'conn'; S.fab = true; goPage('cc', false); } else { S.fab = false; goPage(['loc','conn','dev','wid'].includes(v) ? 'cc-' + v : v, false); } },
+    opts: [['loc', 'Локации'], ['conn', 'Подключения'], ['conn-fab', 'Подключения + меню'], ['dev', 'Список устройств'], ['wid', 'Виджеты'], ['cc-integ', 'Интеграция'], ['cc-broker', 'Брокер'], ['dlg', 'Диалог «Комната»'], ['cc-vdevs', 'Виртуальные устройства'], ['cc-vdev', 'Виртуальное устройство'], ['cc-devedit', 'Правка устройства'], ['cc-scen', 'Сценарий: шаги'], ['cc-pick', 'Сценарий: что включить']] },
+  { label: 'Экран стола', get: () => String(cur), set: v => { const n = +v; if (n !== cur) { cur = n; tiles = pagesData[cur]; undoStack = []; hideSnack(); render(); updateDots(); } }, opts: [['0', '1'], ['1', '2'], ['2', '3'], ['3', '4']] },
+];
+const controls = $('#controls');
+GROUPS.forEach(g => {
+  const wrap = document.createElement('div'); wrap.className = 'group';
+  wrap.innerHTML = `<div class="lbl">${g.label}</div><div class="seg"></div>`;
+  const seg = wrap.querySelector('.seg');
+  g.opts.forEach(([val, text]) => {
+    const b = document.createElement('button'); b.textContent = text; b.dataset.val = val;
+    b.onclick = () => { g.set(val); syncControls(); };
+    seg.appendChild(b);
+  });
+  if (g.cls) seg.classList.add(g.cls);
+  g.seg = seg; controls.appendChild(wrap);
+});
+const hitLabel = document.createElement('label');
+hitLabel.innerHTML = '<input type="checkbox" id="hitToggle"> Показать зоны касания 48×48 у ×';
+controls.appendChild(hitLabel);
+$('#hitToggle').onchange = e => { state.showHit = e.target.checked; desk.classList.toggle('show-hit', state.showHit); };
+const reset = document.createElement('button'); reset.className = 'reset'; reset.textContent = 'Сбросить плитки';
+reset.onclick = () => { pagesData = makePages(); tiles = pagesData[cur]; undoStack = []; hideSnack(); render(); };
+controls.appendChild(reset);
+
+function syncControls() {
+  GROUPS.forEach(g => g.seg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.val === g.get()))));
+}
+
+/* ?mode=edit&theme=dark&bg=wallpaper&mic=listening: открыть сразу в нужном состоянии */
+const q = new URLSearchParams(location.search);
+GROUPS[4].set(state.bg);
+if (q.get('theme')) GROUPS[3].set(q.get('theme'));
+if (q.get('bg')) GROUPS[4].set(q.get('bg'));
+if (q.get('badge')) GROUPS[7].set(q.get('badge'));
+GROUPS[6].set(q.get('dstyle') || 'a');
+if (q.get('dimmer')) state.dimmer = q.get('dimmer');
+if (q.get('mic')) GROUPS[8].set(q.get('mic'));
+if (q.get('mode') === 'edit') state.edit = true;
+if (q.get('screen')) setScreen(q.get('screen'));
+if (q.get('page')) GROUPS[1].set(q.get('page'));
+render();
+</script>
+</body>
+</html>
