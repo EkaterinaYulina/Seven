@@ -618,6 +618,13 @@ svg.ic.dots { stroke-width: 2.6; }
 .page .sec .frow .tf { margin: 0; }
 .page .sec .dd { width: calc(100% + 16px); margin-left: -8px; }
 .page .fil { padding: 0 calc(var(--dim-gutter) + 8px); }
+/* единый заголовок экрана: 22/28, medium, текст на линии 24. Подзаголовок — 14/18 вторичным цветом */
+.page .appbar .ttl2 .t { font-size: 22px; line-height: 28px; font-weight: 500; }
+.form .appbar .ttl, .drawer .head .t, .sheet .h .t { font-size: 22px; line-height: 28px; font-weight: 500; }
+.page .appbar:has(.ttl2) { height: 64px; }
+.dlg .box h2 { font-size: 22px; line-height: 28px; font-weight: 500; }
+/* заголовки разделов формы — как заголовки групп на страницах */
+.form .sec-h { font-size: var(--font-name); line-height: 20px; font-weight: 500; color: var(--glass-head); padding-left: calc(var(--dim-gutter) + 8px); padding-right: calc(var(--dim-gutter) + 8px); }
 .fab { border-radius: var(--dim-radius-fab); box-shadow: 0 2px 6px rgba(0,0,0,.14); }
 </style>
 </head>
