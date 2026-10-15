@@ -553,25 +553,37 @@ svg.ic.dots { stroke-width: 2.6; }
   font-size: var(--font-name); line-height: var(--lh-name); font-weight: 500; z-index: 5; }
 .snackbar.show { display: flex; }
 .snackbar button { height: var(--dim-touch-min); padding: 0 var(--dim-gutter); font-weight: 500; font-size: var(--font-name); }
-/* ── Страницы: тонированное стекло. Скругления по токенам: карточка 12, чип 8, FAB 16 ── */
-:root, [data-theme="light"] { --page-bg: linear-gradient(135deg, #EEF6E8 0%, #D6EBDA 100%); --glass-card: rgba(247,252,244,.92); --glass-border: rgba(47,125,91,.22); --glass-line: rgba(47,125,91,.16); --glass-head: #2A6B4C; --page-t2: #4A4D42; --page-thumb: var(--core-cream); }
-[data-theme="dark"] { --page-bg: linear-gradient(135deg, #121710 0%, #192820 55%, #1F312A 100%); --glass-card: rgba(26,42,33,.94); --glass-border: rgba(143,211,174,.26); --glass-line: rgba(143,211,174,.18); --glass-head: #8FD3AE; --page-t2: #C4C7B8; --page-thumb: var(--core-graphite); }
+/* ── Страницы: воздушное стекло, палитра «Мята». Без live-blur (слабый CPU панели): полупрозрачная заливка + контур поверх статичного градиента.
+      Скругления: карточка и вкладки-плашка — radius-sheet 28, FAB — pill, чипы — radius-chip 8 ── */
+:root, [data-theme="light"] {
+  --page-bg: radial-gradient(60% 50% at 10% 6%, #F1F8E0 0%, transparent 70%), radial-gradient(60% 55% at 95% 95%, #CDE7D3 0%, transparent 70%), #E9F3E1;
+  --glass-card: rgba(255,255,255,.58); --glass-border: rgba(255,255,255,.9); --glass-line: rgba(34,38,30,.09);
+  --glass-head: var(--core-ink-2); --page-t2: var(--core-ink-2); --page-thumb: #FFFFFF;
+  --air-sel: var(--core-ink); --air-on-sel: var(--core-cream); --air-circ: rgba(34,38,30,.22); }
+[data-theme="dark"] {
+  --page-bg: radial-gradient(55% 45% at 10% 5%, rgba(143,211,174,.20) 0%, transparent 70%), radial-gradient(60% 55% at 95% 100%, rgba(70,160,125,.28) 0%, transparent 70%), #10150F;
+  --glass-card: rgba(255,255,255,.08); --glass-border: rgba(255,255,255,.20); --glass-line: rgba(255,255,255,.11);
+  --glass-head: var(--core-stone); --page-t2: #C4C7B8; --page-thumb: var(--core-graphite);
+  --air-sel: var(--core-green-300); --air-on-sel: var(--core-graphite); --air-circ: rgba(255,255,255,.32); }
 .desk > .page { background: var(--page-bg); --c-text-secondary: var(--page-t2); --ui-on-surface-variant: var(--page-t2); --ui-outline-subtle: var(--glass-line); }
-.page .appbar { height: 48px; border-bottom: 0; }
-.page .appbar .ttl { font-size: 18px; line-height: 24px; font-weight: 500; }
-/* вкладки: сегментная лента, активная — стеклянная плашка; внутренний радиус = 12 − 4 = 8 (radius-chip) */
-.page .tabs { border-bottom: 0; margin: 4px var(--dim-gutter) var(--dim-space-sm); padding: 4px; height: auto; gap: 2px; border-radius: var(--dim-radius-card); background: color-mix(in srgb, var(--ui-on-surface) 6%, transparent); }
-.page .tabs .tab { flex: 1 1 auto; height: 36px; border-radius: var(--dim-radius-chip); border-bottom: 0; margin: 0; padding: 0 4px; font-size: 13px; color: var(--c-text-secondary); }
+.page .appbar { height: 56px; border-bottom: 0; padding: 0 var(--dim-gutter); gap: var(--dim-space-sm); }
+.page .appbar .ttl { font-size: 22px; line-height: 28px; font-weight: 500; margin-left: 0; }
+.page .appbar .icon-btn { width: 44px; height: 44px; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--air-circ); background: var(--glass-card); }
+/* вкладки: текст, активная — тёмная (в тёмной теме мятная) плашка */
+.page .tabs { border-bottom: 0; height: 40px; margin: 4px var(--dim-gutter) var(--dim-space-sm); gap: 4px; background: none; padding: 0; }
+.page .tabs .tab { flex: 0 0 auto; height: 36px; margin: 0; padding: 0 12px; border-bottom: 0; border-radius: var(--dim-radius-pill); font-size: 13px; color: var(--c-text-secondary); }
+.page .tabs.main .tab { flex: 1 0 auto; padding: 0 8px; }
 .page .tabs .tab::after { display: none; }
-.page .tabs .tab[aria-selected="true"] { background: var(--glass-card); box-shadow: inset 0 0 0 1px var(--glass-border); color: var(--ui-on-surface); font-weight: 600; }
-.page .grp, .page .card2 { border: 0; box-shadow: inset 0 0 0 1px var(--glass-border); background: var(--glass-card); border-radius: var(--dim-radius-card); }
-.page .gh { color: var(--glass-head); }
-.page .gr { border-top-color: var(--glass-line); }
+.page .tabs .tab[aria-selected="true"] { background: var(--air-sel); color: var(--air-on-sel); font-weight: 500; }
+.page .grp, .page .card2 { border: 0; box-shadow: inset 0 0 0 1px var(--glass-border); background: var(--glass-card); border-radius: var(--dim-radius-sheet); }
+.page .gh { color: var(--glass-head); padding-left: calc(var(--dim-gutter) + 8px); }
+.page .gr { border-top-color: var(--glass-line); padding-left: calc(var(--dim-gutter) + 6px); }
 .page .chip { border: 0; box-shadow: inset 0 0 0 1px var(--glass-border); background: var(--glass-card); border-radius: var(--dim-radius-chip); }
-.page .chip[aria-pressed="true"] { background: var(--ui-primary-container); box-shadow: none; }
+.page .chip[aria-pressed="true"] { background: var(--air-sel); color: var(--air-on-sel); box-shadow: none; }
 .page .foot, .page .bnav { border-top: 0; background: var(--glass-card); box-shadow: inset 0 1px 0 var(--glass-border); }
 .page .sw .trk::after { background: var(--page-thumb); }
-.fab { border-radius: var(--dim-radius-fab); }
+.page .sw[aria-checked="true"] .trk, .page .sw.on .trk { background: var(--air-sel); }
+.fab { border-radius: var(--dim-radius-pill); background: var(--air-sel); color: var(--air-on-sel); box-shadow: 0 2px 6px rgba(0,0,0,.14); }
 </style>
 </head>
 <body>
