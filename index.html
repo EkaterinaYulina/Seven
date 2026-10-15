@@ -554,36 +554,41 @@ svg.ic.dots { stroke-width: 2.6; }
 .snackbar.show { display: flex; }
 .snackbar button { height: var(--dim-touch-min); padding: 0 var(--dim-gutter); font-weight: 500; font-size: var(--font-name); }
 /* ── Страницы: воздушное стекло, палитра «Мята». Без live-blur (слабый CPU панели): полупрозрачная заливка + контур поверх статичного градиента.
-      Скругления: карточка и вкладки-плашка — radius-sheet 28, FAB — pill, чипы — radius-chip 8 ── */
+      Скругления по дизайн-системе: карточка 12 (radius-card), чип/активная вкладка 8, FAB 16 (radius-fab). Выбранное — зелёный primary-container, как в main ── */
 :root, [data-theme="light"] {
   --page-bg: radial-gradient(60% 50% at 10% 6%, #F1F8E0 0%, transparent 70%), radial-gradient(60% 55% at 95% 95%, #CDE7D3 0%, transparent 70%), #E9F3E1;
-  --glass-card: rgba(255,255,255,.58); --glass-border: rgba(255,255,255,.9); --glass-line: rgba(34,38,30,.09);
-  --glass-head: var(--core-ink-2); --page-t2: var(--core-ink-2); --page-thumb: #FFFFFF;
-  --air-sel: var(--core-ink); --air-on-sel: var(--core-cream); --air-circ: rgba(34,38,30,.22); }
+  --glass-card: rgba(255,255,255,.58); --glass-border: rgba(255,255,255,.9); --glass-line: rgba(20,40,29,.10);
+  --page-text: #14281D; --page-t2: #3F5246; --glass-head: #3F5246; --page-thumb: var(--core-cream); --page-acc: #14281D; }
 [data-theme="dark"] {
   --page-bg: radial-gradient(55% 45% at 10% 5%, rgba(143,211,174,.20) 0%, transparent 70%), radial-gradient(60% 55% at 95% 100%, rgba(70,160,125,.28) 0%, transparent 70%), #10150F;
   --glass-card: rgba(255,255,255,.08); --glass-border: rgba(255,255,255,.20); --glass-line: rgba(255,255,255,.11);
-  --glass-head: var(--core-stone); --page-t2: #C4C7B8; --page-thumb: var(--core-graphite);
-  --air-sel: var(--core-green-300); --air-on-sel: var(--core-graphite); --air-circ: rgba(255,255,255,.32); }
-.desk > .page { background: var(--page-bg); --c-text-secondary: var(--page-t2); --ui-on-surface-variant: var(--page-t2); --ui-outline-subtle: var(--glass-line); }
-.page .appbar { height: 56px; border-bottom: 0; padding: 0 var(--dim-gutter); gap: var(--dim-space-sm); }
+  --page-text: var(--core-paper); --page-t2: var(--core-stone); --glass-head: var(--core-stone); --page-thumb: var(--core-graphite); --page-acc: #DCE7AA; }
+.desk > .page { background: var(--page-bg); --c-text-primary: var(--page-text); --ui-on-surface: var(--page-text); --c-text-secondary: var(--page-t2); --ui-on-surface-variant: var(--page-t2); --ui-outline-subtle: var(--glass-line); color: var(--page-text); }
+.page .appbar { height: 56px; border-bottom: 0; padding: 0 var(--dim-gutter) 0 calc(var(--dim-gutter) + 8px); gap: var(--dim-space-sm); }
 .page .appbar .ttl { font-size: 22px; line-height: 28px; font-weight: 500; margin-left: 0; }
-.page .appbar .icon-btn { width: 44px; height: 44px; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--air-circ); background: var(--glass-card); }
-/* вкладки: текст, активная — тёмная (в тёмной теме мятная) плашка */
-.page .tabs { border-bottom: 0; height: 40px; margin: 4px var(--dim-gutter) var(--dim-space-sm); gap: 4px; background: none; padding: 0; }
-.page .tabs .tab { flex: 0 0 auto; height: 36px; margin: 0; padding: 0 12px; border-bottom: 0; border-radius: var(--dim-radius-pill); font-size: 13px; color: var(--c-text-secondary); }
-.page .tabs.main .tab { flex: 1 0 auto; padding: 0 8px; }
-.page .tabs .tab::after { display: none; }
-.page .tabs .tab[aria-selected="true"] { background: var(--air-sel); color: var(--air-on-sel); font-weight: 500; }
-.page .grp, .page .card2 { border: 0; box-shadow: inset 0 0 0 1px var(--glass-border); background: var(--glass-card); border-radius: var(--dim-radius-sheet); }
+.page .appbar .ttl2 { margin-left: 0; }
+.page .appbar .icon-btn { border-radius: 50%; margin-right: -8px; background: none; box-shadow: none; }
+/* вкладки: текст, у активной жирный шрифт и короткая черта */
+.page .tabs { border-bottom: 0; height: 48px; margin: 0 var(--dim-gutter); padding: 0; gap: 0; justify-content: space-between; background: none; }
+.page .tabs .tab { flex: 0 0 auto; height: 48px; margin: 0; padding: 0 8px; border-bottom: 0; border-radius: 0; font-size: 14px; color: var(--c-text-secondary); position: relative; }
+.page .tabs.main .tab { flex: 0 0 auto; padding: 0 8px; }
+.page .tabs .tab::after { display: block; content: ""; position: absolute; left: 50%; margin-left: -12px; bottom: 4px; width: 24px; height: 3px; border-radius: 2px; background: var(--page-acc); opacity: 0; }
+.page .tabs .tab[aria-selected="true"] { background: none; color: var(--page-text); font-weight: 600; }
+.page .tabs .tab[aria-selected="true"]::after { opacity: 1; }
+.page .grp, .page .card2 { border: 0; box-shadow: inset 0 0 0 1px var(--glass-border); background: var(--glass-card); border-radius: var(--dim-radius-card); }
 .page .gh { color: var(--glass-head); padding-left: calc(var(--dim-gutter) + 8px); }
 .page .gr { border-top-color: var(--glass-line); padding-left: calc(var(--dim-gutter) + 6px); }
+/* выбор одной опции (радио) — отдельные карточки, отметка слева; выбранная в рамке 2 dp */
+.page .grp:has(> .gr[role="radio"]) { background: none; box-shadow: none; overflow: visible; display: flex; flex-direction: column; gap: var(--dim-space-sm); }
+.page .grp > .gr[role="radio"] { flex-direction: row-reverse; border-top: 0; border-radius: var(--dim-radius-card); background: var(--glass-card); box-shadow: inset 0 0 0 1px var(--glass-border); padding-left: var(--dim-gutter); }
+.page .grp > .gr[role="radio"][aria-checked="true"] { box-shadow: inset 0 0 0 2px var(--ui-primary-container); background: color-mix(in srgb, var(--ui-primary-container) 12%, transparent); }
+.page .gr[role="radio"] .mk { border-color: var(--ui-primary-container); }
+.page .gr[aria-checked="true"] .mk::after { background: var(--ui-primary-container); }
 .page .chip { border: 0; box-shadow: inset 0 0 0 1px var(--glass-border); background: var(--glass-card); border-radius: var(--dim-radius-chip); }
-.page .chip[aria-pressed="true"] { background: var(--air-sel); color: var(--air-on-sel); box-shadow: none; }
+.page .chip[aria-pressed="true"] { background: var(--ui-primary-container); color: var(--ui-on-primary-container); box-shadow: none; }
 .page .foot, .page .bnav { border-top: 0; background: var(--glass-card); box-shadow: inset 0 1px 0 var(--glass-border); }
 .page .sw .trk::after { background: var(--page-thumb); }
-.page .sw[aria-checked="true"] .trk, .page .sw.on .trk { background: var(--air-sel); }
-.fab { border-radius: var(--dim-radius-pill); background: var(--air-sel); color: var(--air-on-sel); box-shadow: 0 2px 6px rgba(0,0,0,.14); }
+.fab { border-radius: var(--dim-radius-fab); box-shadow: 0 2px 6px rgba(0,0,0,.14); }
 </style>
 </head>
 <body>
@@ -1306,9 +1311,9 @@ const bottomNav = pg => `<nav class="bnav" role="tablist">` + (pg.tabs
   : CCT.map(([k, n, ic]) => `<button class="ni" role="tab" aria-selected="${S.cct === k}" data-go="cct:${k}"><i class="pl">${ICON(ic)}</i>${n}</button>`)).join('') + `</nav>`;
 function drawPage(keepScroll = true) {
   const pg = PAGES[curPage](), el = $('#page'), old = el.querySelector('.body'), top = keepScroll && old ? old.scrollTop : 0;
-  el.innerHTML = `<div class="appbar"><button class="icon-btn" data-go="back" aria-label="Назад">${ICON('back')}</button>` +
+  el.innerHTML = `<div class="appbar">` +
     (pg.sub ? `<div class="ttl2"><div class="t">${pg.title}</div><div class="s">${pg.sub}</div></div>` : `<div class="ttl">${pg.title}</div>`) +
-    (pg.close ? `<button class="icon-btn" data-go="close" aria-label="Закрыть">${ICON('close')}</button>` : '') + `<span class="acts" id="acts">${pg.actions || ''}</span></div>` +
+    `<span class="acts" id="acts">${pg.actions || ''}</span><button class="icon-btn" data-go="${pg.close ? 'close' : 'back'}" aria-label="Закрыть">${ICON('close')}</button></div>` +
     (S.nav !== 'bottom' && pg.mainTabs ? `<div class="tabs main" role="tablist">${pg.mainTabs}</div>` : '') +
     (S.nav !== 'bottom' && pg.tabs ? `<div class="tabs main" role="tablist">${TABS.map(([k, t]) => `<button class="tab" role="tab" aria-selected="${S.tab === k}" data-tab="${k}">${t}</button>`).join('')}</div>` : '') +
     `<div class="body${pg.fab && pg.fab.includes('class="fab"') ? ' fabpad' : ''}">${pg.filter ? `<div class="fchips" role="group">${pg.filter}</div>` : ''}${pg.body}</div>` + (pg.foot ? `<div class="foot" id="foot">${pg.foot()}</div>` : '') + (pg.nav || '') + (S.nav === 'bottom' && (pg.mainTabs || pg.tabs) ? bottomNav(pg) : '') + (pg.fab || '');
