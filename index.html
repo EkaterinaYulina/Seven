@@ -34,7 +34,7 @@
   --dim-panel: 480px;   --dim-top-strip: 32px; --dim-tile: 90px; --dim-gap: 4px;
   --dim-touch-min: 48px; --dim-icon: 24px;
   --dim-gutter: 16px;   --dim-space-sm: 8px; --dim-space-md: 12px; --dim-space-xl: 24px;
-  --dim-radius-card: 12px; --dim-radius-tile: 12px;
+  --dim-radius-field: 4px; --dim-radius-chip: 8px; --dim-radius-card: 12px; --dim-radius-tile: 12px; --dim-radius-fab: 16px; --dim-radius-sheet: 28px; --dim-radius-pill: 100px;
   --dim-bar: 64px;      /* wizard-footer / нижняя панель правки */
 
   --font-value: 20px; --font-name: 14px; --font-secondary: 11px;
@@ -553,19 +553,25 @@ svg.ic.dots { stroke-width: 2.6; }
   font-size: var(--font-name); line-height: var(--lh-name); font-weight: 500; z-index: 5; }
 .snackbar.show { display: flex; }
 .snackbar button { height: var(--dim-touch-min); padding: 0 var(--dim-gutter); font-weight: 500; font-size: var(--font-name); }
-/* ── Страницы в языке стола: тот же мятный фон и те же стеклянные поверхности, что у плиток ── */
-.desk > .page { background: var(--desk-bg); }
+/* ── Страницы: тонированное стекло. Скругления по токенам: карточка 12, чип 8, FAB 16 ── */
+:root, [data-theme="light"] { --page-bg: linear-gradient(135deg, #EEF6E8 0%, #D6EBDA 100%); --glass-card: rgba(247,252,244,.92); --glass-border: rgba(47,125,91,.22); --glass-line: rgba(47,125,91,.16); --glass-head: #2A6B4C; --page-t2: #4A4D42; --page-thumb: var(--core-cream); }
+[data-theme="dark"] { --page-bg: linear-gradient(135deg, #121710 0%, #192820 55%, #1F312A 100%); --glass-card: rgba(26,42,33,.94); --glass-border: rgba(143,211,174,.26); --glass-line: rgba(143,211,174,.18); --glass-head: #8FD3AE; --page-t2: #C4C7B8; --page-thumb: var(--core-graphite); }
+.desk > .page { background: var(--page-bg); --c-text-secondary: var(--page-t2); --ui-on-surface-variant: var(--page-t2); --ui-outline-subtle: var(--glass-line); }
 .page .appbar { height: 48px; border-bottom: 0; }
 .page .appbar .ttl { font-size: 18px; line-height: 24px; font-weight: 500; }
-.page .tabs { border-bottom: 1px solid color-mix(in srgb, var(--ui-on-surface) 10%, transparent); }
-.page .grp, .page .card2 { border: 0; background: color-mix(in srgb, var(--c-tile) calc(var(--tile-glass) * 100%), transparent); }
-.page .gr { border-top-color: color-mix(in srgb, var(--ui-on-surface) 8%, transparent); }
-.page .chip { border: 0; background: color-mix(in srgb, var(--c-tile) calc(var(--tile-glass) * 100%), transparent); }
-.page .chip[aria-pressed="true"] { background: var(--ui-primary-container); }
-.page .foot, .page .bnav { border-top: 0; background: color-mix(in srgb, var(--c-tile) 70%, transparent); }
-[data-theme="dark"] .page .grp, [data-theme="dark"] .page .card2, [data-theme="dark"] .page .chip { background: color-mix(in srgb, var(--core-paper) 11%, transparent); box-shadow: inset 0 0 0 1px var(--core-paper-14); }
-[data-theme="dark"] .page .chip[aria-pressed="true"] { background: var(--ui-primary-container); box-shadow: none; }
-[data-theme="dark"] .page .foot, [data-theme="dark"] .page .bnav { background: color-mix(in srgb, var(--core-paper) 11%, transparent); }
+/* вкладки: сегментная лента, активная — стеклянная плашка; внутренний радиус = 12 − 4 = 8 (radius-chip) */
+.page .tabs { border-bottom: 0; margin: 4px var(--dim-gutter) var(--dim-space-sm); padding: 4px; height: auto; gap: 2px; border-radius: var(--dim-radius-card); background: color-mix(in srgb, var(--ui-on-surface) 6%, transparent); }
+.page .tabs .tab { flex: 1 1 auto; height: 36px; border-radius: var(--dim-radius-chip); border-bottom: 0; margin: 0; padding: 0 4px; font-size: 13px; color: var(--c-text-secondary); }
+.page .tabs .tab::after { display: none; }
+.page .tabs .tab[aria-selected="true"] { background: var(--glass-card); box-shadow: inset 0 0 0 1px var(--glass-border); color: var(--ui-on-surface); font-weight: 600; }
+.page .grp, .page .card2 { border: 0; box-shadow: inset 0 0 0 1px var(--glass-border); background: var(--glass-card); border-radius: var(--dim-radius-card); }
+.page .gh { color: var(--glass-head); }
+.page .gr { border-top-color: var(--glass-line); }
+.page .chip { border: 0; box-shadow: inset 0 0 0 1px var(--glass-border); background: var(--glass-card); border-radius: var(--dim-radius-chip); }
+.page .chip[aria-pressed="true"] { background: var(--ui-primary-container); box-shadow: none; }
+.page .foot, .page .bnav { border-top: 0; background: var(--glass-card); box-shadow: inset 0 1px 0 var(--glass-border); }
+.page .sw .trk::after { background: var(--page-thumb); }
+.fab { border-radius: var(--dim-radius-fab); }
 </style>
 </head>
 <body>
