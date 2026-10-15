@@ -553,6 +553,19 @@ svg.ic.dots { stroke-width: 2.6; }
   font-size: var(--font-name); line-height: var(--lh-name); font-weight: 500; z-index: 5; }
 .snackbar.show { display: flex; }
 .snackbar button { height: var(--dim-touch-min); padding: 0 var(--dim-gutter); font-weight: 500; font-size: var(--font-name); }
+/* ── Страницы в языке стола: тот же мятный фон и те же стеклянные поверхности, что у плиток ── */
+.desk > .page { background: var(--desk-bg); }
+.page .appbar { height: 48px; border-bottom: 0; }
+.page .appbar .ttl { font-size: 18px; line-height: 24px; font-weight: 500; }
+.page .tabs { border-bottom: 1px solid color-mix(in srgb, var(--ui-on-surface) 10%, transparent); }
+.page .grp, .page .card2 { border: 0; background: color-mix(in srgb, var(--c-tile) calc(var(--tile-glass) * 100%), transparent); }
+.page .gr { border-top-color: color-mix(in srgb, var(--ui-on-surface) 8%, transparent); }
+.page .chip { border: 0; background: color-mix(in srgb, var(--c-tile) calc(var(--tile-glass) * 100%), transparent); }
+.page .chip[aria-pressed="true"] { background: var(--ui-primary-container); }
+.page .foot, .page .bnav { border-top: 0; background: color-mix(in srgb, var(--c-tile) 70%, transparent); }
+[data-theme="dark"] .page .grp, [data-theme="dark"] .page .card2, [data-theme="dark"] .page .chip { background: color-mix(in srgb, var(--core-paper) 11%, transparent); box-shadow: inset 0 0 0 1px var(--core-paper-14); }
+[data-theme="dark"] .page .chip[aria-pressed="true"] { background: var(--ui-primary-container); box-shadow: none; }
+[data-theme="dark"] .page .foot, [data-theme="dark"] .page .bnav { background: color-mix(in srgb, var(--core-paper) 11%, transparent); }
 </style>
 </head>
 <body>
