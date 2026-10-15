@@ -131,11 +131,7 @@ svg.ic.dots { stroke-width: 2.6; }
 .strip { left: 0; right: 0; top: 0; height: var(--dim-top-strip); display: flex; align-items: center; }
 .strip .hit { width: var(--dim-touch-min); height: 100%; display: flex; align-items: center; justify-content: center; }
 .strip .room { margin-left: var(--dim-gutter); font-size: var(--font-name); line-height: var(--lh-name); font-weight: 500; color: var(--ui-on-surface); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.strip .spacer { flex: 1; }
-/* значки полосы — на одной линии с краем плиток (зазор сетки), слева и справа одинаково; зона касания остаётся 48 */
-.strip > .hit:first-child { margin-left: -11px; }
-.strip > .hit:last-child { margin-right: -11px; }
-.strip .time { margin-right: var(--dim-space-sm); font-size: var(--font-name); line-height: var(--lh-name); color: var(--ui-on-surface); }
+.strip .spacer { flex: 1; }.strip .time { margin-right: var(--dim-space-sm); font-size: var(--font-name); line-height: var(--lh-name); color: var(--ui-on-surface); }
 .dots-pager { position: absolute; left: 0; right: 0; bottom: 16px; height: 6px; display: flex; justify-content: center; align-items: center; gap: 6px; z-index: 2; pointer-events: none; }
 .dots-pager i { width: 6px; height: 6px; border-radius: 3px; background: var(--ui-on-surface); opacity: .3; transition: width .22s ease, opacity .22s ease; }
 .dots-pager i.on { width: 20px; opacity: 1; }
@@ -590,6 +586,19 @@ svg.ic.dots { stroke-width: 2.6; }
 .page .chip[aria-pressed="true"] { background: var(--ui-primary-container); color: var(--ui-on-primary-container); box-shadow: none; }
 .page .foot, .page .bnav { border-top: 0; background: var(--glass-card); box-shadow: inset 0 1px 0 var(--glass-border); }
 .page .sw .trk::after { background: var(--page-thumb); }
+/* ── Единый стиль всего приложения: те же фон --desk-bg, стеклянные карточки и цвета текста, что на страницах.
+      Относится к меню, приложениям, листу и форме плитки, шторке «Панель» и диалогам ── */
+.desk > .drawer, .desk > .launcher, .desk > .sheet, .desk > .form, .desk > .shade {
+  background: var(--desk-bg); --c-text-primary: var(--page-text); --ui-on-surface: var(--page-text);
+  --c-text-secondary: var(--page-t2); --ui-on-surface-variant: var(--page-t2); --ui-outline-subtle: var(--glass-line); color: var(--page-text); }
+.launcher .search { border: 0; box-shadow: inset 0 0 0 1px var(--glass-border); background: var(--glass-card); }
+.launcher .search:focus-within { border: 0; padding: 0 var(--dim-space-md); box-shadow: inset 0 0 0 2px var(--ui-primary-container); }
+.sheet .act, .sheet .sizes .sz, .shade .q, .form .vrow, .pick, .jrow { background: var(--glass-card); box-shadow: inset 0 0 0 1px var(--glass-border); }
+.sheet .sizes .sz[aria-pressed="true"] { box-shadow: none; }
+.form .pv .tile { background: var(--glass-card); box-shadow: inset 0 0 0 1px var(--glass-border); }
+.form .appbar { border-bottom: 0; }
+.btn.secondary, .form .szb { background: var(--glass-card); border-color: var(--glass-border); }
+.dlg .box { background: var(--desk-bg); box-shadow: inset 0 0 0 1px var(--glass-border), 0 6px 24px #0004; }
 .fab { border-radius: var(--dim-radius-fab); box-shadow: 0 2px 6px rgba(0,0,0,.14); }
 </style>
 </head>
