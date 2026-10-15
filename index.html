@@ -576,10 +576,9 @@ svg.ic.dots { stroke-width: 2.6; }
 .page .grp, .page .card2 { border: 0; box-shadow: inset 0 0 0 1px var(--glass-border); background: var(--glass-card); border-radius: var(--dim-radius-card); }
 .page .gh { color: var(--glass-head); padding-left: calc(var(--dim-gutter) + 8px); }
 .page .gr { border-top-color: var(--glass-line); padding-left: calc(var(--dim-gutter) + 6px); }
-/* выбор одной опции (радио) — отдельные карточки, отметка слева; выбранная в рамке 2 dp */
-.page .grp:has(> .gr[role="radio"]) { background: none; box-shadow: none; overflow: visible; display: flex; flex-direction: column; gap: var(--dim-space-sm); }
-.page .grp > .gr[role="radio"] { flex-direction: row-reverse; border-top: 0; border-radius: var(--dim-radius-card); background: var(--glass-card); box-shadow: inset 0 0 0 1px var(--glass-border); padding-left: var(--dim-gutter); }
-.page .grp > .gr[role="radio"][aria-checked="true"] { box-shadow: inset 0 0 0 2px var(--ui-primary-container); background: color-mix(in srgb, var(--ui-primary-container) 12%, transparent); }
+/* выбор одной опции (радио) — строки одной группы с разделителем, отметка слева; выбранная с лёгкой зелёной заливкой */
+.page .grp > .gr[role="radio"] { flex-direction: row-reverse; padding-left: var(--dim-gutter); }
+.page .grp > .gr[role="radio"][aria-checked="true"] { background: color-mix(in srgb, var(--ui-primary-container) 12%, transparent); }
 .page .gr[role="radio"] .mk { border-color: var(--ui-primary-container); }
 .page .gr[aria-checked="true"] .mk::after { background: var(--ui-primary-container); }
 .page .chip { border: 0; box-shadow: inset 0 0 0 1px var(--glass-border); background: var(--glass-card); border-radius: var(--dim-radius-chip); }
