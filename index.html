@@ -635,6 +635,20 @@ svg.ic.dots { stroke-width: 2.6; }
 /* заголовки разделов формы — как заголовки групп на страницах */
 .form .sec-h { font-size: var(--font-name); line-height: 20px; font-weight: 500; color: var(--glass-head); padding-left: calc(var(--dim-gutter) + 8px); padding-right: calc(var(--dim-gutter) + 8px); }
 .fab { border-radius: var(--dim-radius-fab); box-shadow: 0 2px 6px rgba(0,0,0,.14); }
+
+/* ── Страницы в стиле листа плитки: фон --sheet-bg, карточки, строки и поля — плоские тональные (6 % текста), без стеклянного контура ── */
+.desk > .page, .desk > .form {
+  background: var(--sheet-bg);
+  --glass-card: color-mix(in srgb, var(--page-text) 6%, transparent);
+  --glass-border: transparent;
+}
+.desk > .page .foot, .desk > .page .bnav { background: var(--sheet-bg); box-shadow: inset 0 1px 0 var(--glass-line); }
+.desk > .page .chip[aria-pressed="true"] { box-shadow: none; }
+.desk > .page .tf span { background: transparent; }
+.desk > .page .gr { border-top-color: color-mix(in srgb, var(--page-text) 8%, transparent); }
+.desk > .page .dd, .desk > .page .fld, .desk > .page .tf input, .desk > .page .search2 { box-shadow: none; }
+.desk > .page .tf input:focus, .desk > .page .fld:focus-within, .desk > .page .search2:focus-within { box-shadow: inset 0 0 0 2px var(--ui-primary); }
+.desk > .page .card2[style*="background:none"] { background: none !important; box-shadow: inset 0 0 0 1px var(--glass-line); }
 </style>
 </head>
 <body>
