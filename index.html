@@ -620,6 +620,7 @@ svg.ic.dots { stroke-width: 2.6; }
 .page .sec .frow .tf { margin: 0; }
 .page .sec .dd { width: calc(100% + 16px); margin-left: -8px; }
 .page .sec .grp { margin-left: -8px; margin-right: -8px; }   /* карточка списка на одной линии с полями ввода */
+.page .sec .grp + .grp { margin-top: var(--dim-space-md); }   /* карточки подряд (устройства в мастере) не слипаются */
 .page .fil { padding: 0 calc(var(--dim-gutter) + 8px); }
 /* единый заголовок экрана: 22/28, medium, текст на линии 24. Подзаголовок — 14/18 вторичным цветом */
 .form .appbar .ttl, .drawer .head .t, .sheet .h .t { font-size: 22px; line-height: 28px; font-weight: 500; }
