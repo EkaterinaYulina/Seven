@@ -1316,16 +1316,16 @@ const foot = (...b) => b.join('');
 const nextBtn = (go, ok = true) => `<button class="btn primary" data-go="${go}" ${ok ? '' : 'disabled'}>Далее</button>`;
 const DEVS = [['a', 'NSPanel Pro', 'NsPro-1001e0aed1', 13], ['b', '_TZE200_znlqjmih TS0601', 'NsPro_0x804b50fffee0fc86', 15]];
 Object.assign(PAGES, {
-  'add-controller': () => ({ title: 'Добавление оборудования', ctx: 'Контроллер', body:
+  'add-controller': () => ({ title: 'Добавление оборудования', body:
     `<div class="sec"><h3 class="sh sm">Найдено в сети</h3>` + grp('', radio('ctrl', 'wb', S.ctrl, 'wirenboard-AEYCHFJC', '192.168.23.141 · MAC …02:cc · добавлен') + radio('ctrl', 'manual', S.ctrl, 'Указать вручную')) +
     (S.ctrl === 'manual' ? `<div class="frow">${tf('addr', 'Адрес брокера (имя или IP)', S.addr, 'style="flex:1"')}${tf('port', 'Порт', S.port, 'style="width:112px"')}</div>` : '') + '</div>',
     foot: () => nextBtn(S.ctrl === 'manual' ? 'ph-mqtt-tail' : 'add-devices', S.ctrl === 'wb' || (S.ctrl === 'manual' && S.addr.trim() !== '')) }),
-  'add-ha': () => ({ title: 'Добавить Home Assistant', ctx: 'Сервер', body:
+  'add-ha': () => ({ title: 'Добавить Home Assistant', body:
     `<div class="sec"><h3 class="sh sm">Найдено в сети</h3><p class="sd">Серверы Home Assistant в сети не найдены. Укажите адрес вручную.</p>` + grp('', radio('ha', 'manual', 'manual', 'Указать вручную')) +
     `<div class="frow">${tf('haAddr', 'Адрес (имя, IP или ссылка)', S.haAddr, 'style="flex:1"')}</div>` +
     `<div class="frow">${tf('haPort', 'Порт', S.haPort, 'style="width:112px"')}<div class="srow" style="flex:1;align-items:center"><div class="tx" style="font-size:var(--font-name);line-height:20px">Защищённое соединение (HTTPS)</div>${sw('https', S.https)}</div></div></div>`,
     foot: () => nextBtn('add-devices', S.haAddr.trim() !== '') }),
-  'add-devices': () => ({ title: 'Добавление оборудования', ctx: 'Устройства', close: true, body:
+  'add-devices': () => ({ title: 'Добавление оборудования', close: true, body:
     `<div class="sec"><p class="sd" style="color:var(--ui-on-surface)">Можно не выбирать устройства: соединение сохранится, устройства добавите позже</p><h3 class="sh sm" style="margin-top:var(--dim-space-md)">Home Assistant · Home Assistant (MQTT Discovery)</h3>` +
     DEVS.map(([k, n, id, c]) => grp('', crow(k, S.dev[k], n, `${id}<br>часть добавлена<br>Новых свойств: ${c}`, 'data-chk2') + `<button class="gr act" data-go="note:Откроется список свойств устройства."><span class="tx">Свойства</span></button>`)).join('') + '</div>',
     foot: () => nextBtn('note:Мастер завершён: оборудование добавится в «Центр управления → Подключения». В прототип этот экран не входит.') }),
