@@ -321,7 +321,7 @@ svg.ic.dots { stroke-width: 2.6; }
 .page .tab { flex: none; padding: 0 var(--dim-gutter); height: 48px; font-size: var(--font-name); color: var(--c-text-secondary); position: relative; white-space: nowrap; }
 .page .tab[aria-selected="true"] { color: var(--ui-on-surface); font-weight: 600; }
 .page .tab[aria-selected="true"]::after { content: ""; position: absolute; left: var(--dim-space-sm); right: var(--dim-space-sm); bottom: 0; height: 2px; background: var(--ui-primary); }
-.page .tabs.main .tab { flex: 1 0 auto; padding: 0 var(--dim-space-sm); }                 /* разделы страницы: поровну на всю ширину, как в Настройках и Центре управления */
+.page .tabs.main .tab { flex: 1 0 auto; padding: 0 var(--dim-space-sm); }                 /* разделы страницы: поровну на всю ширину, как в Настройках и Моём доме */
 .page .fchips { display: flex; gap: var(--dim-space-sm); padding: var(--dim-space-md) var(--dim-gutter) var(--dim-space-sm); overflow-x: auto; scrollbar-width: none; }  /* фильтр внутри раздела: чипы, не вкладки */
 .page .fchips::-webkit-scrollbar { display: none; }
 .page .chip { flex: none; height: 32px; padding: 0 14px; border-radius: 16px; border: 1px solid var(--ui-outline); font-size: 13px; line-height: 16px; white-space: nowrap; }
@@ -336,7 +336,7 @@ svg.ic.dots { stroke-width: 2.6; }
 .page .srow { display: flex; align-items: flex-start; gap: var(--dim-gutter); }
 .page .srow > .tx { flex: 1; min-width: 0; }
 .page .srow .sd { margin-bottom: 0; }
-/* Группа строк: единый блок Настроек и Центра управления. Заголовок группы, строки внутри одного контейнера, действие — последняя строка */
+/* Группа строк: единый блок Настроек и Моего дома. Заголовок группы, строки внутри одного контейнера, действие — последняя строка */
 .page .gh { padding: var(--dim-gutter) var(--dim-gutter) var(--dim-space-sm); font-size: var(--font-name); line-height: 20px; font-weight: 500; color: var(--c-text-secondary); }
 .page .gd { margin: -4px var(--dim-gutter) var(--dim-space-sm); font-size: var(--font-name); line-height: 20px; color: var(--c-text-secondary); }
 .page .grp { margin: 0 var(--dim-gutter); border: 1px solid var(--ui-outline-subtle); border-radius: var(--dim-radius-card); background: color-mix(in srgb, var(--ui-on-surface) 4%, transparent); overflow: hidden; }
@@ -439,7 +439,7 @@ svg.ic.dots { stroke-width: 2.6; }
 .dev .btn { margin-top: 4px; }
 
 
-/* ── Центр управления: FAB, карточки (разделы переключаются вкладками сверху, как в Настройках) ── */
+/* ── Мой дом: FAB, карточки (разделы переключаются вкладками сверху, как в Настройках) ── */
 .fab { position: absolute; right: var(--dim-gutter); bottom: var(--dim-gutter); z-index: 3; height: 56px; padding: 0 20px; border-radius: 12px; display: flex; align-items: center; gap: var(--dim-space-sm);
   background: var(--ui-primary-container); color: var(--ui-on-primary-container); font-size: var(--font-name); font-weight: 500; box-shadow: 0 2px 8px #0003; }
 .fab .ic { width: 24px; height: 24px; }
@@ -778,7 +778,7 @@ input::placeholder { color: var(--a11y-ph); opacity: 1; }
         <div class="head"><div class="t">Seven assistant</div><div class="s">Комната панели: Гостиная</div></div>
         <button class="item" aria-current="true" data-go="room"><svg class="ic"><use href="#i-pin"/></svg>Гостиная</button>
         <div class="gap"></div>
-        <button class="item" data-go="cc"><svg class="ic"><use href="#i-cc"/></svg>Центр управления</button>
+        <button class="item" data-go="cc"><svg class="ic"><use href="#i-cc"/></svg>Мой дом</button>
         <button class="item" data-go="apps"><svg class="ic"><use href="#i-apps"/></svg>Все приложения</button>
         <button class="item" data-go="settings"><svg class="ic"><use href="#i-gear"/></svg>Настройки</button>
         <div class="sep" role="separator"></div>
@@ -1167,7 +1167,7 @@ $('#drawer').addEventListener('click', e => {
   if (go === 'cc') return goPage('cc-loc', false);
   if (go === 'shade') return setScreen('shade');
   setScreen('desk');
-  note({ shade: 'Панель: шторка с яркостью и громкостью. В этот прототип не входит.', settings: 'Откроются «Настройки». В этот прототип не входят.', cc: 'Откроется «Центр управления». В этот прототип не входит.' }[go]);
+  note({ shade: 'Панель: шторка с яркостью и громкостью. В этот прототип не входит.', settings: 'Откроются «Настройки». В этот прототип не входят.', cc: 'Откроется «Мой дом». В этот прототип не входит.' }[go]);
 });
 /* свайп от левого края открывает меню */
 let edgeX = null;
@@ -1280,7 +1280,7 @@ const PAGES = {
       grp('Как слушать', rrow('listen', 'always', S.listen, 'Всегда (по умолчанию)', 'Ассистент выполняет любую распознанную фразу') +
         rrow('listen', 'word', S.listen, 'По слову «Севен»', 'Ассистент выполняет только фразы со словом «Севен», например «Севен, включи свет»')),
     device: () => grp('Язык', rrow('lang', 'ru', S.lang, 'Русский') + rrow('lang', 'en', S.lang, 'English') + rrow('lang', 'dev', S.lang, 'Как в системе: English'), 'Язык меню и подсказок. Голосовые команды ассистент понимает только по-русски.') +
-      grp('Комната панели', ROOMS.map(([v, t]) => rrow('room', v, S.room, t)).join('') + nrow('Управление комнатами', '', 'note:Управление комнатами — это экран «Центр управления → Локации». В этот прототип не входит.'), 'Если в команде нет комнаты, например «включи свет», ассистент управляет этой комнатой') +
+      grp('Комната панели', ROOMS.map(([v, t]) => rrow('room', v, S.room, t)).join('') + nrow('Управление комнатами', '', 'note:Управление комнатами — это экран «Мой дом → Локации». В этот прототип не входит.'), 'Если в команде нет комнаты, например «включи свет», ассистент управляет этой комнатой') +
       grp('Обои экранов', nrow('Настроить обои', '', 'wallpaper'), 'Фон, затемнение и прозрачность плиток') +
       grp('Экран и сон', nrow('Открыть настройки экрана', '', 'display'), 'Затемнение и погашение экрана, яркость по освещённости, ночной режим') +
       grp('Лаунчер', nrow('Выбрать домашнее приложение', '', 'note:Откроется системный выбор домашнего приложения.'), 'Сейчас домашний экран — «NSPanelPro». Seven запускается только из списка приложений. Чтобы сделать Seven домашним, нажмите кнопку, выберите «Seven assistant» и «Всегда». Если система не спросит, откройте системные настройки → «Приложения по умолчанию» → «Домашнее приложение».'),
@@ -1337,21 +1337,21 @@ Object.assign(PAGES, {
   'add-devices': () => ({ title: 'Добавление оборудования', close: true, body:
     `<div class="sec"><p class="sd" style="color:var(--ui-on-surface)">Можно не выбирать устройства: соединение сохранится, устройства добавите позже</p><h3 class="sh sm" style="margin-top:var(--dim-space-md)">Home Assistant · Home Assistant (MQTT Discovery)</h3>` +
     DEVS.map(([k, n, id, c]) => grp('', crow(k, S.dev[k], n, `${id}<br>часть добавлена<br>Новых свойств: ${c}`, 'data-chk2') + `<button class="gr act" data-go="note:Откроется список свойств устройства."><span class="tx">Свойства</span></button>`)).join('') + '</div>',
-    foot: () => nextBtn('note:Мастер завершён: оборудование добавится в «Центр управления → Подключения». В прототип этот экран не входит.') }),
+    foot: () => nextBtn('note:Мастер завершён: оборудование добавится в «Мой дом → Подключения». В прототип этот экран не входит.') }),
   w1: () => ({ title: 'Мастер настройки', body: stepBar(1, 'Приветствие') +
     `<div class="sec"><h3 class="sh">Добро пожаловать в «Севен»</h3><p class="sd">Настроим приложение за несколько шагов. Любой шаг можно пропустить; пока вы не нажмёте «Готово» на последнем шаге, ничего не сохраняется.</p>` +
     `<h3 class="sh sm" style="margin-top:var(--dim-gutter)">Комната панели</h3><p class="sd">Команды без названия комнаты («включи свет») относятся к комнате, где висит панель. Выберите её или создайте.</p>` +
     `<h3 class="sh sm" style="margin-top:var(--dim-space-sm)">Ваши комнаты</h3>${grp('', radio('room', 'living', S.room, 'Гостиная'))}<button class="btn secondary" style="margin-top:var(--dim-space-sm)" data-go="note:Откроется диалог «Комната».">Создать комнату</button></div>`,
     foot: () => foot(`<button class="btn text" data-go="w2">Пропустить</button>`, nextBtn('w2')) }),
   w2: () => ({ title: 'Мастер настройки', close: true, body: stepBar(2, 'Контроллеры') +
-    `<div class="sec"><p class="sd" style="color:var(--ui-on-surface)">Добавьте контроллер, найденный в сети (например, Wirenboard), или пропустите шаг: позже его можно добавить в Центре управления. Контроллер сохраняется сразу, не дожидаясь «Готово».</p>` +
+    `<div class="sec"><p class="sd" style="color:var(--ui-on-surface)">Добавьте контроллер, найденный в сети (например, Wirenboard), или пропустите шаг: позже его можно добавить в «Моём доме». Контроллер сохраняется сразу, не дожидаясь «Готово».</p>` +
     `<h3 class="sh sm" style="margin-top:var(--dim-space-md)">Контроллеры в приложении</h3></div>` +
     `<div class="jrow"><div class="ph">wirenboard-AEYCHFJC</div><div class="dt" style="color:var(--ui-on-surface)">Wirenboard</div></div><div class="jrow"><div class="ph">Home Assistant</div><div class="dt" style="color:var(--ui-on-surface)">Home Assistant (MQTT Discovery)</div></div>` +
     `<div class="sec" style="border:0"><button class="btn secondary wide" data-go="add-controller">Добавить контроллер</button></div>`,
     foot: () => foot(`<button class="btn text" data-go="w3">Пропустить</button>`, nextBtn('w3')) }),
 });
 
-/* ───────── Центр управления ───────── */
+/* ───────── Мой дом ───────── */
 Object.assign(S, { nav: 'tabs', empty: false, cct: 'loc', roomOpen: true, fab: false, wTab: 'scen', devTab: 'all',
   conns: [{ n: 'wirenboard-AEYCHFJC', t: 'Wirenboard', a: '192.168.23.141:1883', on: true }, { n: 'Home Assistant', t: 'Home Assistant (MQTT Discovery)', a: '192.168.23.10:1883', on: true }],
   iName: '', iAddr: '', iToken: '', bName: '', bAddr: '', bPort: '1883', bUser: '', bPass: '' });
@@ -1387,7 +1387,7 @@ const ccPage = () => {
       return Object.entries(by).map(([h, ds]) => grp(h, ds.map(d => grow(d[1], '', `<span class="go">${ICON('chev')}</span>`, { attrs: `data-go="devedit:${d[1]}"`, c: d[2] })).join(''))).join(''); },
     wid: () => S.steps.length && S.wTab === 'scen' && !S.empty ? '' : emptyState('scen'),
   };
-  return { title: 'Центр управления', mainTabs: CCT.map(([k, n]) => `<button class="tab" role="tab" aria-selected="${S.cct === k}" data-go="cct:${k}">${n}</button>`).join(''), filter: S.cct === 'dev' && !S.empty ? [['all', 'Все'], ['wb', 'Wirenboard'], ['ha', 'Home Assistant (MQTT Discovery)']].map(([k, n]) => `<button class="chip" aria-pressed="${S.devTab === k}" data-go="dtab:${k}">${n}</button>`).join('') :
+  return { title: 'Мой дом', mainTabs: CCT.map(([k, n]) => `<button class="tab" role="tab" aria-selected="${S.cct === k}" data-go="cct:${k}">${n}</button>`).join(''), filter: S.cct === 'dev' && !S.empty ? [['all', 'Все'], ['wb', 'Wirenboard'], ['ha', 'Home Assistant (MQTT Discovery)']].map(([k, n]) => `<button class="chip" aria-pressed="${S.devTab === k}" data-go="dtab:${k}">${n}</button>`).join('') :
       S.cct === 'wid' ? [['wid', 'Виджеты'], ['scen', 'Сценарии']].map(([k, n]) => `<button class="chip" aria-pressed="${S.wTab === k}" data-go="wtab:${k}">${n}</button>`).join('') : '',
     body: S.cct === 'wid' && S.wTab === 'wid' ? emptyState('wid') : bodies[S.cct](),
     fab: S.cct === 'loc' ? `<button class="fab" data-go="dlg:open">${ICON('plus')}Создать комнату</button>` : S.cct === 'conn' ? (S.fab ? `<div class="scrim2" data-go="fab"></div><div class="speed"><button data-go="cc-integ">Home Assistant</button><button data-go="cc-broker">Брокер MQTT</button></div>` : '') + extFab('Добавить', 'plus', true) : S.cct === 'dev' ? fabGo('Добавить', 'note:Откроется добавление устройства.') : S.cct === 'wid' && S.wTab === 'scen' ? fabGo('Добавить сценарий', 'cc-scen') : '' };
@@ -1628,7 +1628,7 @@ const GROUPS = [
   { label: 'Мастера', cls: 'grid3', get: () => state.screen === 'page' && curPage !== 'settings' ? (curPage === 'add-controller' && S.ctrl === 'manual' ? 'add-controller-m' : curPage) : '',
     set: v => { if (v === 'add-controller-m') { S.ctrl = 'manual'; goPage('add-controller', false); } else { if (v === 'add-controller') S.ctrl = ''; goPage(v, false); } },
     opts: [['add-controller', 'Контроллер'], ['add-controller-m', 'Ручной ввод'], ['add-ha', 'Home Assistant'], ['add-devices', 'Устройства'], ['w1', 'Первый запуск 1'], ['w2', 'Первый запуск 2']] },
-  { label: 'Центр управления', cls: 'grid3', get: () => state.screen === 'page' ? (curPage === 'cc' ? S.cct + (S.cct === 'conn' && S.fab ? '-fab' : '') : curPage) : '',
+  { label: 'Мой дом', cls: 'grid3', get: () => state.screen === 'page' ? (curPage === 'cc' ? S.cct + (S.cct === 'conn' && S.fab ? '-fab' : '') : curPage) : '',
     set: v => { if (v === 'dlg') { S.cct = 'loc'; S.dlg = true; S.rName = 'Гостиная'; goPage('cc', false); return; } S.dlg = false; if (v === 'cc-scen' ) S.steps = []; if (v === 'conn-fab') { S.cct = 'conn'; S.fab = true; goPage('cc', false); } else { S.fab = false; goPage(['loc','conn','dev','wid'].includes(v) ? 'cc-' + v : v, false); } },
     opts: [['loc', 'Локации'], ['conn', 'Подключения'], ['conn-fab', 'Подключения + меню'], ['dev', 'Список устройств'], ['wid', 'Виджеты'], ['cc-integ', 'Интеграция'], ['cc-broker', 'Брокер'], ['dlg', 'Диалог «Комната»'], ['cc-vdevs', 'Виртуальные устройства'], ['cc-vdev', 'Виртуальное устройство'], ['cc-devedit', 'Правка устройства'], ['cc-scen', 'Сценарий: шаги'], ['cc-pick', 'Сценарий: что включить']] },
   { label: 'Заглушки (нет скриншотов)', cls: 'grid3', get: () => state.screen === 'page' && (curPage in PH) ? curPage : '', set: v => { if (v === 'ph-se-action') S.steps = []; goPage(v, false); },
