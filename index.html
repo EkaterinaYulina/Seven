@@ -722,6 +722,7 @@ input::placeholder { color: var(--a11y-ph); opacity: 1; }
   <symbol id="i-more" viewBox="0 0 24 24"><path d="M12 5.5h.01M12 12h.01M12 18.5h.01"/></symbol>
   <symbol id="i-thermometer" viewBox="0 0 24 24"><path d="M14 14.76V4a2 2 0 0 0-4 0v10.76a4 4 0 1 0 4 0z"/></symbol>
   <symbol id="i-signal" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.48M7.76 16.24a6 6 0 0 1 0-8.48M19.07 4.93a10 10 0 0 1 0 14.14M4.93 19.07a10 10 0 0 1 0-14.14"/></symbol>
+  <symbol id="i-devices" viewBox="0 0 24 24"><path d="M13 9a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-6a1 1 0 0 1-1-1V9z"/><path d="M18 8V5a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h9"/><path d="M16 9h2"/></symbol>
   <symbol id="i-group" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"/><circle cx="5.5" cy="9.5" r="2"/><circle cx="18.5" cy="9.5" r="2"/><path d="M6.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5M2 17c0-2 1.5-3.5 3.5-3.5M22 17c0-2-1.5-3.5-3.5-3.5"/></symbol>
   <symbol id="i-list" viewBox="0 0 24 24"><path d="M3.5 6.5l1.8 1.8L9 4.5M3.5 15.5l1.8 1.8L9 13.5M12.5 7h8M12.5 17h8"/></symbol>
   <symbol id="i-vol" viewBox="0 0 24 24"><path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5zM15.5 9a4 4 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11"/></symbol>
@@ -1313,7 +1314,7 @@ Object.assign(PAGES, {
     foot: () => nextBtn('add-devices', S.haAddr.trim() !== '') }),
   'add-devices': () => ({ title: 'Добавление оборудования', ctx: 'Устройства', close: true, body:
     `<div class="sec"><p class="sd" style="color:var(--ui-on-surface)">Можно не выбирать устройства: соединение сохранится, устройства добавите позже</p><h3 class="sh sm" style="margin-top:var(--dim-space-md)">Home Assistant · Home Assistant (MQTT Discovery)</h3>` +
-    DEVS.map(([k, n, id, c]) => grp('', crow(k, S.dev[k], n, `${id}<br>часть добавлена<br>Новых свойств: ${c}`, 'data-chk2')) + `<button class="btn text" data-go="note:Откроется список свойств устройства.">Свойства</button>`).join('') + '</div>',
+    DEVS.map(([k, n, id, c]) => grp('', crow(k, S.dev[k], n, `${id}<br>часть добавлена<br>Новых свойств: ${c}`, 'data-chk2') + `<button class="gr act" data-go="note:Откроется список свойств устройства."><span class="tx">Свойства</span></button>`)).join('') + '</div>',
     foot: () => nextBtn('note:Мастер завершён: оборудование добавится в «Центр управления → Подключения». В прототип этот экран не входит.') }),
   w1: () => ({ title: 'Мастер настройки', body: stepBar(1, 'Приветствие') +
     `<div class="sec"><h3 class="sh">Добро пожаловать в «Севен»</h3><p class="sd">Настроим приложение за несколько шагов. Любой шаг можно пропустить; пока вы не нажмёте «Готово» на последнем шаге, ничего не сохраняется.</p>` +
@@ -1358,7 +1359,7 @@ const ccPage = () => {
       `<div class="chiprow" style="padding-top:var(--dim-space-sm)"><button class="btn secondary" data-go="note:Виртуальные устройства: список в прототип не входит.">Виртуальные устройства</button></div>`,
     loc: () => S.empty || !S.rooms.length ? emptyState('loc') : S.rooms.map((r, i) => grp(r.n,
       grow(r.alt ? 'Другие названия: ' + r.alt : 'Других названий нет', `Виртуальных устройств: ${r.v} · Свойств: ${r.p}`, `<div class="mv"><button data-go="mv:${i}:-1" ${i === 0 ? 'disabled' : ''} aria-label="Выше" style="transform:rotate(180deg)">${ICON('chev')}</button><button data-go="mv:${i}:1" ${i === S.rooms.length - 1 ? 'disabled' : ''} aria-label="Ниже">${ICON('chev')}</button></div>`) +
-      arow('Виртуальные устройства', 'cc-vdevs', 'group'))).join(''),
+      arow('Виртуальные устройства', 'cc-vdevs', 'devices'))).join(''),
     conn: () => S.empty || !S.conns.length ? emptyState('conn') : S.conns.map((c, i) => grp(c.n, grow(c.t, '', sw('cn' + i, c.on), { c: c.a }) + arow('Добавить устройства', 'add-controller'))).join(''),
     dev: () => { if (S.empty) return emptyState('dev'); const by = {}; CCDEV.filter(d => S.devTab === 'all' || d[3] === S.devTab).forEach(d => (by[d[0].split(' / ')[0]] = by[d[0].split(' / ')[0]] || []).push(d));
       return Object.entries(by).map(([h, ds]) => grp(h, ds.map(d => grow(d[1], '', `<span class="go">${ICON('chev')}</span>`, { attrs: `data-go="devedit:${d[1]}"`, c: d[2] })).join(''))).join(''); },
