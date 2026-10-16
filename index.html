@@ -648,6 +648,12 @@ svg.ic.dots { stroke-width: 2.6; }
 .desk > .page .dd, .desk > .page .fld, .desk > .page .tf input, .desk > .page .search2 { box-shadow: none; }
 .desk > .page .tf input:focus, .desk > .page .fld:focus-within, .desk > .page .search2:focus-within { box-shadow: inset 0 0 0 2px var(--ui-primary); }
 .desk > .page .card2[style*="background:none"] { background: none !important; box-shadow: inset 0 0 0 1px var(--glass-line); }
+
+/* ── Тёмная тема: поверхности того же мятного оттенка (≈140°), что и фон стола, и темнее. Раньше считались от оливковых graphite/ink и выглядели мутно ── */
+[data-theme="dark"] { --sheet-bg: #1C2721; }
+[data-theme="dark"] .desk > .page, [data-theme="dark"] .desk > .form, [data-theme="dark"] .desk > .launcher { --glass-card: color-mix(in srgb, var(--core-paper) 7%, transparent); }
+[data-theme="dark"] .tile { background: color-mix(in srgb, #CDE7D3 10%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, #CDE7D3 16%, transparent); }
+[data-theme="dark"] .desk > .page .gr, [data-theme="dark"] .desk > .page .foot { border-top-color: color-mix(in srgb, var(--core-paper) 9%, transparent); }
 </style>
 </head>
 <body>
