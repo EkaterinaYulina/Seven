@@ -232,6 +232,7 @@ svg.ic.dots { stroke-width: 2.6; }
 .drawer .item[aria-current="true"] { background: color-mix(in srgb, var(--ui-primary-container) 16%, transparent); font-weight: 500; }
 .drawer .item:active { background: color-mix(in srgb, var(--ui-on-surface) 8%, transparent); }
 .drawer .gap { flex: 1; }
+.drawer .sep { height: 1px; margin: var(--dim-space-xs, 4px) var(--dim-space-xl) var(--dim-space-xs) calc(var(--dim-space-sm) + var(--dim-space-md)); background: color-mix(in srgb, var(--ui-on-surface) 12%, transparent); flex: none; }
 .desk > .launcher { inset: 0; z-index: 7; background: var(--ui-surface-card); color: var(--ui-on-surface); display: none; flex-direction: column; }
 .desk[data-screen="apps"] > .launcher, .desk[data-screen="kbd"] > .launcher { display: flex; }
 .launcher .search { margin: 0 var(--dim-space-md); height: 48px; flex: none; border-radius: var(--dim-radius-card); border: 1px solid var(--ui-outline);
@@ -771,11 +772,12 @@ input::placeholder { color: var(--a11y-ph); opacity: 1; }
         <div class="head"><div class="t">Seven assistant</div><div class="s">Комната панели: Гостиная</div></div>
         <button class="item" aria-current="true" data-go="room"><svg class="ic"><use href="#i-pin"/></svg>Гостиная</button>
         <div class="gap"></div>
+        <button class="item" data-go="cc"><svg class="ic"><use href="#i-cc"/></svg>Центр управления</button>
         <button class="item" data-go="apps"><svg class="ic"><use href="#i-apps"/></svg>Все приложения</button>
+        <button class="item" data-go="settings"><svg class="ic"><use href="#i-gear"/></svg>Настройки</button>
+        <div class="sep" role="separator"></div>
         <button class="item" data-go="shade"><svg class="ic"><use href="#i-sliders"/></svg>Панель</button>
         <button class="item" data-go="edit"><svg class="ic"><use href="#i-pencil"/></svg>Править экраны</button>
-        <button class="item" data-go="settings"><svg class="ic"><use href="#i-gear"/></svg>Настройки</button>
-        <button class="item" data-go="cc"><svg class="ic"><use href="#i-cc"/></svg>Центр управления</button>
       </nav>
 
       <!-- Все приложения -->
