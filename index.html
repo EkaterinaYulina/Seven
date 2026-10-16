@@ -690,6 +690,15 @@ input::placeholder { color: var(--a11y-ph); opacity: 1; }
 .vrow .ib, .form .vrow .ib { width: 48px; height: 48px; }
 .form .szb { height: 48px; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
+/* ── Заглушки: экран есть в карте, но не нарисован (нет скриншота) ── */
+.phbox { margin: var(--dim-gutter) calc(var(--dim-gutter) + 8px); padding: var(--dim-gutter); border-radius: var(--dim-radius-card); border: 2px dashed var(--a11y-line); }
+.phbox h3 { margin: var(--dim-space-sm) 0 4px; font-size: 20px; line-height: 24px; font-weight: 500; }
+.phbox p { font-size: var(--font-name); line-height: 20px; margin: 0 0 var(--dim-space-sm); }
+.phbox dl { margin: var(--dim-space-sm) 0; font-size: var(--font-name); line-height: 20px; }
+.phbox dt { color: var(--c-text-secondary); font-size: 12px; line-height: 16px; margin-top: var(--dim-space-sm); }
+.phbox dd { margin: 0; overflow-wrap: anywhere; }
+.phbox dd code { font-family: ui-monospace, Menlo, monospace; font-size: 13px; }
+.phbox .stl { padding: 0; }
 </style>
 </head>
 <body>
@@ -1037,7 +1046,7 @@ grid.addEventListener('click', e => {
   if (state.edit) {
     if (!act) { const te = e.target.closest('.tile'); if (te) openSheet(te.dataset.id); return; }
     if (act.dataset.act === 'remove') removeTile(act.closest('.tile').dataset.id);
-    if (act.dataset.act === 'slot') { openForm(null); note('Галерея «Добавить на экран» в прототип не входит, открыта «Новая плитка».'); }
+    if (act.dataset.act === 'slot') goPage('ph-gallery', false);
     return;
   }
   const el = e.target.closest('.tile');
@@ -1066,8 +1075,8 @@ function hideSnack() { $('#snackbar').classList.remove('show'); clearTimeout(sna
 $('#snackUndo').onclick = undo;
 $('#btnUndo').onclick = undo;
 $('#btnDone').onclick = () => setEdit(false);
-$('#btnAdd').onclick = () => { openForm(null); note('Галерея «Добавить на экран» в прототип не входит, открыта «Новая плитка».'); };
-$('#btnMore').onclick = () => note('Меню «⋮» в прототип не входит.');
+$('#btnAdd').onclick = () => goPage('ph-gallery', false);
+$('#btnMore').onclick = () => goPage('ph-more', false);
 
 function note(text) { $('#note').textContent = text; }
 
@@ -1189,7 +1198,7 @@ $('#sheet').addEventListener('click', e => {
   const a = b.dataset.sh;
   if (a === 'size') setMode('size');
   if (a === 'settings') openForm(sheetId);
-  if (a === 'move') { setScreen('desk'); note('Перенос плиток в этот прототип не входит.'); }
+  if (a === 'move') goPage('ph-move', false);
   if (a === 'remove') { const id = sheetId; setScreen('desk'); removeTile(id); }
 });
 function openForm(id) {
@@ -1271,7 +1280,8 @@ const PAGES = {
     security: () => grp('Время на подтверждение', `<div class="gr ctr">${stepper('confirm', S.confirm, 'с', 3, 30)}</div>`, 'Сколько ассистент ждёт подтверждения команды. От 3 до 30 секунд.') +
       grp('Время на отмену', `<div class="gr ctr">${stepper('cancel', S.cancel, 'с', 3, 60)}</div>`, 'Сколько секунд после выполнения команду можно отменить. От 3 до 60 секунд.'),
     data: () => grp('Экспорт и импорт', nrow('Открыть экспорт и импорт', '', 'export'), 'Перенесите комнаты, виртуальные устройства, голосовые настройки, сценарии и экраны на другое устройство: файлом или через буфер обмена') +
-      grp('Журнал команд', nrow('Открыть журнал', '', 'journal'), 'Что ассистент услышал, как понял и что отправил устройствам'),
+      grp('Журнал команд', nrow('Открыть журнал', '', 'journal'), 'Что ассистент услышал, как понял и что отправил устройствам') +
+      grp('Мастер настройки', nrow('Запустить мастер настройки', '', 'w1')),
   })[S.tab]() }),
   wallpaper: () => ({ title: 'Обои экранов', body:
     `<div class="sec"><div class="wp" id="wpPrev"><div class="wpdim"></div><div class="st"><span>Кухня</span><span>14:02</span></div>` +
@@ -1307,7 +1317,7 @@ Object.assign(PAGES, {
   'add-controller': () => ({ title: 'Добавление оборудования', ctx: 'Контроллер', body:
     `<div class="sec"><h3 class="sh sm">Найдено в сети</h3>` + grp('', radio('ctrl', 'wb', S.ctrl, 'wirenboard-AEYCHFJC', '192.168.23.141 · MAC …02:cc · добавлен') + radio('ctrl', 'manual', S.ctrl, 'Указать вручную')) +
     (S.ctrl === 'manual' ? `<div class="frow">${tf('addr', 'Адрес брокера (имя или IP)', S.addr, 'style="flex:1"')}${tf('port', 'Порт', S.port, 'style="width:112px"')}</div>` : '') + '</div>',
-    foot: () => nextBtn('add-devices', S.ctrl === 'wb' || (S.ctrl === 'manual' && S.addr.trim() !== '')) }),
+    foot: () => nextBtn(S.ctrl === 'manual' ? 'ph-mqtt-tail' : 'add-devices', S.ctrl === 'wb' || (S.ctrl === 'manual' && S.addr.trim() !== '')) }),
   'add-ha': () => ({ title: 'Добавить Home Assistant', ctx: 'Сервер', body:
     `<div class="sec"><h3 class="sh sm">Найдено в сети</h3><p class="sd">Серверы Home Assistant в сети не найдены. Укажите адрес вручную.</p>` + grp('', radio('ha', 'manual', 'manual', 'Указать вручную')) +
     `<div class="frow">${tf('haAddr', 'Адрес (имя, IP или ссылка)', S.haAddr, 'style="flex:1"')}</div>` +
@@ -1327,7 +1337,7 @@ Object.assign(PAGES, {
     `<h3 class="sh sm" style="margin-top:var(--dim-space-md)">Контроллеры в приложении</h3></div>` +
     `<div class="jrow"><div class="ph">wirenboard-AEYCHFJC</div><div class="dt" style="color:var(--ui-on-surface)">Wirenboard</div></div><div class="jrow"><div class="ph">Home Assistant</div><div class="dt" style="color:var(--ui-on-surface)">Home Assistant (MQTT Discovery)</div></div>` +
     `<div class="sec" style="border:0"><button class="btn secondary wide" data-go="add-controller">Добавить контроллер</button></div>`,
-    foot: () => foot(`<button class="btn text" data-go="note:Шаги 3–6 мастера в прототип не входят.">Пропустить</button>`, nextBtn('note:Шаги 3–6 мастера в прототип не входят.')) }),
+    foot: () => foot(`<button class="btn text" data-go="w3">Пропустить</button>`, nextBtn('w3')) }),
 });
 
 /* ───────── Центр управления ───────── */
@@ -1360,7 +1370,7 @@ const ccPage = () => {
       `<div class="chiprow" style="padding-top:var(--dim-space-sm)"><button class="btn secondary" data-go="note:Виртуальные устройства: список в прототип не входит.">Виртуальные устройства</button></div>`,
     loc: () => S.empty || !S.rooms.length ? emptyState('loc') : S.rooms.map((r, i) => grp(r.n,
       grow(r.alt ? 'Другие названия: ' + r.alt : 'Других названий нет', `Виртуальных устройств: ${r.v} · Свойств: ${r.p}`, `<div class="mv"><button data-go="mv:${i}:-1" ${i === 0 ? 'disabled' : ''} aria-label="Выше" style="transform:rotate(180deg)">${ICON('chev')}</button><button data-go="mv:${i}:1" ${i === S.rooms.length - 1 ? 'disabled' : ''} aria-label="Ниже">${ICON('chev')}</button></div>`) +
-      arow('Виртуальные устройства', 'cc-vdevs', 'devices'))).join(''),
+      arow('Виртуальные устройства', 'cc-vdevs', 'devices') + arow('Группы комнат', 'ph-groups', 'group'))).join(''),
     conn: () => S.empty || !S.conns.length ? emptyState('conn') : S.conns.map((c, i) => grp(c.n, grow(c.t, '', sw('cn' + i, c.on), { c: c.a }) + arow('Добавить устройства', 'add-controller'))).join(''),
     dev: () => { if (S.empty) return emptyState('dev'); const by = {}; CCDEV.filter(d => S.devTab === 'all' || d[3] === S.devTab).forEach(d => (by[d[0].split(' / ')[0]] = by[d[0].split(' / ')[0]] || []).push(d));
       return Object.entries(by).map(([h, ds]) => grp(h, ds.map(d => grow(d[1], '', `<span class="go">${ICON('chev')}</span>`, { attrs: `data-go="devedit:${d[1]}"`, c: d[2] })).join(''))).join(''); },
@@ -1377,6 +1387,7 @@ Object.assign(PAGES, {
 
   'cc-vdevs': () => ({ title: 'Виртуальные устройства', ctx: 'Гостиная', body: (S.empty ? emptyState('vdevs') : '') + (S.empty ? '' :
     `<div class="card2"><div class="nm" style="font-size:var(--font-name);line-height:20px">${S.vdName}</div><div class="ds">Других названий нет</div><div class="ds">Участников: 3</div><button class="btn secondary" style="margin-top:8px" data-go="cc-vdev">${ICON('list')}Настроить</button></div>` +
+    grp('', arow('Собрать из найденного', 'ph-vd-suggest', 'list')) +
     `<div class="card2" style="background:none;border-color:var(--ui-outline)"><div class="hint">${ICON('info')}Подсказка</div><p class="sd">Название виртуального устройства произносят в команде: «включи свет на кухне». Примеры названий: «свет», «шторы», «все лампы».</p><p class="sd">Если в другой комнате есть виртуальное устройство с таким же названием, фраза «выключи свет» выключит их все. Назовите устройства по-разному, чтобы управлять ими по отдельности.</p></div><div style="height:72px"></div>`),
     fab: fabGo('Создать виртуальное устройство', 'cc-vdev') }),
   'cc-vdev': () => ({ title: 'Виртуальное устройство', ctx: 'Устройство', body:
@@ -1391,7 +1402,7 @@ Object.assign(PAGES, {
     S.steps.map((x, i) => `<div class="jrow"><div class="ph">${i + 1}. Включить: ${x}</div><div class="dt">Спросит подтверждение</div></div>`).join('') +
     '',
     fab: fabGo('Добавить шаг', 'cc-pick'),
-    foot: () => foot(`<button class="btn text" data-go="note:Проверка выполнит сценарий без отправки команд устройствам.">Проверить</button>`, nextBtn('note:Следующие шаги сценария в прототип не входят.', S.steps.length > 0)) }),
+    foot: () => foot(`<button class="btn text" data-go="note:Проверка выполнит сценарий без отправки команд устройствам.">Проверить</button>`, nextBtn('ph-se-action', S.steps.length > 0)) }),
   'cc-pick': () => ({ title: 'Новый сценарий', ctx: 'Что включить', close: true, body:
     `<div class="sec" style="border:0;padding-bottom:0"><p class="sd" style="color:var(--ui-on-surface)">Выберите, чем управляет шаг. Виртуальное устройство — сразу несколько свойств комнаты.</p></div><label class="search2" style="margin-top:0">${ICON('search')}<input type="text" placeholder="Поиск: название или комната" autocomplete="off"></label>` +
     `<div class="gh">Гостиная</div>` + [['Свет', 'Виртуальное устройство — свойств: 3 · спросит подтверждение'], ['Бра', 'спросит подтверждение'], ['Громкость', '']].map(([n, d]) => `<button class="pick" data-go="pickstep:${n}"><b>${n}</b><span>${d || '&nbsp;'}</span></button>`).join('') }),
@@ -1399,6 +1410,41 @@ Object.assign(PAGES, {
     body: `<div class="fgap">${tfm('iName', 'Название', S.iName)}${tfm('iAddr', 'Адрес (имя, IP или ссылка)', S.iAddr, 'Например, 192.168.1.10:8123')}${tfm('iToken', 'Токен доступа', S.iToken, 'Создайте его в профиле Home Assistant')}</div>` }),
   'cc-broker': () => ({ title: 'Брокер', ctx: 'MQTT', foot: () => `<button class="btn primary" ${S.bName.trim() && S.bAddr.trim() ? '' : 'disabled'} data-go="save:broker">Сохранить</button>`,
     body: `<div class="fgap">${tfm('bName', 'Название', S.bName)}<div class="frow" style="margin:0">${tfm('bAddr', 'Адрес брокера (имя или IP)', S.bAddr)}<div style="width:112px">${tfm('bPort', 'Порт', S.bPort)}</div></div>${tfm('bUser', 'Логин', S.bUser, 'Если брокер не требует вход, оставьте пустым')}${tfm('bPass', 'Пароль', S.bPass, '', true)}</div>` }),
+});
+/* ───────── Заглушки: экраны есть в map.md, но не нарисованы. Скриншоты запрошены у Сергея, задача ALL-71 ───────── */
+const PH = {
+  'ph-gallery': { title: 'Добавить на экран', code: 'DeskGallery', via: 'Правка → «+ Виджет» или тап по пустому слоту', has: 'Вкладки «Эта комната / Все комнаты», «Своя плитка», «Выключатели».', shot: 'есть desk__gallery.png', n: 1,
+    foot: `<button class="btn secondary" data-go="custom">Своя плитка</button>` },
+  'ph-move': { title: 'Переместить', code: 'режим переноса плитки', via: 'Правка → тап по плитке → «Переместить»', has: 'Перенос плитки на другое место экрана.', shot: 'нужен', n: 2 },
+  'ph-more': { title: 'Ещё', code: 'меню «⋮» панели правки', via: 'Правка → «⋮» в нижней панели', has: 'Дополнительные действия режима правки.', shot: 'нужен', n: 2 },
+  w3: { title: 'Мастер настройки', step: 3, name: 'Комнаты', code: 'FRRooms', via: 'Мастер первого запуска, шаг 3 · Настройки → Данные → «Запустить мастер настройки»', has: 'Шаг «Комнаты» мастера первого запуска.', shot: 'нужен', n: 3, close: true,
+    foot: `<button class="btn text" data-go="w4">Пропустить</button><button class="btn primary" data-go="w4">Далее</button>` },
+  w4: { title: 'Мастер настройки', step: 4, name: 'Группы', code: 'FRGroups', via: 'Мастер первого запуска, шаг 4', has: 'Шаг «Группы» мастера первого запуска.', shot: 'нужен', n: 3, close: true,
+    foot: `<button class="btn text" data-go="w5">Пропустить</button><button class="btn primary" data-go="w5">Далее</button>` },
+  w5: { title: 'Мастер настройки', step: 5, name: 'Импорт', code: 'FRImport', via: 'Мастер первого запуска, шаг 5', has: 'Шаг «Импорт» мастера первого запуска.', shot: 'нужен', n: 3, close: true,
+    foot: `<button class="btn text" data-go="w6">Пропустить</button><button class="btn primary" data-go="w6">Далее</button>` },
+  w6: { title: 'Мастер настройки', step: 6, name: 'Итог', code: 'FRSummary', via: 'Мастер первого запуска, шаг 6', has: 'Шаг «Итог» мастера первого запуска.', shot: 'нужен', n: 3, close: true,
+    foot: `<button class="btn primary" data-go="close">Готово</button>` },
+  'ph-se-action': { title: 'Новый сценарий', ctx: 'Действие', code: 'SEAction', via: 'ЦУ → Виджеты → «Сценарии» → «Добавить сценарий» → шаги → «Далее»', has: 'Шаг редактора сценария после выбора цели.', shot: 'нужен', n: 5, close: true,
+    foot: `<button class="btn primary" data-go="ph-se-order">Далее</button>` },
+  'ph-se-order': { title: 'Новый сценарий', ctx: 'Порядок', code: 'SEOrder', via: 'Редактор сценария, после «Действие»', has: 'Шаг редактора сценария: порядок шагов.', shot: 'нужен', n: 5, close: true,
+    foot: `<button class="btn primary" data-go="ph-se-name">Далее</button>` },
+  'ph-se-name': { title: 'Новый сценарий', ctx: 'Название', code: 'SEName', via: 'Редактор сценария, после «Порядок»', has: 'Шаг редактора сценария: название.', shot: 'нужен', n: 5, close: true,
+    foot: `<button class="btn primary" data-go="ph-se-preview">Далее</button>` },
+  'ph-se-preview': { title: 'Новый сценарий', ctx: 'Предпросмотр', code: 'SEPreview', via: 'Редактор сценария, после «Название»', has: 'Последний шаг редактора сценария: предпросмотр.', shot: 'нужен', n: 5, close: true,
+    foot: `<button class="btn primary" data-go="cc-wid">Сохранить</button>` },
+  'ph-groups': { title: 'Группы комнат', code: 'LocationGroups', via: 'ЦУ → Локации → карточка комнаты → «Группы»', has: 'Группы комнат. На панели вход недоступен: шевроны карточки комнаты обрезаны краем экрана и не нажимаются.', shot: 'нужен', n: 6 },
+  'ph-vd-suggest': { title: 'Собрать из найденного', code: 'VirtualDeviceSuggest', via: 'ЦУ → Локации → «Виртуальные устройства» → «Собрать из найденного»', has: 'Предложения виртуальных устройств из найденных свойств. На панели кнопка не отображается, вероятно, нет предложений.', shot: 'нужен', n: 6 },
+  'ph-mqtt-tail': { title: 'Добавление оборудования', ctx: 'Контроллер', code: 'шаги мастера MQTT после «Адрес»', via: 'ЦУ → Подключения → «Добавить» → «Брокер MQTT» → «Указать вручную» → «Далее»', has: 'Провайдер, порт, авторизация, проверка соединения.', shot: 'нужен', n: 7,
+    foot: `<button class="btn primary" data-go="add-devices">Далее</button>` },
+};
+Object.keys(PH).forEach(k => {
+  const c = PH[k];
+  PAGES[k] = () => ({ title: c.title, ctx: c.ctx, close: c.close, foot: c.foot ? () => c.foot : undefined,
+    body: (c.step ? stepBar(c.step, c.name) : '') +
+      `<div class="phbox"><span class="stl warn">${ICON('info')}Заглушка</span><h3>Экран ещё не нарисован</h3><p>${c.has}</p>` +
+      `<dl><dt>Экран в коде</dt><dd><code>${c.code}</code></dd><dt>Как открыть</dt><dd>${c.via}</dd><dt>Скриншот</dt><dd>${c.shot}</dd></dl>` +
+      `<p class="sd" style="margin:0">Пункт ${c.n} в задаче ALL-71.</p></div>` });
 });
 function goPage(name, push = true) {
   if (name.startsWith('cc-') && ['loc','conn','dev','wid'].includes(name.slice(3))) { S.cct = name.slice(3); name = 'cc'; }
@@ -1440,6 +1486,7 @@ $('#page').addEventListener('click', e => {
   if (t.dataset.jst) { S.jstat[t.dataset.jst] = !S.jstat[t.dataset.jst]; return drawPage(); }
   const g = t.dataset.go;
   if (g === 'back') { const p = pageStack.pop(); if (p) { curPage = p; drawPage(false); syncControls(); } else { setScreen('desk'); } return; }
+  if (g === 'custom') return openForm(null);
   if (g === 'close') { if (curPage === 'cc-pick') { const p = pageStack.pop(); curPage = p || 'cc-scen'; return drawPage(false); } return setScreen('desk'); }
   if (g.startsWith('cct:')) { S.cct = g.slice(4); S.fab = false; return drawPage(false); }
   if (g.startsWith('dtab:')) { S.devTab = g.slice(5); return drawPage(false); }
@@ -1570,6 +1617,8 @@ const GROUPS = [
   { label: 'Центр управления', cls: 'grid3', get: () => state.screen === 'page' ? (curPage === 'cc' ? S.cct + (S.cct === 'conn' && S.fab ? '-fab' : '') : curPage) : '',
     set: v => { if (v === 'dlg') { S.cct = 'loc'; S.dlg = true; S.rName = 'Гостиная'; goPage('cc', false); return; } S.dlg = false; if (v === 'cc-scen' ) S.steps = []; if (v === 'conn-fab') { S.cct = 'conn'; S.fab = true; goPage('cc', false); } else { S.fab = false; goPage(['loc','conn','dev','wid'].includes(v) ? 'cc-' + v : v, false); } },
     opts: [['loc', 'Локации'], ['conn', 'Подключения'], ['conn-fab', 'Подключения + меню'], ['dev', 'Список устройств'], ['wid', 'Виджеты'], ['cc-integ', 'Интеграция'], ['cc-broker', 'Брокер'], ['dlg', 'Диалог «Комната»'], ['cc-vdevs', 'Виртуальные устройства'], ['cc-vdev', 'Виртуальное устройство'], ['cc-devedit', 'Правка устройства'], ['cc-scen', 'Сценарий: шаги'], ['cc-pick', 'Сценарий: что включить']] },
+  { label: 'Заглушки (нет скриншотов)', cls: 'grid3', get: () => state.screen === 'page' && (curPage in PH) ? curPage : '', set: v => { if (v === 'ph-se-action') S.steps = []; goPage(v, false); },
+    opts: [['ph-gallery', 'Галерея'], ['ph-move', 'Переместить'], ['ph-more', 'Меню ⋮'], ['w3', 'Мастер 3'], ['w4', 'Мастер 4'], ['w5', 'Мастер 5'], ['w6', 'Мастер 6'], ['ph-se-action', 'Сценарий: действие'], ['ph-se-order', 'Сценарий: порядок'], ['ph-se-name', 'Сценарий: название'], ['ph-se-preview', 'Сценарий: просмотр'], ['ph-groups', 'Группы комнат'], ['ph-vd-suggest', 'Собрать из найденного'], ['ph-mqtt-tail', 'MQTT: хвост']] },
   { label: 'Пустые состояния',   get: () => S.empty ? 'empty' : 'full', set: v => { S.empty = v === 'empty'; if (state.screen === 'page') drawPage(false); },
     opts: [['full', 'Есть данные'], ['empty', 'Пусто']] },
   { label: 'Навигация в разделах', get: () => S.nav, set: v => { S.nav = v; if (state.screen === 'page') drawPage(false); },
