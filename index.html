@@ -663,7 +663,7 @@ svg.ic.dots { stroke-width: 2.6; }
 /* 1.4.11: граница полей, вторичных кнопок и невыбранных чипов ≥3:1 */
 .desk > .page .dd, .desk > .page .fld, .desk > .page .tf input, .desk > .page .search2,
 .desk > .form .dd, .desk > .form .fld, .desk > .form .tf input, .desk > .launcher .search,
-.desk > .form .szb, .desk > .page .btn.secondary, .desk > .form .btn.secondary { box-shadow: inset 0 0 0 1px var(--a11y-line); border-color: transparent; }
+.desk > .form .szb, .desk > .sheet .act, .desk > .page .btn.secondary, .desk > .form .btn.secondary { box-shadow: inset 0 0 0 1px var(--a11y-line); border-color: transparent; }
 .desk > .page .chip:not([aria-pressed="true"]) { box-shadow: inset 0 0 0 1px var(--a11y-line); }
 .desk > .page .tf input:focus, .desk > .page .fld:focus-within, .desk > .page .search2:focus-within,
 .desk > .form .tf input:focus, .desk > .form .fld:focus-within, .desk > .launcher .search:focus-within { box-shadow: inset 0 0 0 2px var(--ui-primary); }
@@ -686,7 +686,7 @@ input::placeholder { color: var(--a11y-ph); opacity: 1; }
 .page .chip::before { content: ""; position: absolute; inset: -8px -2px; }
 .strip .hit::before { content: ""; position: absolute; inset: -8px 0 -12px; }
 .mv button { width: 48px; }
-.vrow .ib { width: 48px; height: 48px; }
+.vrow .ib, .form .vrow .ib { width: 48px; height: 48px; }
 .form .szb { height: 48px; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
 </style>
@@ -1618,7 +1618,7 @@ render();
   const txt = el => (el && el.textContent || '').replace(/\s+/g, ' ').trim();
   function pass(root) {
     root.querySelectorAll('[role=switch]:not([aria-label])').forEach(b => {
-      const row = b.closest('.gr, .srow'); const t = row && row.querySelector('.rt, .sh'); if (t) b.setAttribute('aria-label', txt(t));
+      const row = b.closest('.gr, .srow'); const t = row && (row.querySelector('.rt, .sh') || row.querySelector('.tx')); if (t) b.setAttribute('aria-label', txt(t));
     });
     root.querySelectorAll('[role=slider]').forEach(z => {
       z.tabIndex = 0; if (!z.hasAttribute('aria-label')) z.setAttribute('aria-label', txt(z.closest('.sl2').querySelector('.lr span')));
@@ -1627,13 +1627,14 @@ render();
     root.querySelectorAll('.desk .tile').forEach(t => {
       if (t.closest('.pv')) return; if (!t.hasAttribute('role')) { t.setAttribute('role', 'button'); t.tabIndex = 0; t.setAttribute('aria-label', txt(t)); }
     });
+    root.querySelectorAll('.strip .hit:not([role])').forEach(h => { h.setAttribute('role', 'button'); h.tabIndex = 0; });
     root.querySelectorAll('.page .appbar .ttl, .form .appbar .ttl, .launcher .appbar .ttl').forEach(h => { h.setAttribute('role', 'heading'); h.setAttribute('aria-level', '1'); });
   }
   const mo = new MutationObserver(() => { mo.disconnect(); pass(document); mo.observe(document.body, { childList: true, subtree: true }); });
   pass(document); mo.observe(document.body, { childList: true, subtree: true });
   document.addEventListener('keydown', e => {
     const t = e.target;
-    if (t.matches && t.matches('.desk .tile[role=button]') && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); t.click(); }
+    if (t.matches && t.matches('.desk .tile[role=button], .strip .hit') && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); t.click(); }
     if (t.matches && t.matches('.sl2 .zone')) {
       const box = t.closest('.sl2'), k = box.dataset.sl, mn = +box.dataset.min, mx = +box.dataset.max;
       const d = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1, PageUp: 10, PageDown: -10 }[e.key];
