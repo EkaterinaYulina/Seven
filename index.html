@@ -234,7 +234,6 @@ svg.ic.dots { stroke-width: 2.6; }
 .drawer .gap { flex: 1; }
 .desk > .launcher { inset: 0; z-index: 7; background: var(--ui-surface-card); color: var(--ui-on-surface); display: none; flex-direction: column; }
 .desk[data-screen="apps"] > .launcher, .desk[data-screen="kbd"] > .launcher { display: flex; }
-.launcher .top { height: 48px; display: flex; align-items: center; justify-content: flex-end; padding: 0 var(--dim-space-sm); flex: none; }
 .launcher .search { margin: 0 var(--dim-space-md); height: 48px; flex: none; border-radius: var(--dim-radius-card); border: 1px solid var(--ui-outline);
   display: flex; align-items: center; gap: var(--dim-space-md); padding: 0 var(--dim-space-md); }
 .launcher .search:focus-within { border: 2px solid var(--ui-primary-container); padding: 0 calc(var(--dim-space-md) - 1px); }
@@ -414,9 +413,6 @@ svg.ic.dots { stroke-width: 2.6; }
 .page .chiprow { display: flex; flex-wrap: wrap; gap: var(--dim-space-sm); padding: 0 var(--dim-gutter) var(--dim-space-sm); }
 
 /* ── Мастера: поля, подвал, шапка из двух строк, шаги ── */
-.page .appbar .ttl2 { flex: 1; min-width: 0; margin-left: var(--dim-space-sm); }
-.page .appbar .ttl2 .t { font-size: 16px; line-height: 20px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.page .appbar .ttl2 .s { font-size: var(--font-name); line-height: 18px; color: var(--c-text-secondary); }
 .page .foot { flex: none; height: 72px; display: flex; align-items: center; justify-content: flex-end; gap: var(--dim-space-sm); padding: 0 var(--dim-gutter); background: var(--ui-surface-bar); border-top: 1px solid var(--ui-outline-subtle); }
 .step { padding: var(--dim-space-sm) var(--dim-gutter) 0; }
 .step .lb { font-size: var(--font-name); line-height: 20px; margin-bottom: 6px; }
@@ -562,7 +558,6 @@ svg.ic.dots { stroke-width: 2.6; }
 .desk > .page { background: var(--desk-bg); --c-text-primary: var(--page-text); --ui-on-surface: var(--page-text); --c-text-secondary: var(--page-t2); --ui-on-surface-variant: var(--page-t2); --ui-outline-subtle: var(--glass-line); color: var(--page-text); }
 .page .appbar { height: 56px; border-bottom: 0; padding: 0 var(--dim-gutter) 0 calc(var(--dim-gutter) + 8px); gap: var(--dim-space-sm); }
 .page .appbar .ttl { font-size: 22px; line-height: 28px; font-weight: 500; margin-left: 0; }
-.page .appbar .ttl2 { margin-left: 0; }
 .page .appbar .icon-btn { border-radius: 50%; margin-right: -8px; background: none; box-shadow: none; }
 /* вкладки: текст, у активной жирный шрифт и короткая черта */
 .page .tabs { border-bottom: 0; height: 48px; margin: 0 var(--dim-gutter); padding: 0; gap: 0; justify-content: space-between; background: none; }
@@ -627,9 +622,7 @@ svg.ic.dots { stroke-width: 2.6; }
 .page .sec .grp { margin-left: -8px; margin-right: -8px; }   /* карточка списка на одной линии с полями ввода */
 .page .fil { padding: 0 calc(var(--dim-gutter) + 8px); }
 /* единый заголовок экрана: 22/28, medium, текст на линии 24. Подзаголовок — 14/18 вторичным цветом */
-.page .appbar .ttl2 .t { font-size: 22px; line-height: 28px; font-weight: 500; }
 .form .appbar .ttl, .drawer .head .t, .sheet .h .t { font-size: 22px; line-height: 28px; font-weight: 500; }
-.page .appbar:has(.ttl2) { height: 64px; }
 .dlg .box h2 { font-size: 22px; line-height: 28px; font-weight: 500; }
 /* заголовки разделов формы — как заголовки групп на страницах */
 .form .sec-h { font-size: var(--font-name); line-height: 20px; font-weight: 500; color: var(--glass-head); padding-left: calc(var(--dim-gutter) + 8px); padding-right: calc(var(--dim-gutter) + 8px); }
@@ -654,6 +647,15 @@ svg.ic.dots { stroke-width: 2.6; }
 [data-theme="dark"] .desk > .page, [data-theme="dark"] .desk > .form, [data-theme="dark"] .desk > .launcher { --glass-card: color-mix(in srgb, var(--core-paper) 7%, transparent); }
 [data-theme="dark"] .tile { background: color-mix(in srgb, #CDE7D3 10%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, #CDE7D3 16%, transparent); }
 [data-theme="dark"] .desk > .page .gr, [data-theme="dark"] .desk > .page .foot { border-top-color: color-mix(in srgb, var(--core-paper) 9%, transparent); }
+
+/* ── Единая шапка экрана (страницы, форма плитки, «Все приложения»): 56, заголовок 22/28 medium в одну строку на линии 24,
+      справа действия (текстовые кнопки «Сохранить»/«Готово» или иконки) и × на линии 16. Подзаголовков нет: пояснение идёт в содержимое ── */
+.desk .appbar { height: 56px; flex: none; display: flex; align-items: center; gap: var(--dim-space-sm); padding: 0 var(--dim-gutter) 0 calc(var(--dim-gutter) + 8px); border: 0; background: none; }
+.desk .appbar .ttl { flex: 1; min-width: 0; margin: 0; font-size: 22px; line-height: 28px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.desk .appbar .acts { display: flex; align-items: center; }
+.desk .appbar .icon-btn { border-radius: 50%; margin-right: -8px; background: none; box-shadow: none; }
+.desk .appbar .btn.text { min-width: 0; padding: 0 12px; }
+.desk > .page .step { padding-left: calc(var(--dim-gutter) + 8px); padding-right: calc(var(--dim-gutter) + 8px); }   /* шаг мастера на линии 24, как заголовок и текст */
 </style>
 </head>
 <body>
@@ -734,7 +736,7 @@ svg.ic.dots { stroke-width: 2.6; }
 
       <!-- Все приложения -->
       <section class="launcher" id="launcher" aria-label="Все приложения">
-        <div class="top"><button class="btn text" id="btnHideApps">Скрыть</button></div>
+        <div class="appbar"><div class="ttl">Все приложения</div><button class="icon-btn" id="btnHideApps" aria-label="Закрыть"><svg class="ic"><use href="#i-close"/></svg></button></div>
         <label class="search"><svg class="ic"><use href="#i-search"/></svg><input id="appSearch" type="text" placeholder="Поиск приложения" autocomplete="off"></label>
         <div class="apps" id="apps"></div>
         <div class="kbd" aria-hidden="true">
@@ -760,7 +762,7 @@ svg.ic.dots { stroke-width: 2.6; }
 
       <!-- Форма плитки -->
       <section class="form" id="form" aria-label="Плитка">
-        <div class="appbar"><button class="icon-btn" id="fmBack" aria-label="Назад"><svg class="ic"><use href="#i-back"/></svg></button><div class="ttl" id="fmTitle"></div><button class="btn text" id="fmDone">Готово</button></div>
+        <div class="appbar"><div class="ttl" id="fmTitle"></div><button class="btn text" id="fmDone">Готово</button><button class="icon-btn" id="fmBack" aria-label="Закрыть"><svg class="ic"><use href="#i-close"/></svg></button></div>
         <div class="scroll">
           <div class="top"><div class="pv" id="fmPv"></div><div class="szcol"><div class="lbl">Размер</div><div id="fmSizes" style="display:flex;flex-direction:column;gap:8px"></div></div></div>
           <div class="sec-h" style="padding-bottom:4px">Показывать</div>
@@ -1262,30 +1264,30 @@ const PAGES = {
 };
 
 const tf = (k, label, v, extra = '') => `<label class="tf m" ${extra}><input data-in="${k}" placeholder=" " value="${v}" autocomplete="off"><span>${label}</span><button type="button" class="mi" data-go="note:Голосовой ввод в этот прототип не входит." aria-label="Голосовой ввод">${ICON('mic')}</button></label>`;
-const stepBar = n => `<div class="step"><div class="lb">Шаг ${n} из 6</div><div class="pbar"><i style="width:${n / 6 * 100}%"></i></div></div>`;
+const stepBar = (n, name) => `<div class="step"><div class="lb">Шаг ${n} из 6 · ${name}</div><div class="pbar"><i style="width:${n / 6 * 100}%"></i></div></div>`;
 const foot = (...b) => b.join('');
 const nextBtn = (go, ok = true) => `<button class="btn primary" data-go="${go}" ${ok ? '' : 'disabled'}>Далее</button>`;
 const DEVS = [['a', 'NSPanel Pro', 'NsPro-1001e0aed1', 13], ['b', '_TZE200_znlqjmih TS0601', 'NsPro_0x804b50fffee0fc86', 15]];
 Object.assign(PAGES, {
-  'add-controller': () => ({ title: 'Добавление оборудования', sub: 'Контроллер', body:
+  'add-controller': () => ({ title: 'Добавление оборудования', ctx: 'Контроллер', body:
     `<div class="sec"><h3 class="sh sm">Найдено в сети</h3>` + grp('', radio('ctrl', 'wb', S.ctrl, 'wirenboard-AEYCHFJC', '192.168.23.141 · MAC …02:cc · добавлен') + radio('ctrl', 'manual', S.ctrl, 'Указать вручную')) +
     (S.ctrl === 'manual' ? `<div class="frow">${tf('addr', 'Адрес брокера (имя или IP)', S.addr, 'style="flex:1"')}${tf('port', 'Порт', S.port, 'style="width:112px"')}</div>` : '') + '</div>',
     foot: () => nextBtn('add-devices', S.ctrl === 'wb' || (S.ctrl === 'manual' && S.addr.trim() !== '')) }),
-  'add-ha': () => ({ title: 'Добавить Home Assistant', sub: 'Сервер', body:
+  'add-ha': () => ({ title: 'Добавить Home Assistant', ctx: 'Сервер', body:
     `<div class="sec"><h3 class="sh sm">Найдено в сети</h3><p class="sd">Серверы Home Assistant в сети не найдены. Укажите адрес вручную.</p>` + grp('', radio('ha', 'manual', 'manual', 'Указать вручную')) +
     `<div class="frow">${tf('haAddr', 'Адрес (имя, IP или ссылка)', S.haAddr, 'style="flex:1"')}</div>` +
     `<div class="frow">${tf('haPort', 'Порт', S.haPort, 'style="width:112px"')}<div class="srow" style="flex:1;align-items:center"><div class="tx" style="font-size:var(--font-name);line-height:20px">Защищённое соединение (HTTPS)</div>${sw('https', S.https)}</div></div></div>`,
     foot: () => nextBtn('add-devices', S.haAddr.trim() !== '') }),
-  'add-devices': () => ({ title: 'Добавление оборудования', sub: 'Устройства', close: true, body:
+  'add-devices': () => ({ title: 'Добавление оборудования', ctx: 'Устройства', close: true, body:
     `<div class="sec"><p class="sd" style="color:var(--ui-on-surface)">Можно не выбирать устройства: соединение сохранится, устройства добавите позже</p><h3 class="sh sm" style="margin-top:var(--dim-space-md)">Home Assistant · Home Assistant (MQTT Discovery)</h3>` +
     DEVS.map(([k, n, id, c]) => grp('', crow(k, S.dev[k], n, `${id}<br>часть добавлена<br>Новых свойств: ${c}`, 'data-chk2')) + `<button class="btn text" data-go="note:Откроется список свойств устройства.">Свойства</button>`).join('') + '</div>',
     foot: () => nextBtn('note:Мастер завершён: оборудование добавится в «Центр управления → Подключения». В прототип этот экран не входит.') }),
-  w1: () => ({ title: 'Мастер настройки', sub: 'Приветствие', body: stepBar(1) +
+  w1: () => ({ title: 'Мастер настройки', body: stepBar(1, 'Приветствие') +
     `<div class="sec"><h3 class="sh">Добро пожаловать в «Севен»</h3><p class="sd">Настроим приложение за несколько шагов. Любой шаг можно пропустить; пока вы не нажмёте «Готово» на последнем шаге, ничего не сохраняется.</p>` +
     `<h3 class="sh sm" style="margin-top:var(--dim-gutter)">Комната панели</h3><p class="sd">Команды без названия комнаты («включи свет») относятся к комнате, где висит панель. Выберите её или создайте.</p>` +
     `<h3 class="sh sm" style="margin-top:var(--dim-space-sm)">Ваши комнаты</h3>${grp('', radio('room', 'living', S.room, 'Гостиная'))}<button class="btn secondary" style="margin-top:var(--dim-space-sm)" data-go="note:Откроется диалог «Комната».">Создать комнату</button></div>`,
     foot: () => foot(`<button class="btn text" data-go="w2">Пропустить</button>`, nextBtn('w2')) }),
-  w2: () => ({ title: 'Мастер настройки', sub: 'Контроллеры', close: true, body: stepBar(2) +
+  w2: () => ({ title: 'Мастер настройки', close: true, body: stepBar(2, 'Контроллеры') +
     `<div class="sec"><p class="sd" style="color:var(--ui-on-surface)">Добавьте контроллер, найденный в сети (например, Wirenboard), или пропустите шаг: позже его можно добавить в Центре управления. Контроллер сохраняется сразу, не дожидаясь «Готово».</p>` +
     `<h3 class="sh sm" style="margin-top:var(--dim-space-md)">Контроллеры в приложении</h3></div>` +
     `<div class="jrow"><div class="ph">wirenboard-AEYCHFJC</div><div class="dt" style="color:var(--ui-on-surface)">Wirenboard</div></div><div class="jrow"><div class="ph">Home Assistant</div><div class="dt" style="color:var(--ui-on-surface)">Home Assistant (MQTT Discovery)</div></div>` +
@@ -1338,29 +1340,29 @@ const dlgHtml = () => !S.dlg ? '' : `<div class="dlg"><div class="box"><h2>Ко�
 Object.assign(PAGES, {
   cc: () => { const r = ccPage(); r.fab = (r.fab || '') + dlgHtml(); return r; },
 
-  'cc-vdevs': () => ({ title: 'Виртуальные устройства: Гостиная', body: S.empty ? emptyState('vdevs') :
+  'cc-vdevs': () => ({ title: 'Виртуальные устройства', ctx: 'Гостиная', body: (S.empty ? emptyState('vdevs') : '') + (S.empty ? '' :
     `<div class="card2"><div class="nm" style="font-size:var(--font-name);line-height:20px">${S.vdName}</div><div class="ds">Других названий нет</div><div class="ds">Участников: 3</div><button class="btn secondary" style="margin-top:8px" data-go="cc-vdev">${ICON('list')}Настроить</button></div>` +
-    `<div class="card2" style="background:none;border-color:var(--ui-outline)"><div class="hint">${ICON('info')}Подсказка</div><p class="sd">Название виртуального устройства произносят в команде: «включи свет на кухне». Примеры названий: «свет», «шторы», «все лампы».</p><p class="sd">Если в другой комнате есть виртуальное устройство с таким же названием, фраза «выключи свет» выключит их все. Назовите устройства по-разному, чтобы управлять ими по отдельности.</p></div><div style="height:72px"></div>`,
+    `<div class="card2" style="background:none;border-color:var(--ui-outline)"><div class="hint">${ICON('info')}Подсказка</div><p class="sd">Название виртуального устройства произносят в команде: «включи свет на кухне». Примеры названий: «свет», «шторы», «все лампы».</p><p class="sd">Если в другой комнате есть виртуальное устройство с таким же названием, фраза «выключи свет» выключит их все. Назовите устройства по-разному, чтобы управлять ими по отдельности.</p></div><div style="height:72px"></div>`),
     fab: fabGo('Создать виртуальное устройство', 'cc-vdev') }),
-  'cc-vdev': () => ({ title: 'Виртуальное устройство', sub: 'Устройство', body:
+  'cc-vdev': () => ({ title: 'Виртуальное устройство', ctx: 'Устройство', body:
     `<div class="fgap"><p class="sd" style="margin:0;color:var(--ui-on-surface)">Виртуальное устройство собирает свойства из разного оборудования и работает как одно: «включи свет», «шторы на 30 %». Каналы нужны, только если у устройства несколько разных функций.</p>` +
     `${tfm('vdName', 'Название', S.vdName)}${tfm('vdAlt', 'Другие названия через запятую', S.vdAlt)}<div><span class="lab" style="font-weight:400">Комната</span><div class="fld dd"><span style="color:var(--ui-on-surface)">Гостиная</span>${ICON('chev')}</div></div></div>`,
     foot: () => foot(`<button class="btn text" data-go="note:Проверка покажет, какие свойства услышит ассистент.">Проверить</button>`, `<button class="btn primary" data-go="back" ${S.vdName.trim() ? '' : 'disabled'}>Сохранить</button>`) }),
-  'cc-devedit': () => ({ title: 'Редактирование устройства', actions: `<button class="icon-btn" data-go="back" aria-label="Сохранить" ${S.dName.trim() ? '' : 'disabled'} style="${S.dName.trim() ? '' : 'opacity:.38'}">${ICON('check')}</button>`, body:
+  'cc-devedit': () => ({ title: 'Редактирование устройства', foot: () => `<button class="btn primary" data-go="back" ${S.dName.trim() ? '' : 'disabled'}>Сохранить</button>`, body:
     `<div class="fgap">${tfm('dName', 'Наименование', S.dName).replace(' m"', ' m"')}${tfm('dPlace', 'Место размещения', S.dPlace)}<button class="btn danger" style="align-self:center" data-go="note:Удаление устройства запросит подтверждение.">Удалить</button></div>` }),
-  'cc-scen': () => ({ title: 'Новый сценарий', sub: 'Шаги сценария', body:
+  'cc-scen': () => ({ title: 'Новый сценарий', ctx: 'Шаги сценария', body:
     `<div class="sec" style="border:0"><p class="sd" style="color:var(--ui-on-surface)">Шаги идут сверху вниз. «Вместе с предыдущим» — в то же время, что шаг выше; иначе перед шагом можно сделать паузу.</p>` +
     (S.steps.length ? '' : `<p class="sd" style="color:var(--ui-on-surface)">Шагов пока нет. Добавьте первый: выберите, что включить или выключить.</p>`) + '</div>' +
     S.steps.map((x, i) => `<div class="jrow"><div class="ph">${i + 1}. Включить: ${x}</div><div class="dt">Спросит подтверждение</div></div>`).join('') +
     '',
     fab: fabGo('Добавить шаг', 'cc-pick'),
     foot: () => foot(`<button class="btn text" data-go="note:Проверка выполнит сценарий без отправки команд устройствам.">Проверить</button>`, nextBtn('note:Следующие шаги сценария в прототип не входят.', S.steps.length > 0)) }),
-  'cc-pick': () => ({ title: 'Новый сценарий', sub: 'Что включить', close: true, body:
+  'cc-pick': () => ({ title: 'Новый сценарий', ctx: 'Что включить', close: true, body:
     `<div class="sec" style="border:0;padding-bottom:0"><p class="sd" style="color:var(--ui-on-surface)">Выберите, чем управляет шаг. Виртуальное устройство — сразу несколько свойств комнаты.</p></div><label class="search2" style="margin-top:0">${ICON('search')}<input type="text" placeholder="Поиск: название или комната" autocomplete="off"></label>` +
     `<div class="gh">Гостиная</div>` + [['Свет', 'Виртуальное устройство — свойств: 3 · спросит подтверждение'], ['Бра', 'спросит подтверждение'], ['Громкость', '']].map(([n, d]) => `<button class="pick" data-go="pickstep:${n}"><b>${n}</b><span>${d || '&nbsp;'}</span></button>`).join('') }),
-  'cc-integ': () => ({ title: 'Интеграция', sub: 'Home Assistant', actions: `<button class="btn text" ${S.iName.trim() && S.iAddr.trim() ? '' : 'disabled'} data-go="save:integ">Сохранить</button>`,
+  'cc-integ': () => ({ title: 'Интеграция', ctx: 'Home Assistant', foot: () => `<button class="btn primary" ${S.iName.trim() && S.iAddr.trim() ? '' : 'disabled'} data-go="save:integ">Сохранить</button>`,
     body: `<div class="fgap">${tfm('iName', 'Название', S.iName)}${tfm('iAddr', 'Адрес (имя, IP или ссылка)', S.iAddr, 'Например, 192.168.1.10:8123')}${tfm('iToken', 'Токен доступа', S.iToken, 'Создайте его в профиле Home Assistant')}</div>` }),
-  'cc-broker': () => ({ title: 'Брокер', sub: 'MQTT', actions: `<button class="btn text" ${S.bName.trim() && S.bAddr.trim() ? '' : 'disabled'} data-go="save:broker">Сохранить</button>`,
+  'cc-broker': () => ({ title: 'Брокер', ctx: 'MQTT', foot: () => `<button class="btn primary" ${S.bName.trim() && S.bAddr.trim() ? '' : 'disabled'} data-go="save:broker">Сохранить</button>`,
     body: `<div class="fgap">${tfm('bName', 'Название', S.bName)}<div class="frow" style="margin:0">${tfm('bAddr', 'Адрес брокера (имя или IP)', S.bAddr)}<div style="width:112px">${tfm('bPort', 'Порт', S.bPort)}</div></div>${tfm('bUser', 'Логин', S.bUser, 'Если брокер не требует вход, оставьте пустым')}${tfm('bPass', 'Пароль', S.bPass, '', true)}</div>` }),
 });
 function goPage(name, push = true) {
@@ -1378,11 +1380,11 @@ const bottomNav = pg => `<nav class="bnav" role="tablist">` + (pg.tabs
 function drawPage(keepScroll = true) {
   const pg = PAGES[curPage](), el = $('#page'), old = el.querySelector('.body'), top = keepScroll && old ? old.scrollTop : 0;
   el.innerHTML = `<div class="appbar">` +
-    (pg.sub ? `<div class="ttl2"><div class="t">${pg.title}</div><div class="s">${pg.sub}</div></div>` : `<div class="ttl">${pg.title}</div>`) +
+    `<div class="ttl">${pg.title}</div>` +
     `<span class="acts" id="acts">${pg.actions || ''}</span><button class="icon-btn" data-go="${pg.close ? 'close' : 'back'}" aria-label="Закрыть">${ICON('close')}</button></div>` +
     (S.nav !== 'bottom' && pg.mainTabs ? `<div class="tabs main" role="tablist">${pg.mainTabs}</div>` : '') +
     (S.nav !== 'bottom' && pg.tabs ? `<div class="tabs main" role="tablist">${TABS.map(([k, t]) => `<button class="tab" role="tab" aria-selected="${S.tab === k}" data-tab="${k}">${t}</button>`).join('')}</div>` : '') +
-    `<div class="body${pg.fab && pg.fab.includes('class="fab"') ? ' fabpad' : ''}">${pg.filter ? `<div class="fchips" role="group">${pg.filter}</div>` : ''}${pg.body}</div>` + (pg.foot ? `<div class="foot" id="foot">${pg.foot()}</div>` : '') + (pg.nav || '') + (S.nav === 'bottom' && (pg.mainTabs || pg.tabs) ? bottomNav(pg) : '') + (pg.fab || '');
+    `<div class="body${pg.fab && pg.fab.includes('class="fab"') ? ' fabpad' : ''}">${pg.ctx ? `<div class="gh">${pg.ctx}</div>` : ''}${pg.filter ? `<div class="fchips" role="group">${pg.filter}</div>` : ''}${pg.body}</div>` + (pg.foot ? `<div class="foot" id="foot">${pg.foot()}</div>` : '') + (pg.nav || '') + (S.nav === 'bottom' && (pg.mainTabs || pg.tabs) ? bottomNav(pg) : '') + (pg.fab || '');
   el.querySelector('.body').scrollTop = top;
   syncKb();
   const sel = el.querySelector('.tab[aria-selected="true"]'); if (sel) sel.scrollIntoView({ inline: 'center', block: 'nearest' });
