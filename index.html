@@ -34,7 +34,7 @@
   --dim-panel: 480px;   --dim-top-strip: 32px; --dim-tile: 90px; --dim-gap: 4px;
   --dim-touch-min: 48px; --dim-icon: 24px;
   --dim-gutter: 16px;   --dim-space-sm: 8px; --dim-space-md: 12px; --dim-space-xl: 24px;
-  --dim-radius-field: 4px; --dim-radius-chip: 8px; --dim-radius-card: 12px; --dim-radius-tile: 12px; --dim-radius-fab: 16px; --dim-radius-sheet: 28px; --dim-radius-pill: 100px;
+  --dim-radius-field: 4px; --dim-radius-chip: 8px; --dim-radius-card: 12px; --dim-radius-tile: 12px; --dim-radius-fab: 12px; --dim-radius-sheet: 28px; --dim-radius-pill: 100px;
   --dim-bar: 64px;      /* wizard-footer / нижняя панель правки */
 
   --font-value: 20px; --font-name: 14px; --font-secondary: 11px;
@@ -242,7 +242,7 @@ svg.ic.dots { stroke-width: 2.6; }
 .launcher .search input::placeholder { color: var(--c-text-secondary); }
 .launcher .apps { flex: 1; min-height: 0; overflow-y: auto; display: grid; grid-template-columns: repeat(4, 1fr); align-content: start; padding: var(--dim-space-md) var(--dim-space-sm); row-gap: var(--dim-space-md); }
 .launcher .app { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 11px; line-height: 14px; text-align: center; padding: 0 4px; }
-.launcher .app b { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 500; color: var(--ui-on-surface);
+.launcher .app b { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 500; color: var(--ui-on-surface);
   background: color-mix(in srgb, var(--hue) 45%, var(--ui-surface-card)); }
 .launcher .empty { grid-column: 1 / -1; text-align: center; color: var(--c-text-secondary); font-size: var(--font-name); padding-top: 24px; }
 .desk > .kbd.gk { position: absolute; left: 0; right: 0; bottom: 0; z-index: 20; }
@@ -395,7 +395,7 @@ svg.ic.dots { stroke-width: 2.6; }
 /* Превью обоев */
 .wp { position: relative; height: 150px; border-radius: var(--dim-radius-card); overflow: hidden; border: 1px solid var(--ui-outline-subtle); }
 .wp .wpdim { position: absolute; inset: 0; background: color-mix(in srgb, var(--core-graphite) calc(var(--wallpaper-dim) * 100%), transparent); }
-.wp .st { position: absolute; left: 0; right: 0; top: 0; height: 24px; display: flex; justify-content: space-between; align-items: center; padding: 0 12px; font-size: 12px; color: #fff; }
+.wp .st { position: absolute; left: 0; right: 0; top: 0; height: 24px; display: flex; justify-content: space-between; align-items: center; padding: 0 12px; font-size: 12px; color: #FCFBF7; }
 .wp .mt { position: absolute; top: 32px; height: 100px; border-radius: 8px; padding: 8px; font-size: 12px; line-height: 16px; color: var(--ui-on-surface); background: color-mix(in srgb, var(--c-tile) calc(var(--tile-glass) * 100%), transparent); }
 .wp .mt svg { width: 20px; height: 20px; }
 .wp .mt b { display: block; font-size: 14px; font-weight: 600; }
@@ -437,7 +437,7 @@ svg.ic.dots { stroke-width: 2.6; }
 
 
 /* ── Центр управления: FAB, карточки (разделы переключаются вкладками сверху, как в Настройках) ── */
-.fab { position: absolute; right: var(--dim-gutter); bottom: var(--dim-gutter); z-index: 3; height: 56px; padding: 0 20px; border-radius: 16px; display: flex; align-items: center; gap: var(--dim-space-sm);
+.fab { position: absolute; right: var(--dim-gutter); bottom: var(--dim-gutter); z-index: 3; height: 56px; padding: 0 20px; border-radius: 12px; display: flex; align-items: center; gap: var(--dim-space-sm);
   background: var(--ui-primary-container); color: var(--ui-on-primary-container); font-size: var(--font-name); font-weight: 500; box-shadow: 0 2px 8px #0003; }
 .fab .ic { width: 24px; height: 24px; }
 .fab .ic { transition: transform .2s ease; } .fab[aria-expanded="true"] .ic { transform: rotate(45deg); }
@@ -486,7 +486,7 @@ svg.ic.dots { stroke-width: 2.6; }
 .pick b { display: block; font-size: var(--font-name); line-height: 20px; font-weight: 600; } .pick span { display: block; font-size: var(--font-name); line-height: 20px; color: var(--c-text-secondary); }
 .grp { margin: var(--dim-space-md) var(--dim-gutter) var(--dim-space-sm); font-size: 20px; line-height: 24px; color: var(--ui-primary-container); }
 /* Шторка оформлена как лист плитки (Seven/Sheet): карточка, плоские тональные кнопки 76 px с иконкой над подписью */
-.shade { position: absolute; left: 0; right: 0; top: 0; z-index: 11; background: var(--ui-surface-card); color: var(--ui-on-surface); border-radius: 0 0 var(--dim-gutter) var(--dim-gutter);
+.shade { position: absolute; left: 0; right: 0; top: 0; z-index: 11; background: var(--ui-surface-card); color: var(--ui-on-surface); border-radius: 0 0 12px 12px;
   padding: var(--dim-space-sm) var(--dim-gutter) var(--dim-gutter); transform: translateY(-105%); transition: transform .25s ease; box-shadow: 0 6px 24px #0004; }
 .desk[data-screen="shade"] > .shade { transform: none; } .desk[data-screen="shade"] > .scrim { opacity: 1; pointer-events: auto; }
 .shade .st { display: flex; align-items: center; gap: var(--dim-space-sm); min-height: 48px; padding-bottom: var(--dim-space-xs, 4px); margin-bottom: var(--dim-space-md); border-bottom: 1px solid var(--ui-outline-subtle); font-size: var(--font-name); }
@@ -580,6 +580,14 @@ svg.ic.dots { stroke-width: 2.6; }
 /* выбор одной опции (радио) — строки одной группы с разделителем, отметка слева; выбранная с лёгкой зелёной заливкой */
 .page .grp > .gr[role="radio"] { flex-direction: row-reverse; padding-left: var(--dim-gutter); }
 .page .grp > .gr[role="radio"][aria-checked="true"] { background: color-mix(in srgb, var(--ui-primary-container) 12%, transparent); }
+.page .grp > .gr[role="checkbox"] { flex-direction: row-reverse; padding-left: var(--dim-gutter); }
+.page .grp > .gr[role="checkbox"][aria-checked="true"] { background: color-mix(in srgb, var(--ui-primary-container) 12%, transparent); }
+.page .gr .mk.c { border-radius: 4px; }
+.page .gr[role="checkbox"] .mk { border-color: var(--ui-primary-container); }
+.page .gr[role="checkbox"][aria-checked="true"] .mk { background: var(--ui-primary-container); }
+.page .gr[role="checkbox"][aria-checked="true"] .mk::after { content: none; }
+.page .gr .mk.c svg { position: absolute; inset: 1px; width: 14px; height: 14px; stroke: var(--ui-surface-card); stroke-width: 2.6; fill: none; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+.page .gr[aria-checked="true"] .mk.c svg { opacity: 1; }
 .page .gr[role="radio"] .mk { border-color: var(--ui-primary-container); }
 .page .gr[aria-checked="true"] .mk::after { background: var(--ui-primary-container); }
 .page .chip { border: 0; box-shadow: inset 0 0 0 1px var(--glass-border); background: var(--glass-card); border-radius: var(--dim-radius-chip); }
@@ -617,6 +625,7 @@ svg.ic.dots { stroke-width: 2.6; }
 .page .sec .tf, .page .sec .fld, .page .sec .frow { margin-left: -8px; margin-right: -8px; }
 .page .sec .frow .tf { margin: 0; }
 .page .sec .dd { width: calc(100% + 16px); margin-left: -8px; }
+.page .sec .grp { margin-left: -8px; margin-right: -8px; }   /* карточка списка на одной линии с полями ввода */
 .page .fil { padding: 0 calc(var(--dim-gutter) + 8px); }
 /* единый заголовок экрана: 22/28, medium, текст на линии 24. Подзаголовок — 14/18 вторичным цветом */
 .page .appbar .ttl2 .t { font-size: 22px; line-height: 28px; font-weight: 500; }
@@ -1180,7 +1189,8 @@ const nrow = (t, d, go, o = {}) => grow(t, d, `<span class="go">${ICON('chev')}<
 const arow = (t, go, ic = 'plus') => `<button class="gr act" data-go="${go}">${ICON(ic)}<span class="tx">${t}</span></button>`;
 const srow = (t, d, k, on) => grow(t, d, sw(k, on));
 const swRow = (k, on, t, d) => `<div class="sec"><div class="srow"><div class="tx"><h3 class="sh">${t}</h3><p class="sd">${d}</p></div>${sw(k, on)}</div></div>`;
-const radio = (g, v, cur, t, d = '') => `<button class="opt" role="radio" aria-checked="${v === cur}" data-radio="${g}" data-v="${v}"><span class="mk r"></span><span class="tx"><b>${t}</b>${d ? `<span>${d}</span>` : ''}</span></button>`;
+const radio = rrow;
+const crow = (k, on, t, d = '', a = 'data-chk') => grow(t, d, '<span class="mk c">' + CHECK + '</span>', { attrs: `role="checkbox" aria-checked="${on}" ${a}="${k}"` });
 const check = (k, on, t) => `<button class="opt" role="checkbox" aria-checked="${on}" data-chk="${k}"><span class="mk c">${CHECK}</span><span class="tx"><b>${t}</b></span></button>`;
 const stepper = (k, v, unit, min, max) => `<div class="stp"><button data-step="${k}" data-d="-1" ${v <= min ? 'disabled' : ''} aria-label="Меньше">${ICON('minus')}</button><span class="v">${v} ${unit}</span><button data-step="${k}" data-d="1" ${v >= max ? 'disabled' : ''} aria-label="Больше">${ICON('plus')}</button></div>`;
 const STEP = { confirm: [1, 3, 30, 'с'], cancel: [1, 3, 60, 'с'], dimAfter: [5, 10, 300, 'с'], dimBright: [5, 0, 100, '%'] };
@@ -1218,7 +1228,7 @@ const PAGES = {
     `<h3 class="sh sm" style="margin-top:var(--dim-gutter)">Яркость в затемнении</h3>${stepper('dimBright', S.dimBright, '%', 0, 100)}</div>` }),
   export: () => ({ title: 'Экспорт и импорт', body:
     `<div class="sec"><h3 class="sh">Экспорт</h3><p class="sd">В файл config.json попадут комнаты, виртуальные устройства, голосовые настройки, сценарии и экраны. Пароли, настройки брокеров и будильники в него не попадут.</p>` +
-    `<h3 class="sh sm" style="margin-top:var(--dim-space-md)">Экраны профилей</h3>` + check('panel', S.exp.panel, 'Панель (это устройство)') + check('phone', S.exp.phone, 'Телефон') + check('pc', S.exp.pc, 'Компьютер') +
+    `<h3 class="sh sm" style="margin-top:var(--dim-space-md)">Экраны профилей</h3>` + grp('', crow('panel', S.exp.panel, 'Панель (это устройство)') + crow('phone', S.exp.phone, 'Телефон') + crow('pc', S.exp.pc, 'Компьютер')) +
     `<p class="sd" style="margin-top:var(--dim-space-md)">В файле: комнат 1, виртуальных устройств 1, свойств 51, сценариев 0, экранов 1 (виджетов 6)</p>` +
     `<button class="btn primary wide" data-go="note:Файл config.json сохранится на панель. В этот прототип не входит.">Сохранить в файл</button><button class="btn secondary wide" data-go="note:Конфигурация скопируется в буфер обмена.">Копировать в буфер</button></div>` +
     `<div class="sec"><h3 class="sh">Импорт</h3><p class="sd">Загрузите config.json из файла или буфера обмена. Перед заменой данных приложение покажет, что изменится.</p><button class="btn secondary wide" data-go="note:Откроется выбор файла.">Выбрать файл</button><button class="btn secondary wide" data-go="note:Конфигурация будет вставлена из буфера обмена.">Вставить из буфера</button></div>` }),
@@ -1232,29 +1242,29 @@ const PAGES = {
       list.map(j => `<div class="jrow"><span class="stl ${j[0]}">${ICON(SICON[j[0]])}${j[1]}</span><div class="ph">${j[2]}</div><div class="dt">${j[3]}</div></div>`).join(''); })() }),
 };
 
-const tf = (k, label, v, extra = '') => `<label class="tf" ${extra}><input data-in="${k}" placeholder=" " value="${v}" autocomplete="off"><span>${label}</span></label>`;
+const tf = (k, label, v, extra = '') => `<label class="tf m" ${extra}><input data-in="${k}" placeholder=" " value="${v}" autocomplete="off"><span>${label}</span><button type="button" class="mi" data-go="note:Голосовой ввод в этот прототип не входит." aria-label="Голосовой ввод">${ICON('mic')}</button></label>`;
 const stepBar = n => `<div class="step"><div class="lb">Шаг ${n} из 6</div><div class="pbar"><i style="width:${n / 6 * 100}%"></i></div></div>`;
 const foot = (...b) => b.join('');
 const nextBtn = (go, ok = true) => `<button class="btn primary" data-go="${go}" ${ok ? '' : 'disabled'}>Далее</button>`;
 const DEVS = [['a', 'NSPanel Pro', 'NsPro-1001e0aed1', 13], ['b', '_TZE200_znlqjmih TS0601', 'NsPro_0x804b50fffee0fc86', 15]];
 Object.assign(PAGES, {
   'add-controller': () => ({ title: 'Добавление оборудования', sub: 'Контроллер', body:
-    `<div class="sec"><h3 class="sh sm">Найдено в сети</h3>` + radio('ctrl', 'wb', S.ctrl, 'wirenboard-AEYCHFJC', '192.168.23.141 · MAC …02:cc · добавлен') + radio('ctrl', 'manual', S.ctrl, 'Указать вручную') +
+    `<div class="sec"><h3 class="sh sm">Найдено в сети</h3>` + grp('', radio('ctrl', 'wb', S.ctrl, 'wirenboard-AEYCHFJC', '192.168.23.141 · MAC …02:cc · добавлен') + radio('ctrl', 'manual', S.ctrl, 'Указать вручную')) +
     (S.ctrl === 'manual' ? `<div class="frow">${tf('addr', 'Адрес брокера (имя или IP)', S.addr, 'style="flex:1"')}${tf('port', 'Порт', S.port, 'style="width:112px"')}</div>` : '') + '</div>',
     foot: () => nextBtn('add-devices', S.ctrl === 'wb' || (S.ctrl === 'manual' && S.addr.trim() !== '')) }),
   'add-ha': () => ({ title: 'Добавить Home Assistant', sub: 'Сервер', body:
-    `<div class="sec"><h3 class="sh sm">Найдено в сети</h3><p class="sd">Серверы Home Assistant в сети не найдены. Укажите адрес вручную.</p>` + radio('ha', 'manual', 'manual', 'Указать вручную') +
+    `<div class="sec"><h3 class="sh sm">Найдено в сети</h3><p class="sd">Серверы Home Assistant в сети не найдены. Укажите адрес вручную.</p>` + grp('', radio('ha', 'manual', 'manual', 'Указать вручную')) +
     `<div class="frow">${tf('haAddr', 'Адрес (имя, IP или ссылка)', S.haAddr, 'style="flex:1"')}</div>` +
     `<div class="frow">${tf('haPort', 'Порт', S.haPort, 'style="width:112px"')}<div class="srow" style="flex:1;align-items:center"><div class="tx" style="font-size:var(--font-name);line-height:20px">Защищённое соединение (HTTPS)</div>${sw('https', S.https)}</div></div></div>`,
     foot: () => nextBtn('add-devices', S.haAddr.trim() !== '') }),
   'add-devices': () => ({ title: 'Добавление оборудования', sub: 'Устройства', close: true, body:
     `<div class="sec"><p class="sd" style="color:var(--ui-on-surface)">Можно не выбирать устройства: соединение сохранится, устройства добавите позже</p><h3 class="sh sm" style="margin-top:var(--dim-space-md)">Home Assistant · Home Assistant (MQTT Discovery)</h3>` +
-    DEVS.map(([k, n, id, c]) => `<div class="dev"><button class="opt" role="checkbox" aria-checked="${S.dev[k]}" data-chk2="${k}"><span class="mk c">${CHECK}</span><span class="tx"><b>${n}</b><span>${id}</span><span>часть добавлена</span><span>Новых свойств: ${c}</span></span></button><button class="btn text" data-go="note:Откроется список свойств устройства.">Свойства</button></div>`).join('') + '</div>',
+    DEVS.map(([k, n, id, c]) => grp('', crow(k, S.dev[k], n, `${id}<br>часть добавлена<br>Новых свойств: ${c}`, 'data-chk2')) + `<button class="btn text" data-go="note:Откроется список свойств устройства.">Свойства</button>`).join('') + '</div>',
     foot: () => nextBtn('note:Мастер завершён: оборудование добавится в «Центр управления → Подключения». В прототип этот экран не входит.') }),
   w1: () => ({ title: 'Мастер настройки', sub: 'Приветствие', body: stepBar(1) +
     `<div class="sec"><h3 class="sh">Добро пожаловать в «Севен»</h3><p class="sd">Настроим приложение за несколько шагов. Любой шаг можно пропустить; пока вы не нажмёте «Готово» на последнем шаге, ничего не сохраняется.</p>` +
     `<h3 class="sh sm" style="margin-top:var(--dim-gutter)">Комната панели</h3><p class="sd">Команды без названия комнаты («включи свет») относятся к комнате, где висит панель. Выберите её или создайте.</p>` +
-    `<h3 class="sh sm" style="margin-top:var(--dim-space-sm)">Ваши комнаты</h3>${radio('room', 'living', S.room, 'Гостиная')}<button class="btn secondary" style="margin-top:var(--dim-space-sm)" data-go="note:Откроется диалог «Комната».">Создать комнату</button></div>`,
+    `<h3 class="sh sm" style="margin-top:var(--dim-space-sm)">Ваши комнаты</h3>${grp('', radio('room', 'living', S.room, 'Гостиная'))}<button class="btn secondary" style="margin-top:var(--dim-space-sm)" data-go="note:Откроется диалог «Комната».">Создать комнату</button></div>`,
     foot: () => foot(`<button class="btn text" data-go="w2">Пропустить</button>`, nextBtn('w2')) }),
   w2: () => ({ title: 'Мастер настройки', sub: 'Контроллеры', close: true, body: stepBar(2) +
     `<div class="sec"><p class="sd" style="color:var(--ui-on-surface)">Добавьте контроллер, найденный в сети (например, Wirenboard), или пропустите шаг: позже его можно добавить в Центре управления. Контроллер сохраняется сразу, не дожидаясь «Готово».</p>` +
@@ -1315,7 +1325,7 @@ Object.assign(PAGES, {
     fab: fabGo('Создать виртуальное устройство', 'cc-vdev') }),
   'cc-vdev': () => ({ title: 'Виртуальное устройство', sub: 'Устройство', body:
     `<div class="fgap"><p class="sd" style="margin:0;color:var(--ui-on-surface)">Виртуальное устройство собирает свойства из разного оборудования и работает как одно: «включи свет», «шторы на 30 %». Каналы нужны, только если у устройства несколько разных функций.</p>` +
-    `<div><span class="lab">Название</span>${fld('vdName', S.vdName)}</div><div><span class="lab">Другие названия через запятую</span>${fld('vdAlt', S.vdAlt)}</div><div><span class="lab" style="font-weight:400">Комната</span><div class="fld dd"><span style="color:var(--ui-on-surface)">Гостиная</span>${ICON('chev')}</div></div></div>`,
+    `${tfm('vdName', 'Название', S.vdName)}${tfm('vdAlt', 'Другие названия через запятую', S.vdAlt)}<div><span class="lab" style="font-weight:400">Комната</span><div class="fld dd"><span style="color:var(--ui-on-surface)">Гостиная</span>${ICON('chev')}</div></div></div>`,
     foot: () => foot(`<button class="btn text" data-go="note:Проверка покажет, какие свойства услышит ассистент.">Проверить</button>`, `<button class="btn primary" data-go="back" ${S.vdName.trim() ? '' : 'disabled'}>Сохранить</button>`) }),
   'cc-devedit': () => ({ title: 'Редактирование устройства', actions: `<button class="icon-btn" data-go="back" aria-label="Сохранить" ${S.dName.trim() ? '' : 'disabled'} style="${S.dName.trim() ? '' : 'opacity:.38'}">${ICON('check')}</button>`, body:
     `<div class="fgap">${tfm('dName', 'Наименование', S.dName).replace(' m"', ' m"')}${tfm('dPlace', 'Место размещения', S.dPlace)}<button class="btn danger" style="align-self:center" data-go="note:Удаление устройства запросит подтверждение.">Удалить</button></div>` }),
