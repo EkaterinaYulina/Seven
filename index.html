@@ -656,6 +656,39 @@ svg.ic.dots { stroke-width: 2.6; }
 .desk .appbar .icon-btn { border-radius: 50%; margin-right: -8px; background: none; box-shadow: none; }
 .desk .appbar .btn.text { min-width: 0; padding: 0 12px; }
 .desk > .page .step { padding-left: calc(var(--dim-gutter) + 8px); padding-right: calc(var(--dim-gutter) + 8px); }   /* шаг мастера на линии 24, как заголовок и текст */
+
+/* ── Доступность (WCAG 2.1 AA) ── */
+:root, [data-theme="light"] { --a11y-line: color-mix(in srgb, var(--page-text) 60%, transparent); --a11y-ph: #566A5D; }
+[data-theme="dark"] { --a11y-line: color-mix(in srgb, var(--page-text) 60%, transparent); --a11y-ph: #A9B8AE; }
+/* 1.4.11: граница полей, вторичных кнопок и невыбранных чипов ≥3:1 */
+.desk > .page .dd, .desk > .page .fld, .desk > .page .tf input, .desk > .page .search2,
+.desk > .form .dd, .desk > .form .fld, .desk > .form .tf input, .desk > .launcher .search,
+.desk > .form .szb, .desk > .page .btn.secondary, .desk > .form .btn.secondary { box-shadow: inset 0 0 0 1px var(--a11y-line); border-color: transparent; }
+.desk > .page .chip:not([aria-pressed="true"]) { box-shadow: inset 0 0 0 1px var(--a11y-line); }
+.desk > .page .tf input:focus, .desk > .page .fld:focus-within, .desk > .page .search2:focus-within,
+.desk > .form .tf input:focus, .desk > .form .fld:focus-within, .desk > .launcher .search:focus-within { box-shadow: inset 0 0 0 2px var(--ui-primary); }
+.launcher .search input, .page .search2 input, .fld input { outline: 0; }
+/* выключенный переключатель: обводка трека ≥3:1 */
+.sw[aria-checked="false"] .trk { box-shadow: inset 0 0 0 2px var(--a11y-line); background: transparent; }
+.sw[aria-checked="false"] .trk::after { background: var(--a11y-line); }
+/* 1.4.3: плейсхолдер и подсказка */
+input::placeholder { color: var(--a11y-ph); opacity: 1; }
+.tf input:placeholder-shown::placeholder { color: transparent; }
+.launcher .search input::placeholder { color: var(--a11y-ph); }
+.card2 .hint, .hint { color: var(--page-text); }
+/* тёмная тема: иконки лаунчера */
+[data-theme="dark"] .launcher .app b { background: color-mix(in srgb, var(--hue) 30%, var(--sheet-bg)); color: color-mix(in srgb, var(--hue) 30%, #fff); }
+/* фокус с клавиатуры */
+:focus-visible { outline: 2px solid var(--ui-primary); outline-offset: 2px; }
+.desk .tile[role="button"]:focus-visible, .zone:focus-visible { outline-offset: -2px; }
+/* 2.5.5: зоны нажатия ≥44–48 без изменения вида */
+.page .chip, .strip .hit, .mv button { position: relative; }
+.page .chip::before { content: ""; position: absolute; inset: -8px -2px; }
+.strip .hit::before { content: ""; position: absolute; inset: -8px 0 -12px; }
+.mv button { width: 48px; }
+.vrow .ib { width: 48px; height: 48px; }
+.form .szb { height: 48px; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
 </style>
 </head>
 <body>
@@ -1579,6 +1612,40 @@ if (q.get('mode') === 'edit') state.edit = true;
 if (q.get('screen')) setScreen(q.get('screen'));
 if (q.get('page')) G('Настройки').set(q.get('page'));
 render();
+
+/* ───────── Доступность: имена, роли, клавиатура ───────── */
+(function () {
+  const txt = el => (el && el.textContent || '').replace(/\s+/g, ' ').trim();
+  function pass(root) {
+    root.querySelectorAll('[role=switch]:not([aria-label])').forEach(b => {
+      const row = b.closest('.gr, .srow'); const t = row && row.querySelector('.rt, .sh'); if (t) b.setAttribute('aria-label', txt(t));
+    });
+    root.querySelectorAll('[role=slider]').forEach(z => {
+      z.tabIndex = 0; if (!z.hasAttribute('aria-label')) z.setAttribute('aria-label', txt(z.closest('.sl2').querySelector('.lr span')));
+    });
+    root.querySelectorAll('input[placeholder]:not([aria-label])').forEach(i => { const p = i.placeholder.trim(); if (p) i.setAttribute('aria-label', p); });
+    root.querySelectorAll('.desk .tile').forEach(t => {
+      if (t.closest('.pv')) return; if (!t.hasAttribute('role')) { t.setAttribute('role', 'button'); t.tabIndex = 0; t.setAttribute('aria-label', txt(t)); }
+    });
+    root.querySelectorAll('.page .appbar .ttl, .form .appbar .ttl, .launcher .appbar .ttl').forEach(h => { h.setAttribute('role', 'heading'); h.setAttribute('aria-level', '1'); });
+  }
+  const mo = new MutationObserver(() => { mo.disconnect(); pass(document); mo.observe(document.body, { childList: true, subtree: true }); });
+  pass(document); mo.observe(document.body, { childList: true, subtree: true });
+  document.addEventListener('keydown', e => {
+    const t = e.target;
+    if (t.matches && t.matches('.desk .tile[role=button]') && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); t.click(); }
+    if (t.matches && t.matches('.sl2 .zone')) {
+      const box = t.closest('.sl2'), k = box.dataset.sl, mn = +box.dataset.min, mx = +box.dataset.max;
+      const d = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1, PageUp: 10, PageDown: -10 }[e.key];
+      if (e.key === 'Home' || e.key === 'End' || d) {
+        e.preventDefault(); const v = e.key === 'Home' ? mn : e.key === 'End' ? mx : Math.min(mx, Math.max(mn, +t.getAttribute('aria-valuenow') + d));
+        S[k] = v; const f = (v - mn) / (mx - mn) * 100;
+        t.querySelector('.fl').style.width = f + '%'; t.querySelector('.th').style.left = f + '%';
+        box.querySelector('.lr b').textContent = v + ' %'; t.setAttribute('aria-valuenow', v); syncWp();
+      }
+    }
+  });
+})();
 </script>
 </body>
 </html>
