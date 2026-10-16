@@ -47,7 +47,7 @@
   /* только в прототипе, в токены не заведены */
   --tile-slider-track: 4px; --tile-slider-thumb: 14px;
   --page-dot: 6px; --page-dot-step: 10px; --mic-circle: 28px;
-  --badge: 24px;           /* красный × на плитке в правке; зона касания = touch-min */
+  --badge: 24px;           /* зелёный бейдж «убрать» на плитке в правке; зона касания = touch-min */
   --snackbar-h: 64px;      /* по Seven / Snackbar */
 }
 
@@ -516,9 +516,8 @@ svg.ic.dots { stroke-width: 2.6; }
 .film { position: absolute; inset: 0; }                /* «плёнка»: гасит нажатия на содержимое */
 .badge-hit { position: absolute; top: 0; right: 0; width: var(--dim-touch-min); height: var(--dim-touch-min);
   display: flex; align-items: center; justify-content: center; }
-.badge { width: var(--badge); height: var(--badge); border-radius: 50%; background: var(--ui-surface-card); color: var(--ui-on-surface); box-shadow: 0 0 0 1px var(--ui-outline-subtle), 0 1px 3px #0003; display: flex; align-items: center; justify-content: center; }
+.badge { width: var(--badge); height: var(--badge); border-radius: 50%; background: var(--ui-primary-container); color: var(--ui-on-primary-container); box-shadow: 0 1px 3px #0003; display: flex; align-items: center; justify-content: center; }
 .badge .ic { width: var(--badge); height: var(--badge); stroke-width: 2.2; }
-.desk[data-badge="green"] .badge { background: var(--ui-primary-container); color: var(--ui-on-primary-container); box-shadow: 0 1px 3px #0003; }
 .slot { position: absolute; border-radius: var(--dim-radius-tile); background: var(--ui-slot-fill);
   border: 1px solid var(--ui-outline-subtle); color: var(--ui-outline);
   display: flex; align-items: center; justify-content: center; cursor: pointer; }
@@ -1520,8 +1519,6 @@ const GROUPS = [
     opts: [['old', 'Было'], ['h', 'Горизонтальный'], ['v', 'Вертикальный']] },
   { label: 'Вид ползунка', get: () => desk.dataset.dstyle || 'a', set: v => { desk.dataset.dstyle = v; },
     opts: [['a', '1 Без заливки'], ['b', '2 Бледная'], ['c', '3 По яркости'], ['d', '4 Светлая']] },
-  { label: 'Бейдж «убрать»', get: () => desk.dataset.badge || 'neutral', set: v => { desk.dataset.badge = v; },
-    opts: [['neutral', 'Нейтральный'], ['green', 'Зелёный']] },
   { label: 'Микрофон', get: () => state.mic, set: v => { state.mic = v; $('#mic').dataset.state = v; },
     opts: [['off', 'Выкл'], ['listening', 'Слушает'], ['no-permission', 'Нет доступа']] },
   { label: 'Мастера', cls: 'grid3', get: () => state.screen === 'page' && curPage !== 'settings' ? (curPage === 'add-controller' && S.ctrl === 'manual' ? 'add-controller-m' : curPage) : '',
@@ -1565,7 +1562,6 @@ function syncControls() {
 /* ?mode=edit&theme=dark&mic=listening: открыть сразу в нужном состоянии */
 const q = new URLSearchParams(location.search);
 if (q.get('theme')) G('Тема').set(q.get('theme'));
-if (q.get('badge')) G('Бейдж «убрать»').set(q.get('badge'));
 G('Вид ползунка').set(q.get('dstyle') || 'a');
 if (q.get('dimmer')) state.dimmer = q.get('dimmer');
 if (q.get('mic')) G('Микрофон').set(q.get('mic'));
