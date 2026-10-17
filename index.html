@@ -511,9 +511,9 @@ svg.ic.dots { stroke-width: 2.6; }
 .dlg h2 { margin: 0 0 var(--dim-gutter); font-size: 22px; line-height: 28px; font-weight: 400; }
 .dlg .ac { display: flex; justify-content: flex-end; gap: var(--dim-space-sm); margin-top: var(--dim-gutter); }
 .dg { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; color: var(--c-text-secondary); cursor: grab; touch-action: none; flex: none; }
-.page .gr .cnt { margin-left: auto; white-space: nowrap; font-size: 13px; font-weight: 400; line-height: 20px; color: var(--c-text-secondary); }
-.page .gr.act:has(.cnt) { gap: var(--dim-space-sm); } .page .gr.act:has(.cnt) > .tx { white-space: nowrap; flex: none; }
-.page .gr.act .cnt + .go { width: 48px; height: 48px; margin: -8px 0 -8px -17px; flex: none; align-items: center; justify-content: center; }   /* та же колонка 48px, что и у ручки drag-and-drop: центры иконок на одной вертикали */
+.page .gr .cnt { margin-left: auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 400; line-height: 20px; color: var(--c-text-secondary); }
+.page .gr.act:has(.cnt) { gap: 6px; } .page .gr.act:has(.cnt) > .tx { white-space: nowrap; flex: none; }
+.page .gr.act .cnt + .go { width: 48px; height: 48px; margin: -8px 0 -8px -15px; flex: none; align-items: center; justify-content: center; }   /* та же колонка 48px, что и у ручки drag-and-drop: центры иконок на одной вертикали */
 .room { position: relative; transition: transform .18s ease; } .room.drag { z-index: 5; transition: none; opacity: .96; filter: drop-shadow(0 6px 14px #0003); } .room.drag .dg { cursor: grabbing; }
 .mv { display: flex; flex-direction: column; }.mv button { width: 40px; height: 32px; display: flex; align-items: center; justify-content: center; color: var(--c-text-secondary); } .mv button:disabled { opacity: .38; }
 .hint { display: flex; gap: 8px; align-items: center; font-weight: 600; margin-bottom: var(--dim-space-sm); } .hint svg { width: 20px; height: 20px; }
