@@ -230,6 +230,7 @@ svg.ic.dots { stroke-width: 2.6; }
 .drawer .item { height: 48px; margin-left: var(--dim-space-sm); border-radius: 999px; padding: 0 var(--dim-space-md) 0 var(--dim-space-md);
   display: flex; align-items: center; gap: var(--dim-gutter); font-size: var(--font-name); line-height: var(--lh-name); cursor: pointer; text-align: left; width: calc(100% - var(--dim-space-sm)); }
 .drawer .item[aria-current="true"] { background: color-mix(in srgb, var(--ui-primary-container) 16%, transparent); font-weight: 500; }
+.drawer .item .tag { margin-left: auto; font-size: 14px; font-weight: 400; color: var(--c-text-secondary); white-space: nowrap; }   /* комната, в которой висит эта панель */
 .drawer .item:active { background: color-mix(in srgb, var(--ui-on-surface) 8%, transparent); }
 .drawer .gap { flex: 1; }
 .drawer .sep { height: 1px; margin: var(--dim-space-xs, 4px) var(--dim-space-xl) var(--dim-space-xs) calc(var(--dim-space-sm) + var(--dim-space-md)); background: color-mix(in srgb, var(--ui-on-surface) 12%, transparent); flex: none; }
@@ -812,8 +813,8 @@ input::placeholder { color: var(--a11y-ph); opacity: 1; }
       <!-- Боковое меню -->
       <div class="scrim" id="scrim"></div>
       <nav class="drawer" id="drawer" aria-label="Меню">
-        <div class="head"><div class="t">Seven assistant</div><div class="s">Комната панели: Гостиная</div></div>
-        <button class="item" aria-current="true" data-go="room"><svg class="ic"><use href="#i-pin"/></svg>Гостиная</button>
+        <div class="head"><div class="t">Seven assistant</div></div>
+        <button class="item" aria-current="true" data-go="room"><svg class="ic"><use href="#i-pin"/></svg>Гостиная<span class="tag">Эта панель</span></button>
         <div class="gap"></div>
         <button class="item" data-go="cc"><svg class="ic"><use href="#i-cc"/></svg>Мой дом</button>
         <button class="item" data-go="apps"><svg class="ic"><use href="#i-apps"/></svg>Все приложения</button>
