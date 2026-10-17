@@ -1428,6 +1428,7 @@ const EMPTY = {
   vdevs: ['group', 'Виртуальных устройств пока нет', 'Виртуальное устройство собирает свойства из разного оборудования и работает как одно'],
 };
 const emptyState = k => { const [ic, t, d] = EMPTY[k]; return `<div class="empty"><i class="eic">${ICON(ic)}</i><b>${t}</b>${d}</div>`; };
+const plr = (n, a, b, c) => n + ' ' + (n % 10 === 1 && n % 100 !== 11 ? a : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? b : c);
 const ccPage = () => {
   const t = CCT.find(x => x[0] === S.cct);
   const bodies = {
@@ -1436,7 +1437,7 @@ const ccPage = () => {
       `<div class="chiprow" style="padding-top:var(--dim-space-sm)"><button class="btn secondary" data-go="note:Виртуальные устройства: список в прототип не входит.">Виртуальные устройства</button></div>`,
     loc: () => S.empty || !S.rooms.length ? emptyState('loc') : S.rooms.map((r, i) => `<div class="room" data-room="${i}">` + grp('',
       grow(r.n, r.alt ? 'Другие названия: ' + r.alt : '', `<span class="dg" data-drag="${i}" role="button" aria-label="Перетащить, чтобы изменить порядок">${ICON('grip')}</span>`) +
-      `<button class="gr act" data-go="cc-vdevs">${ICON('devices')}<span class="tx">Виртуальные устройства</span><span class="cnt">${r.v} · Свойств: ${r.p}</span></button>`) + '</div>').join(''),
+      `<button class="gr act" data-go="cc-vdevs">${ICON('devices')}<span class="tx">Виртуальные устройства</span><span class="cnt">${plr(r.v, 'устройство', 'устройства', 'устройств')}, ${plr(r.p, 'свойство', 'свойства', 'свойств')}</span></button>`) + '</div>').join(''),
     conn: () => S.empty || !S.conns.length ? emptyState('conn') : S.conns.map((c, i) => grp(c.n, grow(c.t, '', sw('cn' + i, c.on), { c: c.a }) + arow('Добавить устройства', 'add-controller'))).join(''),
     dev: () => { if (S.empty) return emptyState('dev'); const by = {}; CCDEV.filter(d => S.devTab === 'all' || d[3] === S.devTab).forEach(d => (by[d[0].split(' / ')[0]] = by[d[0].split(' / ')[0]] || []).push(d));
       return Object.entries(by).map(([h, ds]) => grp(h, ds.map(d => grow(d[1], '', `<span class="go">${ICON('chev')}</span>`, { attrs: `data-go="devedit:${d[1]}"`, c: d[2] })).join(''))).join(''); },
