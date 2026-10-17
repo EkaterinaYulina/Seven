@@ -366,9 +366,15 @@ svg.ic.dots { stroke-width: 2.6; }
 .page .mini b { position: absolute; inset: 0; background: var(--core-ink); }
 .page .lvls { display: flex; gap: var(--dim-space-sm); padding: 0 var(--dim-gutter); }
 .page .chiprow.five.flat { padding: 0 var(--dim-gutter); }
-.page .lvl { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 8px; align-items: stretch; padding: 8px; border-radius: var(--dim-radius-card); box-shadow: inset 0 0 0 1px var(--ui-outline-subtle); background: color-mix(in srgb, var(--ui-on-surface) 4%, transparent); text-align: center; font-size: 14px; line-height: 18px; }
-.page .lvl[aria-checked="true"] { box-shadow: inset 0 0 0 2px var(--ui-primary); font-weight: 500; }
+.page .lvl { position: relative; flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: stretch; padding: 0; overflow: hidden; border-radius: var(--dim-radius-card); background: color-mix(in srgb, var(--ui-on-surface) 4%, transparent); text-align: center; font-size: 14px; line-height: 18px; }
+.page .lvl .mini { border-radius: 0; box-shadow: none; aspect-ratio: 4 / 3; }
+.page .lvl .nm { padding: 10px 4px 12px; }
+.page .lvl::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; box-shadow: inset 0 0 0 1px var(--ui-outline-subtle); }
+.page .lvl[aria-checked="true"] { font-weight: 500; }
+.page .lvl[aria-checked="true"]::after { box-shadow: inset 0 0 0 2px var(--ui-primary); }
 .page .dimflash { position: absolute; inset: 0; z-index: 70; background: #000; opacity: 0; pointer-events: none; transition: opacity .3s ease; }
+.page .flush .gh { padding-left: var(--dim-gutter); padding-right: var(--dim-gutter); }   /* заголовки и подсказка — по краю блоков, а не по линии текста */
+.page .flush .gd { margin-left: var(--dim-gutter); margin-right: var(--dim-gutter); }
 .page .grp + .grp.sep { margin-top: var(--dim-space-md); }   /* ссылка-переход отдельно от списка выбора */
 .page .body > .gd:first-child { margin-top: var(--dim-gutter); }
 .page .gr .mk { flex: none; width: 20px; height: 20px; border: 2px solid var(--ui-on-surface); border-radius: 50%; box-sizing: border-box; position: relative; }
@@ -391,8 +397,8 @@ svg.ic.dots { stroke-width: 2.6; }
   box-shadow: 0 1px 3px #0000004d, 0 0 0 .5px #0000001a; transition: transform .22s cubic-bezier(.3, 1.3, .5, 1), width .15s ease; }
 .sw[aria-checked="true"] .trk { background: var(--ui-primary-container); }
 .sw[aria-checked="true"] .trk::after { transform: translateX(20px); }
-.sw:active .trk::after { width: 28px; }
-.sw[aria-checked="true"]:active .trk::after { transform: translateX(16px); }
+.sw:active .trk::after, .gr:active > .sw .trk::after { width: 28px; }
+.sw[aria-checked="true"]:active .trk::after, .gr:active > .sw[aria-checked="true"] .trk::after { transform: translateX(16px); }
 .sw .trk svg, .sw .lb { display: none; }
 /* Radio / Checkbox */
 .opt { display: flex; align-items: flex-start; gap: var(--dim-space-md); min-height: 48px; padding: 14px 0 6px; width: 100%; text-align: left; }
@@ -1284,7 +1290,9 @@ const grow = (t, d, end = '', o = {}) => { const in_ = `<span class="tx"><span c
 const rrow = (g, v, cur, t, d = '') => grow(t, d, '<span class="mk"></span>', { attrs: `role="radio" aria-checked="${v === cur}" data-radio="${g}" data-v="${v}"` });
 const nrow = (t, d, go, o = {}) => grow(t, d, `<span class="go">${ICON('chev')}</span>`, { attrs: `data-go="${go}"`, c: o.c });
 const arow = (t, go, ic = 'plus') => `<button class="gr act" data-go="${go}">${ICON(ic)}<span class="tx">${t}</span></button>`;
-const srow = (t, d, k, on) => grow(t, d, sw(k, on));
+/* строка-переключатель: нажимается вся строка, сам переключатель — только картинка внутри */
+const swv = (on) => `<span class="sw" aria-checked="${on}" aria-hidden="true"><span class="trk">${CHECK}</span><span class="lb">${on ? 'Вкл' : 'Выкл'}</span></span>`;
+const srow = (t, d, k, on) => grow(t, d, swv(on), { attrs: `role="switch" aria-checked="${on}" data-sw="${k}"` });
 const swRow = (k, on, t, d) => `<div class="sec"><div class="srow"><div class="tx"><h3 class="sh">${t}</h3><p class="sd">${d}</p></div>${sw(k, on)}</div></div>`;
 const radio = rrow;
 const crow = (k, on, t, d = '', a = 'data-chk') => grow(t, d, '<span class="mk c">' + CHECK + '</span>', { attrs: `role="checkbox" aria-checked="${on}" ${a}="${k}"` });
@@ -1314,7 +1322,7 @@ const PAGES = {
       grp('Как слушать', rrow('listen', 'always', S.listen, 'Всегда (по умолчанию)', 'Ассистент выполняет любую распознанную фразу') +
         rrow('listen', 'word', S.listen, 'По слову «Севен»', 'Ассистент выполняет только фразы со словом «Севен», например «Севен, включи свет»')),
     device: () => grp('', lrow('globe', 'Язык', LANG_LABEL[S.lang], 'dev-lang') + lrow('pin', 'Комната панели', roomLabel(), 'dev-room') +
-      lrow('image', 'Обои', '', 'wallpaper') + lrow('sun', 'Экран', S.manage ? (DIM_AFTER.find(d => String(d[0]) === String(S.dimAfter)) || [0, ''])[1] : 'Выкл', 'display') +
+      lrow('image', 'Обои', '', 'wallpaper') + lrow('sun', 'Экран', S.manage ? 'Приглушать через ' + (DIM_AFTER.find(d => String(d[0]) === String(S.dimAfter)) || [0, ''])[1] : 'Не приглушать', 'display') +
       lrow('apps', 'Лаунчер', '', 'dev-launcher')),
     conn: () => grp('', srow('Панель в MQTT', 'Панель появится в брокере как устройство seven_panel_1756903f. Другие системы смогут менять яркость, громкость, экран и микрофон и читать датчики. Если связь оборвётся, брокер пометит панель как «не отвечает». При включении и выключении панель один раз переподключится к брокеру.', 'mqtt', S.mqtt)) +
       grp('Брокер для панели', rrow('broker', 'b1', S.broker ? 'b1' : '', '192.168.23.141:1883')),
@@ -1326,26 +1334,26 @@ const PAGES = {
   })[S.tab]() }),
   'dev-lang': () => ({ title: 'Язык', back: true, body:
     grp('', rrow('lang', 'ru', S.lang, 'Русский') + rrow('lang', 'en', S.lang, 'English') + rrow('lang', 'dev', S.lang, 'Как в системе', 'Сейчас в системе: English'),
-      'Язык меню и подсказок. Голосовые команды ассистент понимает только по-русски.') }),
+      'Язык меню и подсказок. Голосовые команды ассистент понимает только по-русски') }),
   'dev-room': () => ({ title: 'Комната панели', back: true, body:
-    grp('', ROOMS.map(([v, t]) => rrow('room', v, S.room, t)).join(''), 'Если в команде нет комнаты, например «включи свет», ассистент управляет этой комнатой.') +
+    grp('', ROOMS.map(([v, t]) => rrow('room', v, S.room, t)).join(''), 'Если в команде нет комнаты, например «включи свет», ассистент управляет этой комнатой') +
     grp('', lrow('pin', 'Управление комнатами', '', 'note:Управление комнатами — это экран «Мой дом → Локации». В этот прототип не входит.')).replace('class="grp nt"', 'class="grp sep"') }),
   'dev-launcher': () => ({ title: 'Лаунчер', back: true, body:
     grp('', grow('Сейчас домашнее приложение', 'NSPanelPro')) +
     `<div class="sec" style="border-bottom:0"><button class="btn primary wide" data-go="note:Откроется системный выбор домашнего приложения.">Выбрать домашнее приложение</button></div>` +
-    grp('Как сделать Seven домашним', `<div class="gr"><span class="tx"><span class="rd">Seven запускается только из списка приложений. Нажмите кнопку, выберите «Seven assistant» и «Всегда». Если система не спросит, откройте системные настройки → «Приложения по умолчанию» → «Домашнее приложение».</span></span></div>`) }),
+    grp('Как сделать Seven домашним', `<div class="gr"><span class="tx"><span class="rd">Seven запускается только из списка приложений. Нажмите кнопку, выберите «Seven assistant» и «Всегда». Если система не спросит, откройте системные настройки → «Приложения по умолчанию» → «Домашнее приложение»</span></span></div>`) }),
   wallpaper: () => ({ title: 'Обои', back: true, body:
     `<div class="sec"><div class="wp" id="wpPrev"><div class="wpdim"></div><div class="st"><span>Кухня</span><span>14:02</span></div>` +
     `<div class="mt" style="left:8px;width:92px">${ICON('bulb')}<b>Свет</b>Включен</div><div class="mt" style="left:108px;width:92px"><b>22,5 °C</b>Кухня</div></div>` +
     slider('dim', 'Затемнение', S.dim, '%', 0, 80) + slider('glass', 'Прозрачность плиток', S.glass, '%', 0, 100) + '</div>' +
     `<div class="sec"><h3 class="sh sm">Где применять</h3><p class="sd">Экраны этой панели</p><button class="dd"><span>Все комнаты (по умолчанию)</span>${ICON('chev')}</button></div>` }),
-  display: () => ({ title: 'Экран', back: true, body:
+  display: () => ({ title: 'Экран', back: true, body: '<div class="flush">' +
     grp('', srow('Приглушать экран, когда им не пользуются', '', 'manage', S.manage)) +
     `<div class="${S.manage ? '' : 'dis'}">` +
     `<div class="gh">Приглушить через</div>` + `<div class="chiprow five flat">${DIM_AFTER.map(([v, t]) => `<button class="chip" data-radio="dimAfter" data-v="${v}" aria-pressed="${String(S.dimAfter) === String(v)}">${t}</button>`).join('')}</div>` +
-    `<div class="gh">Яркость при приглушении</div>` + `<div class="lvls" role="radiogroup">${DIM_LVL.map(([v, t, pc]) => `<button class="lvl" role="radio" aria-checked="${S.dimBright === pc}" data-radio="dimBright" data-v="${pc}">${mini(miniAlpha(pc))}${t}</button>`).join('')}</div>` +
-    `<p class="gd" style="margin-top:var(--dim-space-sm)">Коснитесь тусклого экрана, и яркость вернётся.</p>` +
-    '</div>' }),
+    `<div class="gh">Яркость при приглушении</div>` + `<div class="lvls" role="radiogroup">${DIM_LVL.map(([v, t, pc]) => `<button class="lvl" role="radio" aria-checked="${S.dimBright === pc}" data-radio="dimBright" data-v="${pc}">${mini(miniAlpha(pc))}<span class="nm">${t}</span></button>`).join('')}</div>` +
+    `<p class="gd" style="margin-top:var(--dim-space-sm)">Коснитесь тусклого экрана, и яркость вернётся</p>` +
+    '</div></div>' }),
   export: () => ({ title: 'Экспорт и импорт', body:
     `<div class="sec"><h3 class="sh">Экспорт</h3><p class="sd">В файл config.json попадут комнаты, виртуальные устройства, голосовые настройки, сценарии и экраны. Пароли, настройки брокеров и будильники в него не попадут.</p>` +
     `<h3 class="sh sm" style="margin-top:var(--dim-space-md)">Экраны профилей</h3>` + grp('', crow('panel', S.exp.panel, 'Панель (это устройство)') + crow('phone', S.exp.phone, 'Телефон') + crow('pc', S.exp.pc, 'Компьютер')) +
