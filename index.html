@@ -364,16 +364,9 @@ svg.ic.dots { stroke-width: 2.6; }
 .page .mini i { position: absolute; top: 22%; width: 26%; height: 30%; border-radius: 5px; background: rgba(255,255,255,.6); }
 .page .mini i:nth-child(1) { left: 12%; } .page .mini i:nth-child(2) { left: 42%; }
 .page .mini b { position: absolute; inset: 0; background: #000; }
-.page .tl { display: flex; align-items: flex-start; gap: 4px; padding: var(--dim-space-md) var(--dim-space-md) var(--dim-space-md) var(--dim-space-md); }
-.page .tl .st { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
-.page .tl .st .ta { color: var(--ui-on-surface); font-size: 14px; line-height: 18px; font-weight: 500; }
-.page .tl .st .tb { font-size: 12px; line-height: 16px; color: var(--c-text-secondary); }
-.page .tl .ar { flex: none; align-self: flex-start; margin-top: 22px; color: var(--c-text-secondary); display: flex; }
-.page .tl .ar .ic { transform: rotate(-90deg); width: 20px; height: 20px; }
 .page .lvls { display: flex; gap: var(--dim-space-sm); padding: var(--dim-space-md); }
 .page .lvl { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 8px; align-items: stretch; padding: 8px; border-radius: var(--dim-radius-card); box-shadow: inset 0 0 0 1px var(--ui-outline-subtle); text-align: center; font-size: 14px; line-height: 18px; }
 .page .lvl[aria-checked="true"] { box-shadow: inset 0 0 0 2px var(--ui-primary); font-weight: 500; }
-.page .dimflash { position: absolute; inset: 0; z-index: 70; background: #000; opacity: 0; pointer-events: none; transition: opacity .25s; }
 .page .grp + .grp.sep { margin-top: var(--dim-space-md); }   /* ссылка-переход отдельно от списка выбора */
 .page .body > .gd:first-child { margin-top: var(--dim-gutter); }
 .page .gr .mk { flex: none; width: 20px; height: 20px; border: 2px solid var(--ui-on-surface); border-radius: 50%; box-sizing: border-box; position: relative; }
@@ -386,6 +379,7 @@ svg.ic.dots { stroke-width: 2.6; }
 .page .chiprow.five { flex-wrap: nowrap; gap: 6px; padding: var(--dim-space-md) var(--dim-gutter); }
 .page .chiprow.five .chip { flex: 1 1 0; min-width: 0; height: var(--dim-touch-min); padding: 0; justify-content: center; border-radius: var(--dim-radius-chip); }
 .page .off { opacity: .45; pointer-events: none; }
+.page .dis { opacity: .45; pointer-events: none; }   /* блок настроек, пока их главный выключатель выключен (класс .off занят оверлеем погашенного экрана) */
 .page .btn.wide { width: 100%; margin-top: var(--dim-space-sm); }
 .page .linkbtn { display: flex; margin: var(--dim-space-sm) 0 0 auto; }
 /* Switch: цветная дорожка 52×32, белый бегунок 24 с тенью, без подписи */
@@ -1277,7 +1271,7 @@ $('#fmDone').onclick = () => {
 
 /* ───────── Настройки: страницы ───────── */
 const S = { tab: 'voice', voice: true, speak: true, listen: 'always', lang: 'ru', room: 'living', mqtt: false, broker: false,
-  confirm: 8, cancel: 10, manage: true, dimAfter: 30, dimBright: 10, offAfter: 300, night: 'sched', dim: 40, glass: 50,
+  confirm: 8, cancel: 10, manage: true, dimAfter: 30, dimBright: 10, dim: 40, glass: 50,
   exp: { panel: true, phone: false, pc: false }, ctrl: '', addr: '', port: '1883', haAddr: '', haPort: '8123', https: false, dev: { a: false, b: false }, jFilters: false, jq: '', jstat: { err: true, warn: true, ok: true } };
 let pageStack = [], curPage = null;
 const TABS = [['voice', 'Голос'], ['device', 'Устройство'], ['conn', 'Подключение'], ['security', 'Безопасность'], ['data', 'Данные']];
@@ -1298,7 +1292,6 @@ const STEP = { confirm: [1, 3, 30, 'сек'], cancel: [1, 3, 60, 'сек'] };
 const DIM_AFTER = [[15, '15 сек'], [30, '30 сек'], [60, '1 мин'], [120, '2 мин'], [300, '5 мин']];
 const slider = (k, label, v, unit, mn, mx) => `<div class="sl2" data-sl="${k}" data-min="${mn}" data-max="${mx}"><div class="lr"><span>${label}</span><b>${v} ${unit}</b></div><div class="zone" role="slider" aria-valuenow="${v}" aria-valuemin="${mn}" aria-valuemax="${mx}"><div class="tr"></div><div class="fl" style="width:${(v - mn) / (mx - mn) * 100}%"></div><div class="th" style="left:${(v - mn) / (mx - mn) * 100}%"></div></div><div class="mm"><span>${mn} ${unit}</span><span>${mx} ${unit}</span></div></div>`;
 const DIM_LVL = [['soft', 'Чуть тише', 40], ['mid', 'Заметно', 20], ['dark', 'Почти темно', 10]];
-const OFF_AFTER = [[300, '5 мин'], [600, '10 мин'], [1800, '30 мин'], [0, 'Не гасить']];
 const dimLvl = () => (DIM_LVL.find(l => l[2] === S.dimBright) || DIM_LVL[2]);
 const mini = a => `<span class="mini"><i></i><i></i><b style="opacity:${a}"></b></span>`;
 const ROOMS = [['none', 'Не выбрано'], ['living', 'Гостиная']];
@@ -1316,7 +1309,7 @@ const PAGES = {
       grp('Как слушать', rrow('listen', 'always', S.listen, 'Всегда (по умолчанию)', 'Ассистент выполняет любую распознанную фразу') +
         rrow('listen', 'word', S.listen, 'По слову «Севен»', 'Ассистент выполняет только фразы со словом «Севен», например «Севен, включи свет»')),
     device: () => grp('', lrow('globe', 'Язык', LANG_LABEL[S.lang], 'dev-lang') + lrow('pin', 'Комната панели', roomLabel(), 'dev-room') +
-      lrow('image', 'Обои', '', 'wallpaper') + lrow('moon', 'Бездействие и сон', S.manage ? (DIM_AFTER.find(d => String(d[0]) === String(S.dimAfter)) || [0, ''])[1] : 'Выкл', 'display') +
+      lrow('image', 'Обои', '', 'wallpaper') + lrow('sun', 'Экран', S.manage ? (DIM_AFTER.find(d => String(d[0]) === String(S.dimAfter)) || [0, ''])[1] : 'Выкл', 'display') +
       lrow('apps', 'Лаунчер', '', 'dev-launcher')),
     conn: () => grp('', srow('Панель в MQTT', 'Панель появится в брокере как устройство seven_panel_1756903f. Другие системы смогут менять яркость, громкость, экран и микрофон и читать датчики. Если связь оборвётся, брокер пометит панель как «не отвечает». При включении и выключении панель один раз переподключится к брокеру.', 'mqtt', S.mqtt)) +
       grp('Брокер для панели', rrow('broker', 'b1', S.broker ? 'b1' : '', '192.168.23.141:1883')),
@@ -1341,17 +1334,12 @@ const PAGES = {
     `<div class="mt" style="left:8px;width:92px">${ICON('bulb')}<b>Свет</b>Включен</div><div class="mt" style="left:108px;width:92px"><b>22,5 °C</b>Кухня</div></div>` +
     slider('dim', 'Затемнение', S.dim, '%', 0, 80) + slider('glass', 'Прозрачность плиток', S.glass, '%', 0, 100) + '</div>' +
     `<div class="sec"><h3 class="sh sm">Где применять</h3><p class="sd">Экраны этой панели</p><button class="dd"><span>Все комнаты (по умолчанию)</span>${ICON('chev')}</button></div>` }),
-  display: () => ({ title: 'Бездействие и сон', back: true, body:
+  display: () => ({ title: 'Экран', back: true, body:
     grp('', srow('Приглушать экран, когда им не пользуются', 'Выключено — экран всегда горит ярко', 'manage', S.manage)) +
-    `<div class="${S.manage ? '' : 'off'}">` +
-    grp('Что произойдёт', `<div class="tl"><div class="st">${mini(0)}<span class="ta">Сейчас</span><span class="tb">ярко</span></div><span class="ar">${ICON('chev')}</span>` +
-      `<div class="st">${mini(1 - S.dimBright / 100)}<span class="ta">через ${(DIM_AFTER.find(d => String(d[0]) === String(S.dimAfter)) || [0, ''])[1]}</span><span class="tb">тускло</span></div><span class="ar">${ICON('chev')}</span>` +
-      `<div class="st">${mini(1)}<span class="ta">${S.offAfter ? 'через ' + (OFF_AFTER.find(d => d[0] === S.offAfter) || [0, ''])[1] : 'не гаснет'}</span><span class="tb">${S.offAfter ? 'экран погаснет' : 'остаётся тусклым'}</span></div></div>`) +
+    `<div class="${S.manage ? '' : 'dis'}">` +
     grp('Приглушить через', `<div class="chiprow five">${DIM_AFTER.map(([v, t]) => `<button class="chip" data-radio="dimAfter" data-v="${v}" aria-pressed="${String(S.dimAfter) === String(v)}">${t}</button>`).join('')}</div>`) +
     grp('Насколько тусклым', `<div class="lvls" role="radiogroup">${DIM_LVL.map(([v, t, pc]) => `<button class="lvl" role="radio" aria-checked="${S.dimBright === pc}" data-radio="dimBright" data-v="${pc}">${mini(1 - pc / 100)}${t}</button>`).join('')}</div>`) +
-    grp('Погасить совсем через', `<div class="chiprow five">${OFF_AFTER.map(([v, t]) => `<button class="chip" data-radio="offAfter" data-v="${v}" aria-pressed="${S.offAfter === v}">${t}</button>`).join('')}</div>`) +
-    `<p class="gd" style="margin-top:var(--dim-space-sm)">Вернуть яркость — коснуться экрана. Погасший экран включается, когда вы подходите к панели или нажимаете кнопку питания.</p>` +
-    grp('', lrow('moon', 'Ночной режим', S.night === 'sched' ? 'По расписанию' : 'Выкл', 'note:Экран ночного режима будет отдельно.')) +
+    `<p class="gd" style="margin-top:var(--dim-space-sm)">Коснитесь тусклого экрана, и яркость вернётся.</p>` +
     '</div>' }),
   export: () => ({ title: 'Экспорт и импорт', body:
     `<div class="sec"><h3 class="sh">Экспорт</h3><p class="sd">В файл config.json попадут комнаты, виртуальные устройства, голосовые настройки, сценарии и экраны. Пароли, настройки брокеров и будильники в него не попадут.</p>` +
@@ -1541,8 +1529,8 @@ $('#page').addEventListener('click', e => {
   const t = e.target.closest('[data-tab],[data-sw],[data-radio],[data-chk],[data-chk2],[data-step],[data-go],[data-jst]'); if (!t) return;
   if (t.dataset.tab) { S.tab = t.dataset.tab; return drawPage(false); }
   if (t.dataset.sw) { const k = t.dataset.sw; if (k.startsWith('cn')) S.conns[+k.slice(2)].on = !S.conns[+k.slice(2)].on; else S[k] = !S[k]; return drawPage(); }
-  if (t.dataset.radio) { const g = t.dataset.radio; S[g] = g === 'broker' ? true : (['dimAfter', 'dimBright', 'offAfter'].includes(g) ? +t.dataset.v : t.dataset.v);
-    drawPage(); if (g === 'dimBright') { const f = document.createElement('div'); f.className = 'dimflash'; $('#page').appendChild(f); requestAnimationFrame(() => { f.style.opacity = 1 - S.dimBright / 100; setTimeout(() => { f.style.opacity = 0; setTimeout(() => f.remove(), 300); }, 1100); }); } return; }
+  if (t.dataset.radio) { const g = t.dataset.radio; S[g] = g === 'broker' ? true : (['dimAfter', 'dimBright'].includes(g) ? +t.dataset.v : t.dataset.v);
+    return drawPage(); }
   if (t.dataset.chk2) { S.dev[t.dataset.chk2] = !S.dev[t.dataset.chk2]; return drawPage(); }
   if (t.dataset.chk) { S.exp[t.dataset.chk] = !S.exp[t.dataset.chk]; return drawPage(); }
   if (t.dataset.step) { const k = t.dataset.step, [st, mn, mx] = STEP[k], d = +t.dataset.d, v = S[k];
@@ -1666,7 +1654,7 @@ const GROUPS = [
   { label: 'Экран', cls: 'grid3', get: () => state.screen, set: v => setScreen(v),
     opts: [['desk', 'Стол'], ['drawer', 'Меню'], ['apps', 'Приложения'], ['kbd', 'Поиск + клавиатура'], ['shade', 'Панель'], ['sheet', 'Лист плитки'], ['tile', 'Плитка'], ['custom', 'Новая плитка']] },
   { label: 'Настройки', cls: 'grid3', get: () => state.screen === 'page' ? (curPage === 'settings' ? S.tab : curPage) : '', set: v => goPage(v, false),
-    opts: [['voice', 'Голос'], ['device', 'Устройство'], ['conn', 'Подключение'], ['security', 'Безопасность'], ['data', 'Данные'], ['dev-lang', 'Язык'], ['dev-room', 'Комната панели'], ['wallpaper', 'Обои'], ['display', 'Бездействие и сон'], ['dev-launcher', 'Лаунчер'], ['export', 'Экспорт'], ['journal', 'Журнал']] },
+    opts: [['voice', 'Голос'], ['device', 'Устройство'], ['conn', 'Подключение'], ['security', 'Безопасность'], ['data', 'Данные'], ['dev-lang', 'Язык'], ['dev-room', 'Комната панели'], ['wallpaper', 'Обои'], ['display', 'Экран'], ['dev-launcher', 'Лаунчер'], ['export', 'Экспорт'], ['journal', 'Журнал']] },
   { label: 'Режим',    get: () => state.edit ? 'edit' : 'normal', set: v => setEdit(v === 'edit'),
     opts: [['normal', 'Обычный'], ['edit', 'Правка']] },
   { label: 'Тема',     get: () => state.theme, set: v => { state.theme = v; document.documentElement.dataset.theme = v; },
