@@ -510,7 +510,9 @@ svg.ic.dots { stroke-width: 2.6; }
 .dlg .box { width: calc(100% - 64px); background: var(--ui-surface-card); border-radius: 28px; padding: 24px; box-shadow: 0 6px 24px #0004; }
 .dlg h2 { margin: 0 0 var(--dim-gutter); font-size: 22px; line-height: 28px; font-weight: 400; }
 .dlg .ac { display: flex; justify-content: flex-end; gap: var(--dim-space-sm); margin-top: var(--dim-gutter); }
-.mv { display: flex; flex-direction: column; } .mv button { width: 40px; height: 32px; display: flex; align-items: center; justify-content: center; color: var(--c-text-secondary); } .mv button:disabled { opacity: .38; }
+.dg { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; color: var(--c-text-secondary); cursor: grab; touch-action: none; flex: none; }
+.room { position: relative; transition: transform .18s ease; } .room.drag { z-index: 5; transition: none; opacity: .96; filter: drop-shadow(0 6px 14px #0003); } .room.drag .dg { cursor: grabbing; }
+.mv { display: flex; flex-direction: column; }.mv button { width: 40px; height: 32px; display: flex; align-items: center; justify-content: center; color: var(--c-text-secondary); } .mv button:disabled { opacity: .38; }
 .hint { display: flex; gap: 8px; align-items: center; font-weight: 600; margin-bottom: var(--dim-space-sm); } .hint svg { width: 20px; height: 20px; }
 .pick { display: block; width: calc(100% - 32px); margin: 0 var(--dim-gutter) var(--dim-space-sm); text-align: left; border-radius: var(--dim-radius-card); padding: var(--dim-space-md); background: color-mix(in srgb, var(--ui-on-surface) 8%, transparent); min-height: 72px; }
 .pick b { display: block; font-size: var(--font-name); line-height: 20px; font-weight: 600; } .pick span { display: block; font-size: var(--font-name); line-height: 20px; color: var(--c-text-secondary); }
@@ -758,6 +760,7 @@ input::placeholder { color: var(--a11y-ph); opacity: 1; }
   <symbol id="i-cc" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="12" cy="12" r="3"/></symbol>
   <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.4-4.4"/></symbol>
   <symbol id="i-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="i-grip" viewBox="0 0 24 24"><g stroke="none" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></g></symbol>
   <symbol id="i-back" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
   <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></symbol>
@@ -1406,7 +1409,7 @@ Object.assign(PAGES, {
 Object.assign(S, { nav: 'tabs', empty: false, cct: 'loc', roomOpen: true, fab: false, wTab: 'scen', devTab: 'all',
   conns: [{ n: 'wirenboard-AEYCHFJC', t: 'Wirenboard', a: '192.168.23.141:1883', on: true }, { n: 'Home Assistant', t: 'Home Assistant (MQTT Discovery)', a: '192.168.23.10:1883', on: true }],
   iName: '', iAddr: '', iToken: '', bName: '', bAddr: '', bPort: '1883', bUser: '', bPass: '' });
-Object.assign(S, { rooms: [{ n: 'Гостиная', alt: 'кухня', v: 1, p: 6 }], dlg: false, rName: '', vdName: 'Свет', vdAlt: '', steps: [], dName: 'Зуммер', dPlace: '', br: 85, vol: 53, quiet: false });
+Object.assign(S, { rooms: [{ n: 'Гостиная', alt: 'кухня', v: 1, p: 6 }, { n: 'Спальня', alt: '', v: 2, p: 4 }], dlg: false, rName: '', vdName: 'Свет', vdAlt: '', steps: [], dName: 'Зуммер', dPlace: '', br: 85, vol: 53, quiet: false });
 const fld = (k, v, mic = true) => `<label class="fld"><input data-in="${k}" value="${v}" autocomplete="off">${mic ? `<button type="button" class="mi" data-go="note:Голосовой ввод в этот прототип не входит." aria-label="Голосовой ввод">${ICON('mic')}</button>` : ''}</label>`;
 const fabGo = (t, go) => `<button class="fab" data-go="${go}">${ICON('plus')}${t}</button>`;
 const CCT = [['loc', 'Локации', 'pin', 'Комнаты и виртуальные устройства'], ['conn', 'Подключения', 'signal', 'Контроллеры и интеграции'], ['dev', 'Устройства', 'bulb', 'Всё, что найдено у подключений'], ['wid', 'Виджеты', 'apps', 'Сценарии и виджеты']];
@@ -1430,9 +1433,9 @@ const ccPage = () => {
     loc0: () => `<div class="card2"><button class="hd" data-go="exp"><div class="tx"><div class="nm">Гостиная</div><div class="ds">Панель находится здесь</div></div><span style="display:flex;transform:rotate(${S.roomOpen ? 180 : 0}deg)">${ICON('chev')}</span></button>` +
       (S.roomOpen ? `<div class="ex"><div class="ds">Устройств: 2 · Виртуальных: 1</div><div class="row" style="margin-top:8px"><button class="btn secondary" data-go="note:Откроется диалог «Комната».">Изменить</button><button class="btn text" data-go="note:Удаление комнаты запросит подтверждение.">Удалить</button></div></div>` : '') + '</div>' +
       `<div class="chiprow" style="padding-top:var(--dim-space-sm)"><button class="btn secondary" data-go="note:Виртуальные устройства: список в прототип не входит.">Виртуальные устройства</button></div>`,
-    loc: () => S.empty || !S.rooms.length ? emptyState('loc') : S.rooms.map((r, i) => grp(r.n,
-      grow(r.alt ? 'Другие названия: ' + r.alt : 'Других названий нет', `Виртуальных устройств: ${r.v} · Свойств: ${r.p}`, `<div class="mv"><button data-go="mv:${i}:-1" ${i === 0 ? 'disabled' : ''} aria-label="Выше" style="transform:rotate(180deg)">${ICON('chev')}</button><button data-go="mv:${i}:1" ${i === S.rooms.length - 1 ? 'disabled' : ''} aria-label="Ниже">${ICON('chev')}</button></div>`) +
-      arow('Виртуальные устройства', 'cc-vdevs', 'devices') + arow('Группы комнат', 'ph-groups', 'group'))).join(''),
+    loc: () => S.empty || !S.rooms.length ? emptyState('loc') : S.rooms.map((r, i) => `<div class="room" data-room="${i}">` + grp(r.n,
+      grow(r.n, `Виртуальных устройств: ${r.v} · Свойств: ${r.p}`, `<span class="dg" data-drag="${i}" role="button" aria-label="Перетащить, чтобы изменить порядок">${ICON('grip')}</span>`, r.alt ? { c: 'Другие названия: ' + r.alt } : {}) +
+      arow('Виртуальные устройства', 'cc-vdevs', 'devices')) + '</div>').join(''),
     conn: () => S.empty || !S.conns.length ? emptyState('conn') : S.conns.map((c, i) => grp(c.n, grow(c.t, '', sw('cn' + i, c.on), { c: c.a }) + arow('Добавить устройства', 'add-controller'))).join(''),
     dev: () => { if (S.empty) return emptyState('dev'); const by = {}; CCDEV.filter(d => S.devTab === 'all' || d[3] === S.devTab).forEach(d => (by[d[0].split(' / ')[0]] = by[d[0].split(' / ')[0]] || []).push(d));
       return Object.entries(by).map(([h, ds]) => grp(h, ds.map(d => grow(d[1], '', `<span class="go">${ICON('chev')}</span>`, { attrs: `data-go="devedit:${d[1]}"`, c: d[2] })).join(''))).join(''); },
@@ -1563,7 +1566,6 @@ $('#page').addEventListener('click', e => {
   if (g.startsWith('cct:')) { S.cct = g.slice(4); S.fab = false; return drawPage(false); }
   if (g.startsWith('dtab:')) { S.devTab = g.slice(5); return drawPage(false); }
   if (g.startsWith('wtab:')) { S.wTab = g.slice(5); return drawPage(false); }
-  if (g.startsWith('mv:')) { const [, i, d] = g.split(':'); const a = S.rooms, j = +i + +d; [a[+i], a[j]] = [a[j], a[+i]]; return drawPage(); }
   if (g === 'dlg:open') { S.dlg = true; S.rName = ''; return drawPage(); }
   if (g === 'dlg:no') { S.dlg = false; return drawPage(); }
   if (g === 'dlg:ok') { S.rooms.push({ n: S.rName.trim(), alt: '', v: 0, p: 0 }); S.dlg = false; S.rName = ''; return drawPage(); }
@@ -1584,6 +1586,23 @@ $('#page').addEventListener('input', e => {
   if (e.target.dataset.in) { S[e.target.dataset.in] = e.target.value; const pg = PAGES[curPage](); if (pg.foot) $('#foot').innerHTML = pg.foot(); if (pg.actions && $('#acts')) $('#acts').innerHTML = pg.actions; const ok = $('#dlgOk'); if (ok) ok.disabled = !S.rName.trim(); return; }
   if (e.target.id !== 'jq') return;
   S.jq = e.target.value; const pos = e.target.selectionStart; drawPage(); const i = $('#jq'); i.focus(); i.setSelectionRange(pos, pos);
+});
+/* перетаскивание комнат за ручку: карточка следует за пальцем, соседние сдвигаются, порядок меняется на отпускании */
+$('#page').addEventListener('pointerdown', e => {
+  const h = e.target.closest('[data-drag]'); if (!h) return;
+  e.preventDefault(); e.stopPropagation();
+  const els = [...$('#page').querySelectorAll('.room')], from = +h.dataset.drag, me = els[from];
+  const hs = els.map(x => x.offsetHeight), tops = els.map(x => x.offsetTop), y0 = e.clientY;
+  let to = from; h.setPointerCapture(e.pointerId); me.classList.add('drag');
+  const mv = ev => {
+    const dy = ev.clientY - y0; me.style.transform = `translateY(${dy}px)`;
+    const c = tops[from] + hs[from] / 2 + dy; to = from;
+    els.forEach((x, i) => { if (i !== from && ((i < from && c < tops[i] + hs[i] / 2) || (i > from && c > tops[i] + hs[i] / 2))) to = i < from ? Math.min(to, i) : Math.max(to, i); });
+    els.forEach((x, i) => { if (i === from) return; x.style.transform = (i >= to && i < from) ? `translateY(${hs[from]}px)` : (i <= to && i > from) ? `translateY(${-hs[from]}px)` : ''; });
+  };
+  const up = () => { h.removeEventListener('pointermove', mv); h.removeEventListener('pointerup', up); h.removeEventListener('pointercancel', up);
+    if (to !== from) { const [r] = S.rooms.splice(from, 1); S.rooms.splice(to, 0, r); } drawPage(); };
+  h.addEventListener('pointermove', mv); h.addEventListener('pointerup', up); h.addEventListener('pointercancel', up);
 });
 /* слайдеры обоев: двигаем DOM напрямую, чтобы не терять захват указателя */
 $('#page').addEventListener('pointerdown', e => {
