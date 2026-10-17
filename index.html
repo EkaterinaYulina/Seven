@@ -478,12 +478,6 @@ svg.ic.dots { stroke-width: 2.6; }
   background: var(--ui-primary-container); color: var(--ui-on-primary-container); font-size: var(--font-name); font-weight: 500; box-shadow: 0 2px 8px #0003; }
 .fab .ic { width: 24px; height: 24px; }
 .fab .ic { transition: transform .2s ease; } .fab[aria-expanded="true"] .ic { transform: rotate(45deg); }
-.page .bnav { flex: none; height: 64px; display: flex; background: var(--ui-surface-bar); border-top: 1px solid var(--ui-outline-subtle); }
-.page .bnav .ni { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 11px; line-height: 14px; color: var(--c-text-secondary); }
-.page .bnav .ni .pl { width: 48px; height: 28px; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
-.page .bnav .ni[aria-selected="true"] { color: var(--ui-on-surface); font-weight: 600; }
-.page .bnav .ni[aria-selected="true"] .pl { background: var(--ui-primary-container); color: var(--ui-on-primary-container); }
-.page .bnav ~ .fab { bottom: calc(64px + var(--dim-gutter)); }
 .page .foot ~ .fab { bottom: calc(72px + var(--dim-gutter)); }   /* на экране с нижней панелью кнопка встаёт над ней */
 .speed { position: absolute; right: var(--dim-gutter); bottom: 80px; z-index: 3; display: flex; flex-direction: column; align-items: flex-end; gap: var(--dim-space-sm); }
 .speed button { height: 48px; padding: 0 20px; border-radius: 12px; background: var(--ui-surface-card); color: var(--ui-on-surface); border: 1px solid var(--ui-outline); font-size: var(--font-name); font-weight: 500; box-shadow: 0 2px 8px #0003; }
@@ -633,7 +627,7 @@ svg.ic.dots { stroke-width: 2.6; }
 .page .gr[aria-checked="true"] .mk::after { background: var(--ui-primary-container); }
 .page .chip { border: 0; box-shadow: inset 0 0 0 1px var(--glass-border); background: var(--glass-card); border-radius: var(--dim-radius-chip); }
 .page .chip[aria-pressed="true"] { background: var(--ui-primary-container); color: var(--ui-on-primary-container); box-shadow: none; }
-.page .foot, .page .bnav { border-top: 0; background: var(--glass-card); box-shadow: inset 0 1px 0 var(--glass-border); }
+.page .foot { border-top: 0; background: var(--glass-card); box-shadow: inset 0 1px 0 var(--glass-border); }
 .page .sw .trk::after { background: var(--page-thumb); }
 /* ── Единый стиль всего приложения: те же фон --desk-bg, стеклянные карточки и цвета текста, что на страницах.
       Относится к меню, приложениям, листу и форме плитки, шторке «Панель» и диалогам ── */
@@ -682,7 +676,7 @@ svg.ic.dots { stroke-width: 2.6; }
   --glass-card: color-mix(in srgb, var(--page-text) 6%, transparent);
   --glass-border: transparent;
 }
-.desk > .page .foot, .desk > .page .bnav { background: var(--sheet-bg); box-shadow: inset 0 1px 0 var(--glass-line); }
+.desk > .page .foot { background: var(--sheet-bg); box-shadow: inset 0 1px 0 var(--glass-line); }
 .desk > .page .chip[aria-pressed="true"] { box-shadow: none; }
 .desk > .page .tf span { background: transparent; }
 .desk > .page .gr { border-top-color: color-mix(in srgb, var(--page-text) 8%, transparent); }
@@ -1418,7 +1412,7 @@ Object.assign(PAGES, {
 });
 
 /* ───────── Мой дом ───────── */
-Object.assign(S, { nav: 'tabs', empty: false, cct: 'loc', roomOpen: true, fab: false, wTab: 'scen', devTab: 'all',
+Object.assign(S, { empty: false, cct: 'loc', roomOpen: true, fab: false, wTab: 'scen', devTab: 'all',
   conns: [{ n: 'wirenboard-AEYCHFJC', t: 'Wirenboard', a: '192.168.23.141:1883', on: true }, { n: 'Home Assistant', t: 'Home Assistant (MQTT Discovery)', a: '192.168.23.10:1883', on: true }],
   iName: '', iAddr: '', iToken: '', bName: '', bAddr: '', bPort: '1883', bUser: '', bPass: '' });
 Object.assign(S, { rooms: [{ n: 'Гостиная', alt: 'кухня', v: 1, p: 6 }, { n: 'Спальня', alt: '', v: 2, p: 4 }], dlg: false, rName: '', vdName: 'Свет', vdAlt: '', steps: [], dName: 'Зуммер', dPlace: '', br: 85, vol: 53, quiet: false });
@@ -1533,18 +1527,15 @@ function goPage(name, push = true) {
   curPage = name; setScreen('page'); drawPage();
 }
 const TICON = { voice: 'mic', device: 'sliders', conn: 'signal', security: 'lock', data: 'list' };
-const bottomNav = pg => `<nav class="bnav" role="tablist">` + (pg.tabs
-  ? TABS.map(([k, t]) => `<button class="ni" role="tab" aria-selected="${S.tab === k}" data-tab="${k}"><i class="pl">${ICON(TICON[k])}</i>${t}</button>`)
-  : CCT.map(([k, n, ic]) => `<button class="ni" role="tab" aria-selected="${S.cct === k}" data-go="cct:${k}"><i class="pl">${ICON(ic)}</i>${n}</button>`)).join('') + `</nav>`;
 function drawPage(keepScroll = true) {
   const pg = PAGES[curPage](), el = $('#page'), old = el.querySelector('.body'), top = keepScroll && old ? old.scrollTop : 0;
   el.innerHTML = (pg.back
     ? `<div class="appbar bk"><button class="icon-btn bk" data-go="back" aria-label="Назад">${ICON('back')}</button><div class="ttl">${pg.title}</div><span class="acts" id="acts">${pg.actions || ''}</span></div>`
     : `<div class="appbar"><div class="ttl">${pg.title}</div>` +
     `<span class="acts" id="acts">${pg.actions || ''}</span><button class="icon-btn" data-go="${pg.close ? 'close' : 'back'}" aria-label="Закрыть">${ICON('close')}</button></div>`) +
-    (S.nav !== 'bottom' && pg.mainTabs ? `<div class="tabs main" role="tablist">${pg.mainTabs}</div>` : '') +
-    (S.nav !== 'bottom' && pg.tabs ? `<div class="tabs main" role="tablist">${TABS.map(([k, t]) => `<button class="tab" role="tab" aria-selected="${S.tab === k}" data-tab="${k}">${t}</button>`).join('')}</div>` : '') +
-    `<div class="body${pg.fab && pg.fab.includes('class="fab"') ? ' fabpad' : ''}">${pg.ctx ? `<div class="gh">${pg.ctx}</div>` : ''}${pg.filter ? `<div class="fchips" role="group">${pg.filter}</div>` : ''}${pg.body}</div>` + (pg.foot ? `<div class="foot" id="foot">${pg.foot()}</div>` : '') + (pg.nav || '') + (S.nav === 'bottom' && (pg.mainTabs || pg.tabs) ? bottomNav(pg) : '') + (pg.fab || '');
+    (pg.mainTabs ? `<div class="tabs main" role="tablist">${pg.mainTabs}</div>` : '') +
+    (pg.tabs ? `<div class="tabs main" role="tablist">${TABS.map(([k, t]) => `<button class="tab" role="tab" aria-selected="${S.tab === k}" data-tab="${k}">${t}</button>`).join('')}</div>` : '') +
+    `<div class="body${pg.fab && pg.fab.includes('class="fab"') ? ' fabpad' : ''}">${pg.ctx ? `<div class="gh">${pg.ctx}</div>` : ''}${pg.filter ? `<div class="fchips" role="group">${pg.filter}</div>` : ''}${pg.body}</div>` + (pg.foot ? `<div class="foot" id="foot">${pg.foot()}</div>` : '') + (pg.nav || '') + (pg.fab || '');
   el.querySelector('.body').scrollTop = top;
   syncKb();
   const sel = el.querySelector('.tab[aria-selected="true"]'); if (sel) sel.scrollIntoView({ inline: 'center', block: 'nearest' });
@@ -1725,8 +1716,6 @@ const GROUPS = [
     opts: [['ph-gallery', 'Галерея'], ['ph-move', 'Переместить'], ['ph-more', 'Меню ⋮'], ['w3', 'Мастер 3'], ['w4', 'Мастер 4'], ['w5', 'Мастер 5'], ['w6', 'Мастер 6'], ['ph-se-action', 'Сценарий: действие'], ['ph-se-order', 'Сценарий: порядок'], ['ph-se-name', 'Сценарий: название'], ['ph-se-preview', 'Сценарий: просмотр'], ['ph-groups', 'Группы комнат'], ['ph-vd-suggest', 'Собрать из найденного'], ['ph-mqtt-tail', 'MQTT: хвост']] },
   { label: 'Пустые состояния',   get: () => S.empty ? 'empty' : 'full', set: v => { S.empty = v === 'empty'; if (state.screen === 'page') drawPage(false); },
     opts: [['full', 'Есть данные'], ['empty', 'Пусто']] },
-  { label: 'Навигация в разделах', get: () => S.nav, set: v => { S.nav = v; if (state.screen === 'page') drawPage(false); },
-    opts: [['tabs', 'Вкладки'], ['bottom', 'Меню внизу']] },
   { label: 'Экран стола', get: () => String(cur), set: v => { const n = +v; if (n !== cur) { cur = n; tiles = pagesData[cur]; undoStack = []; hideSnack(); render(); updateDots(); } }, opts: [['0', '1'], ['1', '2'], ['2', '3'], ['3', '4']] },
 ];
 const G = label => GROUPS.find(g => g.label === label);
@@ -1761,7 +1750,6 @@ if (q.get('theme')) G('Тема').set(q.get('theme'));
 G('Вид ползунка').set(q.get('dstyle') || 'a');
 if (q.get('dimmer')) state.dimmer = q.get('dimmer');
 if (q.get('mic')) G('Микрофон').set(q.get('mic'));
-if (q.get('nav')) S.nav = q.get('nav') === 'bottom' ? 'bottom' : 'tabs';
 if (q.get('empty')) S.empty = q.get('empty') === '1';
 if (q.get('mode') === 'edit') state.edit = true;
 if (q.get('screen')) setScreen(q.get('screen'));
