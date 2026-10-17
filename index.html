@@ -511,6 +511,7 @@ svg.ic.dots { stroke-width: 2.6; }
 .dlg h2 { margin: 0 0 var(--dim-gutter); font-size: 22px; line-height: 28px; font-weight: 400; }
 .dlg .ac { display: flex; justify-content: flex-end; gap: var(--dim-space-sm); margin-top: var(--dim-gutter); }
 .dg { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; color: var(--c-text-secondary); cursor: grab; touch-action: none; flex: none; }
+.page .gr .cnt { margin-left: auto; padding-left: var(--dim-space-sm); white-space: nowrap; font-size: var(--font-name); line-height: 20px; color: var(--c-text-secondary); }
 .room { position: relative; transition: transform .18s ease; } .room.drag { z-index: 5; transition: none; opacity: .96; filter: drop-shadow(0 6px 14px #0003); } .room.drag .dg { cursor: grabbing; }
 .mv { display: flex; flex-direction: column; }.mv button { width: 40px; height: 32px; display: flex; align-items: center; justify-content: center; color: var(--c-text-secondary); } .mv button:disabled { opacity: .38; }
 .hint { display: flex; gap: 8px; align-items: center; font-weight: 600; margin-bottom: var(--dim-space-sm); } .hint svg { width: 20px; height: 20px; }
@@ -1433,9 +1434,9 @@ const ccPage = () => {
     loc0: () => `<div class="card2"><button class="hd" data-go="exp"><div class="tx"><div class="nm">Гостиная</div><div class="ds">Панель находится здесь</div></div><span style="display:flex;transform:rotate(${S.roomOpen ? 180 : 0}deg)">${ICON('chev')}</span></button>` +
       (S.roomOpen ? `<div class="ex"><div class="ds">Устройств: 2 · Виртуальных: 1</div><div class="row" style="margin-top:8px"><button class="btn secondary" data-go="note:Откроется диалог «Комната».">Изменить</button><button class="btn text" data-go="note:Удаление комнаты запросит подтверждение.">Удалить</button></div></div>` : '') + '</div>' +
       `<div class="chiprow" style="padding-top:var(--dim-space-sm)"><button class="btn secondary" data-go="note:Виртуальные устройства: список в прототип не входит.">Виртуальные устройства</button></div>`,
-    loc: () => S.empty || !S.rooms.length ? emptyState('loc') : S.rooms.map((r, i) => `<div class="room" data-room="${i}">` + grp(r.n,
-      grow(r.n, `Виртуальных устройств: ${r.v} · Свойств: ${r.p}`, `<span class="dg" data-drag="${i}" role="button" aria-label="Перетащить, чтобы изменить порядок">${ICON('grip')}</span>`, r.alt ? { c: 'Другие названия: ' + r.alt } : {}) +
-      arow('Виртуальные устройства', 'cc-vdevs', 'devices')) + '</div>').join(''),
+    loc: () => S.empty || !S.rooms.length ? emptyState('loc') : S.rooms.map((r, i) => `<div class="room" data-room="${i}">` + grp('',
+      grow(r.n, r.alt ? 'Другие названия: ' + r.alt : '', `<span class="dg" data-drag="${i}" role="button" aria-label="Перетащить, чтобы изменить порядок">${ICON('grip')}</span>`) +
+      `<button class="gr act" data-go="cc-vdevs">${ICON('devices')}<span class="tx">Виртуальные устройства</span><span class="cnt">${r.v} · Свойств: ${r.p}</span></button>`) + '</div>').join(''),
     conn: () => S.empty || !S.conns.length ? emptyState('conn') : S.conns.map((c, i) => grp(c.n, grow(c.t, '', sw('cn' + i, c.on), { c: c.a }) + arow('Добавить устройства', 'add-controller'))).join(''),
     dev: () => { if (S.empty) return emptyState('dev'); const by = {}; CCDEV.filter(d => S.devTab === 'all' || d[3] === S.devTab).forEach(d => (by[d[0].split(' / ')[0]] = by[d[0].split(' / ')[0]] || []).push(d));
       return Object.entries(by).map(([h, ds]) => grp(h, ds.map(d => grow(d[1], '', `<span class="go">${ICON('chev')}</span>`, { attrs: `data-go="devedit:${d[1]}"`, c: d[2] })).join(''))).join(''); },
