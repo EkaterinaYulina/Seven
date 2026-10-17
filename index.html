@@ -351,6 +351,16 @@ svg.ic.dots { stroke-width: 2.6; }
 .page .gr.act { min-height: 48px; font-size: var(--font-name); font-weight: 500; }
 .page .gr.act .ic { width: 20px; height: 20px; }
 .page .gr .go { display: flex; color: var(--c-text-secondary); transform: rotate(-90deg); }
+/* строка списка «Устройство»: значок слева, значение справа, шеврон; всегда переход на экран */
+.page .gr.ls { min-height: 64px; gap: var(--dim-space-md); }
+.page .gr.ls .li { display: flex; flex: none; color: var(--ui-on-surface); }
+.page .gr.ls .rv { flex: none; max-width: 45%; font-size: var(--font-name); line-height: 20px; color: var(--c-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* шапка дочернего экрана: стрелка назад слева, закрыть справа нет */
+.page .appbar.bk { padding-left: var(--dim-space-sm); padding-right: var(--dim-gutter); gap: var(--dim-space-xs, 4px); }
+.page .appbar.bk .icon-btn.bk { margin: 0; }
+.page .appbar.bk .ttl { margin-left: 0; }
+.page .grp + .grp.sep { margin-top: var(--dim-space-md); }   /* ссылка-переход отдельно от списка выбора */
+.page .body > .gd:first-child { margin-top: var(--dim-gutter); }
 .page .gr .mk { flex: none; width: 20px; height: 20px; border: 2px solid var(--ui-on-surface); border-radius: 50%; box-sizing: border-box; position: relative; }
 .page .gr[aria-checked="true"] .mk::after { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: var(--ui-on-surface); }
 .page .gr.ctr { justify-content: center; }
@@ -752,6 +762,9 @@ input::placeholder { color: var(--a11y-ph); opacity: 1; }
   <symbol id="i-micoff" viewBox="0 0 24 24"><path opacity=".3" d="M11.9998 19.0006V22.0008M4.99902 9.99984V12C4.99902 13.8567 5.73661 15.6373 7.04951 16.9501C8.36241 18.263 10.1431 19.0006 11.9998 19.0006C13.8566 19.0006 15.6372 18.263 16.9501 16.9501C18.263 15.6373 19.0006 13.8567 19.0006 12V9.99984M11.9998 1.9992C13.6569 1.9992 15.0002 3.34245 15.0002 4.99944V12C15.0002 13.657 13.6569 15.0002 11.9998 15.0002C10.3428 15.0002 8.99948 13.657 8.99948 12V4.99944C8.99948 3.34245 10.3428 1.9992 11.9998 1.9992Z"/><path d="M10.4 9a1.6 1.6 0 1 0 3.2 0a1.6 1.6 0 1 0-3.2 0"/></symbol><symbol id="i-quietoff" viewBox="0 0 24 24"><path d="M4 10v4M8 6v12M12 3v18M16 7v10M20 10v4"/></symbol>
   <symbol id="i-voloff" viewBox="0 0 24 24"><path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z"/></symbol>
   <symbol id="i-wifioff" viewBox="0 0 24 24"><path opacity=".3" d="M2.5 9a14 14 0 0 1 19 0M5.5 12.5a9.5 9.5 0 0 1 13 0M8.7 16a5 5 0 0 1 6.6 0"/><path d="M10.4 19a1.6 1.6 0 1 0 3.2 0a1.6 1.6 0 1 0-3.2 0"/></symbol>
+  <!-- нарисованы здесь: в наборе не нашлось по смыслу; та же сетка 24, линия 1,8, скругления, поля 2 -->
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.4 2.5 3.7 5.5 3.7 9s-1.3 6.5-3.7 9c-2.4-2.5-3.7-5.5-3.7-9S9.6 5.5 12 3z"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="3"/><circle cx="9" cy="10" r="1.6"/><path d="M4 16.5l4.8-4.5 3.2 3 3-2.5 5 4.2"/></symbol>
 </svg>
 
 <div class="stage">
@@ -1270,6 +1283,10 @@ const STEP = { confirm: [1, 3, 30, 'сек'], cancel: [1, 3, 60, 'сек'] };
 const DIM_AFTER = [[15, '15 сек'], [30, '30 сек'], [60, '1 мин'], [120, '2 мин'], [300, '5 мин']];
 const slider = (k, label, v, unit, mn, mx) => `<div class="sl2" data-sl="${k}" data-min="${mn}" data-max="${mx}"><div class="lr"><span>${label}</span><b>${v} ${unit}</b></div><div class="zone" role="slider" aria-valuenow="${v}" aria-valuemin="${mn}" aria-valuemax="${mx}"><div class="tr"></div><div class="fl" style="width:${(v - mn) / (mx - mn) * 100}%"></div><div class="th" style="left:${(v - mn) / (mx - mn) * 100}%"></div></div><div class="mm"><span>${mn} ${unit}</span><span>${mx} ${unit}</span></div></div>`;
 const ROOMS = [['none', 'Не выбрано'], ['living', 'Гостиная']];
+const LANG_LABEL = { ru: 'Русский', en: 'English', dev: 'Как в системе' };
+const roomLabel = () => (ROOMS.find(r => r[0] === S.room) || ROOMS[0])[1];
+/* строка списка «Устройство»: значок, название, текущее значение справа, шеврон */
+const lrow = (ic, t, val, go) => `<button class="gr ls" data-go="${go}"><span class="li">${ICON(ic)}</span><span class="tx"><span class="rt">${t}</span></span>${val ? `<span class="rv">${val}</span>` : ''}<span class="go">${ICON('chev')}</span></button>`;
 const JOURNAL = [['err', 'Не понято', 'не надо делать', '10.10 23:22:38'], ['warn', 'Нужно уточнение', 'включи', '10.10 23:20:05'],
   ['ok', 'Выполнено', 'включи свет в гостиной', '10.10 23:18:41'], ['ok', 'Выполнено', 'какая температура', '10.10 22:57:12']];
 const SICON = { err: 'close', warn: 'info', ok: 'check' };
@@ -1279,11 +1296,9 @@ const PAGES = {
     voice: () => grp('', srow('Голосовое управление', 'Ассистент принимает голосовые команды', 'voice', S.voice) + srow('Озвучивать ответы', 'Ассистент отвечает голосом. Если нужной записи нет, ответ появится только на экране.', 'speak', S.speak)) +
       grp('Как слушать', rrow('listen', 'always', S.listen, 'Всегда (по умолчанию)', 'Ассистент выполняет любую распознанную фразу') +
         rrow('listen', 'word', S.listen, 'По слову «Севен»', 'Ассистент выполняет только фразы со словом «Севен», например «Севен, включи свет»')),
-    device: () => grp('Язык', rrow('lang', 'ru', S.lang, 'Русский') + rrow('lang', 'en', S.lang, 'English') + rrow('lang', 'dev', S.lang, 'Как в системе: English'), 'Язык меню и подсказок. Голосовые команды ассистент понимает только по-русски.') +
-      grp('Комната панели', ROOMS.map(([v, t]) => rrow('room', v, S.room, t)).join('') + nrow('Управление комнатами', '', 'note:Управление комнатами — это экран «Мой дом → Локации». В этот прототип не входит.'), 'Если в команде нет комнаты, например «включи свет», ассистент управляет этой комнатой') +
-      grp('Обои экранов', nrow('Настроить обои', '', 'wallpaper'), 'Фон, затемнение и прозрачность плиток') +
-      grp('Экран и сон', nrow('Открыть настройки экрана', '', 'display'), 'Затемнение и погашение экрана, яркость по освещённости, ночной режим') +
-      grp('Лаунчер', nrow('Выбрать домашнее приложение', '', 'note:Откроется системный выбор домашнего приложения.'), 'Сейчас домашний экран — «NSPanelPro». Seven запускается только из списка приложений. Чтобы сделать Seven домашним, нажмите кнопку, выберите «Seven assistant» и «Всегда». Если система не спросит, откройте системные настройки → «Приложения по умолчанию» → «Домашнее приложение».'),
+    device: () => grp('', lrow('globe', 'Язык', LANG_LABEL[S.lang], 'dev-lang') + lrow('pin', 'Комната панели', roomLabel(), 'dev-room') +
+      lrow('image', 'Обои', '', 'wallpaper') + lrow('moon', 'Бездействие и сон', S.manage ? (DIM_AFTER.find(d => String(d[0]) === String(S.dimAfter)) || [0, ''])[1] : 'Выкл', 'display') +
+      lrow('apps', 'Лаунчер', '', 'dev-launcher')),
     conn: () => grp('', srow('Панель в MQTT', 'Панель появится в брокере как устройство seven_panel_1756903f. Другие системы смогут менять яркость, громкость, экран и микрофон и читать датчики. Если связь оборвётся, брокер пометит панель как «не отвечает». При включении и выключении панель один раз переподключится к брокеру.', 'mqtt', S.mqtt)) +
       grp('Брокер для панели', rrow('broker', 'b1', S.broker ? 'b1' : '', '192.168.23.141:1883')),
     security: () => grp('Время на подтверждение', `<div class="gr ctr col">${stepper('confirm', S.confirm, 'сек', 3, 30)}<span class="rc">От 3 до 30 сек</span></div>`, 'Ассистент переспросит и подождёт ваш ответ') +
@@ -1292,12 +1307,22 @@ const PAGES = {
       grp('Журнал команд', nrow('Открыть журнал', '', 'journal'), 'Что ассистент услышал, как понял и что отправил устройствам') +
       grp('Мастер настройки', nrow('Запустить мастер настройки', '', 'w1')),
   })[S.tab]() }),
-  wallpaper: () => ({ title: 'Обои экранов', body:
+  'dev-lang': () => ({ title: 'Язык', back: true, body:
+    grp('', rrow('lang', 'ru', S.lang, 'Русский') + rrow('lang', 'en', S.lang, 'English') + rrow('lang', 'dev', S.lang, 'Как в системе', 'Сейчас в системе: English'),
+      'Язык меню и подсказок. Голосовые команды ассистент понимает только по-русски.') }),
+  'dev-room': () => ({ title: 'Комната панели', back: true, body:
+    grp('', ROOMS.map(([v, t]) => rrow('room', v, S.room, t)).join(''), 'Если в команде нет комнаты, например «включи свет», ассистент управляет этой комнатой.') +
+    grp('', lrow('pin', 'Управление комнатами', '', 'note:Управление комнатами — это экран «Мой дом → Локации». В этот прототип не входит.')).replace('class="grp nt"', 'class="grp sep"') }),
+  'dev-launcher': () => ({ title: 'Лаунчер', back: true, body:
+    grp('', grow('Сейчас домашнее приложение', 'NSPanelPro')) +
+    `<div class="sec" style="border-bottom:0"><button class="btn primary wide" data-go="note:Откроется системный выбор домашнего приложения.">Выбрать домашнее приложение</button></div>` +
+    grp('Как сделать Seven домашним', `<div class="gr"><span class="tx"><span class="rd">Seven запускается только из списка приложений. Нажмите кнопку, выберите «Seven assistant» и «Всегда». Если система не спросит, откройте системные настройки → «Приложения по умолчанию» → «Домашнее приложение».</span></span></div>`) }),
+  wallpaper: () => ({ title: 'Обои', back: true, body:
     `<div class="sec"><div class="wp" id="wpPrev"><div class="wpdim"></div><div class="st"><span>Кухня</span><span>14:02</span></div>` +
     `<div class="mt" style="left:8px;width:92px">${ICON('bulb')}<b>Свет</b>Включен</div><div class="mt" style="left:108px;width:92px"><b>22,5 °C</b>Кухня</div></div>` +
     slider('dim', 'Затемнение', S.dim, '%', 0, 80) + slider('glass', 'Прозрачность плиток', S.glass, '%', 0, 100) + '</div>' +
     `<div class="sec"><h3 class="sh sm">Где применять</h3><p class="sd">Экраны этой панели</p><button class="dd"><span>Все комнаты (по умолчанию)</span>${ICON('chev')}</button></div>` }),
-  display: () => ({ title: 'Экран и сон', body:
+  display: () => ({ title: 'Бездействие и сон', back: true, body:
     grp('', srow('Затемнять экран при бездействии', '', 'manage', S.manage)) +
     `<div class="${S.manage ? '' : 'off'}">` +
     grp('Затемнять экран через', `<div class="chiprow five">${DIM_AFTER.map(([v, t]) => `<button class="chip" data-radio="dimAfter" data-v="${v}" aria-pressed="${String(S.dimAfter) === String(v)}">${t}</button>`).join('')}</div>`) +
@@ -1471,9 +1496,10 @@ const bottomNav = pg => `<nav class="bnav" role="tablist">` + (pg.tabs
   : CCT.map(([k, n, ic]) => `<button class="ni" role="tab" aria-selected="${S.cct === k}" data-go="cct:${k}"><i class="pl">${ICON(ic)}</i>${n}</button>`)).join('') + `</nav>`;
 function drawPage(keepScroll = true) {
   const pg = PAGES[curPage](), el = $('#page'), old = el.querySelector('.body'), top = keepScroll && old ? old.scrollTop : 0;
-  el.innerHTML = `<div class="appbar">` +
-    `<div class="ttl">${pg.title}</div>` +
-    `<span class="acts" id="acts">${pg.actions || ''}</span><button class="icon-btn" data-go="${pg.close ? 'close' : 'back'}" aria-label="Закрыть">${ICON('close')}</button></div>` +
+  el.innerHTML = (pg.back
+    ? `<div class="appbar bk"><button class="icon-btn bk" data-go="back" aria-label="Назад">${ICON('back')}</button><div class="ttl">${pg.title}</div><span class="acts" id="acts">${pg.actions || ''}</span></div>`
+    : `<div class="appbar"><div class="ttl">${pg.title}</div>` +
+    `<span class="acts" id="acts">${pg.actions || ''}</span><button class="icon-btn" data-go="${pg.close ? 'close' : 'back'}" aria-label="Закрыть">${ICON('close')}</button></div>`) +
     (S.nav !== 'bottom' && pg.mainTabs ? `<div class="tabs main" role="tablist">${pg.mainTabs}</div>` : '') +
     (S.nav !== 'bottom' && pg.tabs ? `<div class="tabs main" role="tablist">${TABS.map(([k, t]) => `<button class="tab" role="tab" aria-selected="${S.tab === k}" data-tab="${k}">${t}</button>`).join('')}</div>` : '') +
     `<div class="body${pg.fab && pg.fab.includes('class="fab"') ? ' fabpad' : ''}">${pg.ctx ? `<div class="gh">${pg.ctx}</div>` : ''}${pg.filter ? `<div class="fchips" role="group">${pg.filter}</div>` : ''}${pg.body}</div>` + (pg.foot ? `<div class="foot" id="foot">${pg.foot()}</div>` : '') + (pg.nav || '') + (S.nav === 'bottom' && (pg.mainTabs || pg.tabs) ? bottomNav(pg) : '') + (pg.fab || '');
@@ -1614,7 +1640,7 @@ const GROUPS = [
   { label: 'Экран', cls: 'grid3', get: () => state.screen, set: v => setScreen(v),
     opts: [['desk', 'Стол'], ['drawer', 'Меню'], ['apps', 'Приложения'], ['kbd', 'Поиск + клавиатура'], ['shade', 'Панель'], ['sheet', 'Лист плитки'], ['tile', 'Плитка'], ['custom', 'Новая плитка']] },
   { label: 'Настройки', cls: 'grid3', get: () => state.screen === 'page' ? (curPage === 'settings' ? S.tab : curPage) : '', set: v => goPage(v, false),
-    opts: [['voice', 'Голос'], ['device', 'Устройство'], ['conn', 'Подключение'], ['security', 'Безопасность'], ['data', 'Данные'], ['wallpaper', 'Обои'], ['display', 'Экран и сон'], ['export', 'Экспорт'], ['journal', 'Журнал']] },
+    opts: [['voice', 'Голос'], ['device', 'Устройство'], ['conn', 'Подключение'], ['security', 'Безопасность'], ['data', 'Данные'], ['dev-lang', 'Язык'], ['dev-room', 'Комната панели'], ['wallpaper', 'Обои'], ['display', 'Бездействие и сон'], ['dev-launcher', 'Лаунчер'], ['export', 'Экспорт'], ['journal', 'Журнал']] },
   { label: 'Режим',    get: () => state.edit ? 'edit' : 'normal', set: v => setEdit(v === 'edit'),
     opts: [['normal', 'Обычный'], ['edit', 'Правка']] },
   { label: 'Тема',     get: () => state.theme, set: v => { state.theme = v; document.documentElement.dataset.theme = v; },
