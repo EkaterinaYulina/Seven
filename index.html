@@ -364,8 +364,9 @@ svg.ic.dots { stroke-width: 2.6; }
 .page .mini i { position: absolute; top: 22%; width: 26%; height: 30%; border-radius: 5px; background: rgba(255,255,255,.6); }
 .page .mini i:nth-child(1) { left: 12%; } .page .mini i:nth-child(2) { left: 42%; }
 .page .mini b { position: absolute; inset: 0; background: #000; }
-.page .lvls { display: flex; gap: var(--dim-space-sm); padding: var(--dim-space-md); }
-.page .lvl { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 8px; align-items: stretch; padding: 8px; border-radius: var(--dim-radius-card); box-shadow: inset 0 0 0 1px var(--ui-outline-subtle); text-align: center; font-size: 14px; line-height: 18px; }
+.page .lvls { display: flex; gap: var(--dim-space-sm); padding: 0 var(--dim-gutter); }
+.page .chiprow.five.flat { padding: 0 var(--dim-gutter); }
+.page .lvl { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 8px; align-items: stretch; padding: 8px; border-radius: var(--dim-radius-card); box-shadow: inset 0 0 0 1px var(--ui-outline-subtle); background: color-mix(in srgb, var(--ui-on-surface) 4%, transparent); text-align: center; font-size: 14px; line-height: 18px; }
 .page .lvl[aria-checked="true"] { box-shadow: inset 0 0 0 2px var(--ui-primary); font-weight: 500; }
 .page .grp + .grp.sep { margin-top: var(--dim-space-md); }   /* ссылка-переход отдельно от списка выбора */
 .page .body > .gd:first-child { margin-top: var(--dim-gutter); }
@@ -1335,10 +1336,10 @@ const PAGES = {
     slider('dim', 'Затемнение', S.dim, '%', 0, 80) + slider('glass', 'Прозрачность плиток', S.glass, '%', 0, 100) + '</div>' +
     `<div class="sec"><h3 class="sh sm">Где применять</h3><p class="sd">Экраны этой панели</p><button class="dd"><span>Все комнаты (по умолчанию)</span>${ICON('chev')}</button></div>` }),
   display: () => ({ title: 'Экран', back: true, body:
-    grp('', srow('Приглушать экран, когда им не пользуются', 'Выключено — экран всегда горит ярко', 'manage', S.manage)) +
+    grp('', srow('Приглушать экран, когда им не пользуются', S.manage ? 'Если панелью не пользуются, экран станет тусклее' : 'Экран всегда горит ярко', 'manage', S.manage)) +
     `<div class="${S.manage ? '' : 'dis'}">` +
-    grp('Приглушить через', `<div class="chiprow five">${DIM_AFTER.map(([v, t]) => `<button class="chip" data-radio="dimAfter" data-v="${v}" aria-pressed="${String(S.dimAfter) === String(v)}">${t}</button>`).join('')}</div>`) +
-    grp('Насколько тусклым', `<div class="lvls" role="radiogroup">${DIM_LVL.map(([v, t, pc]) => `<button class="lvl" role="radio" aria-checked="${S.dimBright === pc}" data-radio="dimBright" data-v="${pc}">${mini(1 - pc / 100)}${t}</button>`).join('')}</div>`) +
+    `<div class="gh">Приглушить через</div>` + `<div class="chiprow five flat">${DIM_AFTER.map(([v, t]) => `<button class="chip" data-radio="dimAfter" data-v="${v}" aria-pressed="${String(S.dimAfter) === String(v)}">${t}</button>`).join('')}</div>` +
+    `<div class="gh">Яркость при приглушении</div>` + `<div class="lvls" role="radiogroup">${DIM_LVL.map(([v, t, pc]) => `<button class="lvl" role="radio" aria-checked="${S.dimBright === pc}" data-radio="dimBright" data-v="${pc}">${mini(1 - pc / 100)}${pc} %</button>`).join('')}</div>` +
     `<p class="gd" style="margin-top:var(--dim-space-sm)">Коснитесь тусклого экрана, и яркость вернётся.</p>` +
     '</div>' }),
   export: () => ({ title: 'Экспорт и импорт', body:
