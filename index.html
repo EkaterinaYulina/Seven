@@ -230,6 +230,13 @@ svg.ic.dots { stroke-width: 2.6; }
 .drawer .item { height: 48px; margin-left: var(--dim-space-sm); border-radius: 999px; padding: 0 var(--dim-space-md) 0 var(--dim-space-md);
   display: flex; align-items: center; gap: var(--dim-gutter); font-size: var(--font-name); line-height: var(--lh-name); cursor: pointer; text-align: left; width: calc(100% - var(--dim-space-sm)); }
 .drawer .item[aria-current="true"] { background: color-mix(in srgb, var(--ui-primary-container) 16%, transparent); font-weight: 500; }
+.drawer .roomcard { display: flex; align-items: center; gap: var(--dim-space-md); margin: 0 var(--dim-gutter) 0 var(--dim-space-sm); padding: 12px var(--dim-space-md); width: calc(100% - var(--dim-gutter) - var(--dim-space-sm)); border-radius: 18px; text-align: left; cursor: pointer;
+  background: color-mix(in srgb, var(--ui-primary-container) 14%, transparent); color: var(--ui-on-surface); }
+.drawer .roomcard .ic { width: 22px; height: 22px; flex: none; }
+.drawer .roomcard .tx { display: flex; flex-direction: column; min-width: 0; }
+.drawer .roomcard b { font-size: 20px; line-height: 26px; font-weight: 500; }
+.drawer .roomcard .tx span { font-size: 13px; line-height: 18px; color: var(--c-text-secondary); }   /* «Вы здесь»: комната, где висит эта панель */
+.drawer .roomcard:active { background: color-mix(in srgb, var(--ui-primary-container) 22%, transparent); }
 .drawer .item:active { background: color-mix(in srgb, var(--ui-on-surface) 8%, transparent); }
 .drawer .gap { flex: 1; }
 .drawer .sep { height: 1px; margin: var(--dim-space-xs, 4px) var(--dim-space-xl) var(--dim-space-xs) calc(var(--dim-space-sm) + var(--dim-space-md)); background: color-mix(in srgb, var(--ui-on-surface) 12%, transparent); flex: none; }
@@ -764,6 +771,7 @@ input::placeholder { color: var(--a11y-ph); opacity: 1; }
   <symbol id="i-cc" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="12" cy="12" r="3"/></symbol>
   <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.4-4.4"/></symbol>
   <symbol id="i-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="i-panel" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="3"/><circle cx="12" cy="17" r="1" fill="currentColor" stroke="none"/></symbol>
   <symbol id="i-grip" viewBox="0 0 24 24"><g stroke="none" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></g></symbol>
   <symbol id="i-back" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
@@ -812,8 +820,8 @@ input::placeholder { color: var(--a11y-ph); opacity: 1; }
       <!-- Боковое меню -->
       <div class="scrim" id="scrim"></div>
       <nav class="drawer" id="drawer" aria-label="Меню">
-        <div class="head"><div class="t">Seven assistant</div><div class="s">Комната панели: Гостиная</div></div>
-        <button class="item" aria-current="true" data-go="room"><svg class="ic"><use href="#i-pin"/></svg>Гостиная</button>
+        <div class="head"><div class="t">Seven assistant</div></div>
+        <button class="roomcard" aria-current="true" data-go="room"><svg class="ic"><use href="#i-panel"/></svg><span class="tx"><b>Гостиная</b><span>Вы здесь</span></span></button>
         <div class="gap"></div>
         <button class="item" data-go="cc"><svg class="ic"><use href="#i-cc"/></svg>Мой дом</button>
         <button class="item" data-go="apps"><svg class="ic"><use href="#i-apps"/></svg>Все приложения</button>
@@ -1195,7 +1203,7 @@ $('#btnHideApps').addEventListener('click', () => setScreen('desk'));
 $('#appSearch').addEventListener('focus', () => { if (state.screen === 'apps') setScreen('kbd'); });
 $('#appSearch').addEventListener('keydown', e => { if (e.key === 'Escape') setScreen('apps'); });
 $('#drawer').addEventListener('click', e => {
-  const b = e.target.closest('.item'); if (!b) return;
+  const b = e.target.closest('.item, .roomcard'); if (!b) return;
   const go = b.dataset.go;
   if (go === 'room') return setScreen('desk');
   if (go === 'apps') return setScreen('apps');
