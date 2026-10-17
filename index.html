@@ -361,13 +361,14 @@ svg.ic.dots { stroke-width: 2.6; }
 .page .appbar.bk .ttl { margin-left: 0; }
 /* бездействие и сон: «что произойдёт» и выбор яркости миниатюрами экрана */
 .page .mini { position: relative; flex: none; width: 100%; aspect-ratio: 4 / 3; border-radius: var(--dim-radius-chip); overflow: hidden; box-shadow: inset 0 0 0 1px var(--ui-outline-subtle); background: var(--core-green-200); }   /* картинка самого экрана панели: цвета из core, не зависят от темы */
-.page .mini i { position: absolute; top: 22%; width: 26%; height: 30%; border-radius: var(--dim-radius-field); background: var(--core-cream-40); }
+.page .mini i { position: absolute; top: 22%; width: 26%; height: 30%; border-radius: var(--dim-radius-field); background: var(--core-cream-40); box-shadow: 0 0 0 1px var(--core-cream-40); }
 .page .mini i:nth-child(1) { left: 12%; } .page .mini i:nth-child(2) { left: 42%; }
 .page .mini b { position: absolute; inset: 0; background: var(--core-ink); }
 .page .lvls { display: flex; gap: var(--dim-space-sm); padding: 0 var(--dim-gutter); }
 .page .chiprow.five.flat { padding: 0 var(--dim-gutter); }
 .page .lvl { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 8px; align-items: stretch; padding: 8px; border-radius: var(--dim-radius-card); box-shadow: inset 0 0 0 1px var(--ui-outline-subtle); background: color-mix(in srgb, var(--ui-on-surface) 4%, transparent); text-align: center; font-size: 14px; line-height: 18px; }
 .page .lvl[aria-checked="true"] { box-shadow: inset 0 0 0 2px var(--ui-primary); font-weight: 500; }
+.page .dimflash { position: absolute; inset: 0; z-index: 70; background: #000; opacity: 0; pointer-events: none; transition: opacity .3s ease; }
 .page .grp + .grp.sep { margin-top: var(--dim-space-md); }   /* ссылка-переход отдельно от списка выбора */
 .page .body > .gd:first-child { margin-top: var(--dim-gutter); }
 .page .gr .mk { flex: none; width: 20px; height: 20px; border: 2px solid var(--ui-on-surface); border-radius: 50%; box-sizing: border-box; position: relative; }
@@ -380,7 +381,7 @@ svg.ic.dots { stroke-width: 2.6; }
 .page .chiprow.five { flex-wrap: nowrap; gap: 6px; padding: var(--dim-space-md) var(--dim-gutter); }
 .page .chiprow.five .chip { flex: 1 1 0; min-width: 0; height: var(--dim-touch-min); padding: 0; justify-content: center; border-radius: var(--dim-radius-chip); }
 .page .off { opacity: .45; pointer-events: none; }
-.page .dis { opacity: .45; pointer-events: none; }   /* блок настроек, пока их главный выключатель выключен (класс .off занят оверлеем погашенного экрана) */
+.page .dis { opacity: .55; pointer-events: none; }   /* блок настроек, пока их главный выключатель выключен (класс .off занят оверлеем погашенного экрана) */
 .page .btn.wide { width: 100%; margin-top: var(--dim-space-sm); }
 .page .linkbtn { display: flex; margin: var(--dim-space-sm) 0 0 auto; }
 /* Switch: цветная дорожка 52×32, белый бегунок 24 с тенью, без подписи */
@@ -1293,7 +1294,7 @@ const STEP = { confirm: [1, 3, 30, 'сек'], cancel: [1, 3, 60, 'сек'] };
 const DIM_AFTER = [[15, '15 сек'], [30, '30 сек'], [60, '1 мин'], [120, '2 мин'], [300, '5 мин']];
 const slider = (k, label, v, unit, mn, mx) => `<div class="sl2" data-sl="${k}" data-min="${mn}" data-max="${mx}"><div class="lr"><span>${label}</span><b>${v} ${unit}</b></div><div class="zone" role="slider" aria-valuenow="${v}" aria-valuemin="${mn}" aria-valuemax="${mx}"><div class="tr"></div><div class="fl" style="width:${(v - mn) / (mx - mn) * 100}%"></div><div class="th" style="left:${(v - mn) / (mx - mn) * 100}%"></div></div><div class="mm"><span>${mn} ${unit}</span><span>${mx} ${unit}</span></div></div>`;
 /* яркость при приглушении, %: три уровня, на которых разница видна глазом; подпись словом, число пользователю не показываем */
-const DIM_LVL = [['soft', 'Умеренная', 60], ['mid', 'Низкая', 40], ['dark', 'Минимальная', 20]];
+const DIM_LVL = [['soft', 'Средняя', 60], ['mid', 'Низкая', 40], ['dark', 'Минимальная', 20]];
 /* миниатюра: яркость глаз воспринимает нелинейно (гамма ≈ 2,2), поэтому затемнение миниатюры считаем так же */
 const miniAlpha = pc => (1 - Math.pow(pc / 100, 1 / 2.2)).toFixed(2);
 const dimLvl = () => (DIM_LVL.find(l => l[2] === S.dimBright) || DIM_LVL[2]);
@@ -1525,6 +1526,11 @@ function drawPage(keepScroll = true) {
   const sel = el.querySelector('.tab[aria-selected="true"]'); if (sel) sel.scrollIntoView({ inline: 'center', block: 'nearest' });
   syncWp(); syncControls();
 }
+/* живой просмотр яркости: на панели меняется яркость окна приложения на ~1,5 с и возвращается; в прототипе это чёрная вуаль */
+function previewDim(pc) {
+  const f = document.createElement('div'); f.className = 'dimflash'; $('#page').appendChild(f);
+  requestAnimationFrame(() => { f.style.opacity = miniAlpha(pc); setTimeout(() => { f.style.opacity = 0; setTimeout(() => f.remove(), 450); }, 1500); });
+}
 function syncWp() {
   desk.style.setProperty('--wallpaper-dim', S.dim / 100); desk.style.setProperty('--tile-glass', S.glass / 100);
   const wp = $('#wpPrev'); if (wp) wp.style.backgroundImage = getComputedStyle(desk).backgroundImage;
@@ -1534,7 +1540,7 @@ $('#page').addEventListener('click', e => {
   if (t.dataset.tab) { S.tab = t.dataset.tab; return drawPage(false); }
   if (t.dataset.sw) { const k = t.dataset.sw; if (k.startsWith('cn')) S.conns[+k.slice(2)].on = !S.conns[+k.slice(2)].on; else S[k] = !S[k]; return drawPage(); }
   if (t.dataset.radio) { const g = t.dataset.radio; S[g] = g === 'broker' ? true : (['dimAfter', 'dimBright'].includes(g) ? +t.dataset.v : t.dataset.v);
-    return drawPage(); }
+    drawPage(); if (g === 'dimBright') previewDim(S.dimBright); return; }
   if (t.dataset.chk2) { S.dev[t.dataset.chk2] = !S.dev[t.dataset.chk2]; return drawPage(); }
   if (t.dataset.chk) { S.exp[t.dataset.chk] = !S.exp[t.dataset.chk]; return drawPage(); }
   if (t.dataset.step) { const k = t.dataset.step, [st, mn, mx] = STEP[k], d = +t.dataset.d, v = S[k];
