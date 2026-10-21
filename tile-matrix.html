@@ -335,6 +335,19 @@ h3.s3{font-size:16px;line-height:24px;font-weight:500;margin:20px 0 4px;color:va
 .wp{margin-top:0}
 .pres i{width:34px;height:34px}.pres{gap:10px}
 .mx .tile .nrow{gap:6px}.mx .tile .nrow .ni{gap:6px}
+
+/* ===== раунд 21.10 (2): кнопки к низу, значение уровня справа от названия ===== */
+.mx .tile.org12 .btn3{flex:none;margin-top:auto;gap:4px}
+.mx .tile.org12 .btn3 span{flex:none!important;height:44px;min-height:44px;max-height:44px}
+.mx .tile .nrow .sec.R.lvv{font-size:16px;line-height:20px;font-weight:700;color:var(--page-text)}
+.nrow:has(.lvv) .ni{flex:0 1 auto;min-width:0}
+.mx .tile .nrow .sec.R.lvv svg.ic.s{width:16px;height:16px;vertical-align:-2px;margin:0 0 0 2px}
+/* 4.9: системные плитки — содержимое по центру по вертикали */
+.mx .tile.ctr{justify-content:center;gap:2px}
+/* погода */
+.wxm{display:flex;align-items:center;justify-content:space-between;gap:8px}.wxm .value{flex:1;min-width:0}.wxm svg.ic{width:36px;height:36px;stroke-width:1.6;flex:none}
+.wxf{display:flex;justify-content:space-between;margin-top:auto}.wxf>div{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;min-width:0}.wxf b{font-size:16px;line-height:20px;font-weight:700}.wxf .sec{font-size:14px;line-height:17px}.wxf svg.ic{width:24px;height:24px}
+.mx .tile .rows{margin-top:auto}
 </style></head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -414,6 +427,12 @@ h3.s3{font-size:16px;line-height:24px;font-weight:500;margin:20px 0 4px;color:va
 <symbol id="i-belloff" viewBox="0 0 24 24"><g transform="translate(2.88 2.88) scale(0.76)"><path stroke-width="2.37" d="M6 16v-5a6 6 0 1 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"/></g></symbol>
 <symbol id="i-bellon" viewBox="0 0 24 24"><g transform="translate(2.88 2.88) scale(0.76)"><path stroke-width="2.37" d="M6 16v-5a6 6 0 1 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"/></g><path d="M1.8 10c.3-2.2 1.2-3.8 2.6-5M22.2 10c-.3-2.2-1.2-3.8-2.6-5"/></symbol>
 <symbol id="i-timer" viewBox="0 0 24 24"><path d="M9.5 2.5h5M12 8.5v4l2.5 1.5M20 13.5a8 8 0 1 1-16 0 8 8 0 0 1 16 0z"/></symbol>
+<symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7.5 18.5h9.5a4 4 0 0 0 .6-7.95A5.5 5.5 0 0 0 7 9.7a4.4 4.4 0 0 0 .5 8.8z"/></symbol>
+<symbol id="i-cloudsun" viewBox="0 0 24 24"><path d="M7 19h9.5a3.5 3.5 0 0 0 .5-6.96 5 5 0 0 0-9.4 1.2A3 3 0 0 0 7 19zM9 5.2 8.2 3.8M4.6 8.2 3.2 7.5M13.6 4.2l.4-1.5"/></symbol>
+<symbol id="i-rain" viewBox="0 0 24 24"><path d="M7.5 15h9a3.8 3.8 0 0 0 .6-7.55A5.2 5.2 0 0 0 7 6.8 4.1 4.1 0 0 0 7.5 15zM9 18l-1 2.5M13 18l-1 2.5M17 18l-1 2.5"/></symbol>
+<symbol id="i-snow" viewBox="0 0 24 24"><path d="M7.5 15h9a3.8 3.8 0 0 0 .6-7.55A5.2 5.2 0 0 0 7 6.8 4.1 4.1 0 0 0 7.5 15zM9 18.5h.01M12 20.5h.01M15 18.5h.01M17.5 20.5h.01M6.5 20.5h.01"/></symbol>
+<symbol id="i-storm" viewBox="0 0 24 24"><path d="M7.5 15h9a3.8 3.8 0 0 0 .6-7.55A5.2 5.2 0 0 0 7 6.8 4.1 4.1 0 0 0 7.5 15zM12.8 14.5l-2 3.5h3l-2 3.5"/></symbol>
+<symbol id="i-fog" viewBox="0 0 24 24"><path d="M5 8h14M3.5 12h17M6 16h12M9 20h6"/></symbol>
 </svg>
 <div class="wrap">
 <h1 class="hd1">Матрица плиток · Seven</h1>
@@ -555,7 +574,10 @@ var R=[
  {t:'Шторка',s:'panel · Только панель',ic:'sliders',n:'Шторка',po:1,v:'',k:'nav',z:['2×1','2×2'],d:'2×1'},
  {t:'Часы',s:'clock',q:['4.10','Часы, будильник, погода','clock, alarm, weather'],ic:'clock',n:'Часы',k:'clock',z:['2×1','2×2','4×2'],d:'2×1',xr:'время системное, привязки нет'},
  {t:'Будильник',s:'alarm',ic:'bell',n:'Будильник',k:'alarm',z:['2×1','2×2'],d:'2×1'},
- {t:'Погода',s:'weather',ic:'sun',n:'Погода',v:'скоро',k:'stub',z:['2×1','2×2'],d:'2×1'}
+ {t:'Погода',s:'weather',ic:'cloudsun',n:'Москва',k:'wx',z:['2×1','2×2'],d:'2×1',xr:'данные — сущность weather; прогноз — на 2×2',wx:{ic:'cloudsun',cond:'Облачно',t:'−3 °C',fl:'−7 °C',h:'78 %',w:'4 м/с',fc:[['15:00','cloudsun','−2'],['18:00','cloud','−4'],['21:00','snow','−5'],['00:00','snow','−6']]}},
+ {t:'Осадки',s:'значок по состоянию',sub:1,ic:'rain',n:'Сочи',k:'wx',z:['2×1','2×2'],d:'2×1',wx:{ic:'rain',cond:'Дождь',t:'12 °C',fl:'10 °C',h:'92 %',w:'6 м/с',fc:[['15:00','rain','12'],['18:00','rain','11'],['21:00','cloud','10'],['00:00','cloud','9']]}},
+ {t:'Ночь',s:'ясно, значок луны',sub:1,ic:'moon',n:'Дом',k:'wx',z:['2×1','2×2'],d:'2×1',wx:{ic:'moon',cond:'Ясно',t:'−12 °C',fl:'−17 °C',h:'64 %',w:'2 м/с',fc:[['03:00','moon','−13'],['06:00','moon','−14'],['09:00','cloudsun','−10'],['12:00','cloudsun','−7']]}},
+ {t:'Без прогноза',s:'источник отдаёт только текущее',sub:1,ic:'cloud',n:'Дача',k:'wx',z:['2×1','2×2'],d:'2×2',wx:{ic:'cloud',cond:'Пасмурно',t:'4 °C',fl:'1 °C',h:'85 %',w:'5 м/с',fc:null}}
 ];
 function OFFN(){return '<div class="sec c-off" data-full="нет связи, 14:02">нет связи</div>'}
 function OFFT(t){return '<div class="sec c-off" data-full="нет связи, 14:02">'+t+'</div>'}
@@ -581,7 +603,7 @@ function mkTile(r,sz,st){var h0=mkTile0(r,sz,st);if(r.k=='scn'||r.k=='scx')h0=h0
 function thBody(r,st){var c=r.th,dis=(st=='offline'||st=='nodata'||st=='nobind'),off=(st=='off'),nd=(st=='nodata');
  var cap=stateLine(r,st,true)||'';
  var capR=st=='offline'?OFFN().replace('class="sec','class="sec R'):cap?cap.replace('class="sec','class="sec R shr'):'';
- var head='<div class="nrow"><div class="ni"><span class="name">'+r.n+'</span></div>'+capR+'</div>'+(c.t?'<div class="value" style="font-size:'+(c.mode?'28px;line-height:32px':'40px;line-height:44px')+'">'+(nd?'—':c.t)+'</div>':'');
+ var head='<div class="nrow"><div class="ni"><span class="name">'+r.n+'</span></div>'+capR+'</div>'+(c.t?'<div class="value" style="font-size:'+(c.mode?'32px;line-height:36px':'48px;line-height:52px')+'">'+(nd?'—':c.t)+'</div>':'');
  cap='';
  var lock=dis||off||c.grp||c.ro;
  var mid=nd?'—':(c.grp?'<span class="grpv">'+c.sp+'</span>':c.sp)+(c.tgt&&!dis?'<small style="display:block;font-size:14px;line-height:17px;font-weight:400;color:var(--page-t2)">'+c.tgt+'</small>':'');
@@ -598,36 +620,36 @@ function mkTile0(r,sz,st){var a=sz.split('×').map(Number),w=a[0],h=a[1],on=!(st
  var nb=(st=='nobind');var third=cap||('<div class="sec">'+(on||st=='off'?(k=='sens'||k=='lvl'||k=='info'&&0?'':val):'')+'</div>');
  var nm='<div class="name">'+r.n+'</div>';
  var FB={ltx:'bulb',lrl:'bulb',lvx:'blinds',mode:'lock'},nmI=ic(OFFI((r.ic=='L'?'home':r.ic)||FB[k0]||'info',st))+nm;
- if(k=='clock'){var tm='<div class="value" style="font-size:40px;line-height:44px">14:02</div>',dt='<div class="sec">среда, 21 октября</div>';
-  if(w==2&&h==1)return T(2,1,ic('clock')+'<div class="col">'+nm+'<div class="value">14:02</div><div class="sec">ср, 21 октября</div></div>','',true);
+ if(k=='clock'){var tm='<div class="value" style="font-size:56px;line-height:60px">14:02</div>',dt='<div class="sec">среда, 21 октября</div>';
+  if(w==2&&h==1)return T(2,1,ic('clock')+'<div class="col">'+nm+'<div class="value" style="font-size:26px;line-height:28px">14:02</div><div class="sec">ср, 21 октября</div></div>','',true);
   if(w==2&&h==2)return T(2,2,H22(nmI,'')+'<div class="sp"></div>'+tm+dt,'',true);
-  if(w==4)return T(4,2,H22(nmI,'<div class="sec">'+ic('bellon','s')+'будильник 07:30</div>')+'<div class="sp"></div><div class="value" style="font-size:56px;line-height:60px">14:02</div>'+dt,'',true)}
+  if(w==4)return T(4,2,H22(nmI,'<div class="sec">'+ic('bellon','s')+'будильник 07:30</div>')+'<div class="sp"></div><div class="value" style="font-size:80px;line-height:84px">14:02</div>'+dt,'',true)}
  if(k=='alarm'){var ao=(st=='off'),av=st=='nodata'?'—':(ao?'Выкл':'07:30'),ad=cap||(ao?'':'<div class="sec">пн–пт</div>'),acl=cl+(ao?' muted':'');
-  if(w==2&&h==1)return T(2,1,ic(OFFI('bell',st))+'<div class="col">'+nm+'<div class="value">'+av+'</div>'+ad+'</div>',acl,!ao);
-  if(w==2&&h==2)return T(2,2,H22(nmI,'<div class="sec">'+(cap||ao?'':'пн–пт')+'</div>')+(cap||'')+'<div class="value" style="font-size:40px;line-height:44px">'+av+'</div><div class="sp"></div><div class="seg" style="margin-top:0'+(dis?';opacity:.5':'')+'"><span'+(ao?'':' class="on"')+'>Вкл</span><span'+(ao?' class="on"':'')+'>Выкл</span></div>',acl,!ao)}
- if(k0=='ltx'){return T(2,2,'<div class="nrow"><div class="ni">'+nm+'</div></div><div class="chips" style="margin-top:4px"><span style="height:32px">2700 K</span><span style="height:32px">5000 K</span></div><div class="vmin" style="margin-top:6px">2703 K</div>'+mini(.2)+pill('h',60,'sun','60 %',''),'',true)}
- if(k0=='lrl'){return T(2,1,'<div class="nrow"><div class="ni">'+nmI+'</div></div><div class="value" style="margin-top:auto">Включено</div>','',true)}
+  if(w==2&&h==1)return T(2,1,ic(OFFI('bell',st))+'<div class="col">'+nm+'<div class="value" style="font-size:26px;line-height:28px">'+av+'</div>'+ad+'</div>',acl,!ao);
+  if(w==2&&h==2)return T(2,2,H22(nmI,'<div class="sec">'+(cap||ao?'':'пн–пт')+'</div>')+(cap||'')+'<div class="value" style="font-size:56px;line-height:60px">'+av+'</div><div class="sp"></div><div class="seg" style="margin-top:0'+(dis?';opacity:.5':'')+'"><span'+(ao?'':' class="on"')+'>Вкл</span><span'+(ao?' class="on"':'')+'>Выкл</span></div>',acl,!ao)}
+ if(k0=='ltx'){return T(2,2,'<div class="nrow"><div class="ni">'+nm+'</div><div class="sec R lvv">60 %</div></div><div class="chips" style="margin-top:4px"><span style="height:32px">2700 K</span><span style="height:32px">5000 K</span></div><div class="vmin" style="margin-top:6px">2703 K</div>'+mini(.2)+pill('h',60,'sun','',''),'',true)}
+ if(k0=='lrl'){var lrv=st=='off'?'Выключено':st=='nodata'?'—':'Включено';return T(2,1,'<div class="nrow"><div class="ni">'+nmI+'</div>'+(st=='stale'?'<div class="sec R shr">устар.</div>':RT(st,cap,'').replace('class="sec R','class="sec R shr'))+'</div><div class="value" style="margin-top:auto">'+lrv+'</div>',cl,on)}
  if(k0=='dim'){
   var lt=st=='nodata'?'—':(st=='off'?'':r.lv+' %'),xi2=extraIc(st);
   var cS=st=='stale'?'<div class="sec R shr">устарело</div>':st=='offline'?OFFN().replace('class="sec','class="sec R'):st=='nodata'?'<div class="sec R shr">нет данных</div>':st=='nobind'?'<div class="sec R shr">нет привязки</div>':st=='busy'?'<div class="sec R shr">в работе…</div>':st=='err'?'<div class="sec R shr c-err">ошибка</div>':'';
   var vL='';
-  var sL=pill('h',st=='nodata'?0:(on?lv:0),OFFI('bulb',st),lt,(dis?(st=='nodata'?'empty ':'dis '):''));
+  var sL=pill('h',st=='nodata'?0:(on?lv:0),OFFI('bulb',st),'',(dis?(st=='nodata'?'empty ':'dis '):''));
   if(w==1&&h==1)return T(1,1,'<div class="top">'+icn(r,st)+xi2+'</div>'+nm+(cap||'<div class="sec">'+(on?'Вкл':'Выкл')+'</div>'),cl,on);
   if(w==1&&h==2)return T(1,2,'<div class="top">'+icn(r,st)+xi2+'</div>'+nm+(cap||'<div class="vmin">'+(st=='off'?'Выкл':lt)+'</div>')+(nb?'':btnc('plus','minus')),cl+' org12',on);
-  var rowL='<div class="nrow"><div class="ni">'+nm+'</div>'+(cS||(st=='off'?'<div class="sec R shr">Выкл</div>':''))+'</div>';
+  var rowL='<div class="nrow"><div class="ni">'+nm+'</div>'+(cS||'<div class="sec R lvv">'+(st=='off'?'Выкл':r.lv+' %')+'</div>')+'</div>';
   if(w==2&&h==1)return T(2,1,rowL+sL,cl+' plt',on);
   if(w==2&&h==2)return T(2,2,rowL+'<div class="wp"'+(dis?' style="opacity:.5"':'')+'><div class="wheel"></div><div class="pres"><i style="background:#fff"></i><i style="background:#D95550"></i></div></div>'+sL,cl,on)}
  if(k0=='lvx'&&r.x.grp){var xg=r.x;return T(2,1,ic('blinds')+'<div class="col">'+nm+'<div class="value">'+xg.v+'</div><div class="sec">'+xg.cap+'</div></div>',cl,on)}
- if(k0=='lvx'){var xx=r.x;return T(2,1,'<div class="nrow"><div class="ni">'+nm+'</div><div class="sec R">'+xx.cap+'</div></div>'+pill('h',xx.lv,'blinds',xx.v,''),'plt',true)}
+ if(k0=='lvx'){var xx=r.x;var xr2=xx.cap.charAt(0)=='→'?xx.v+' '+xx.cap:xx.v+ic('check','s');return T(2,1,'<div class="nrow"><div class="ni">'+nm+'</div><div class="sec R lvv">'+xr2+'</div></div>'+pill('h',xx.lv,'blinds','',''),'plt',true)}
  if(k0=='lvl'||k0=='cur'){
   var isC=k0=='cur',vtxt=st=='nodata'?'—':(r.sw?(st=='off'?'':lv+' %'):(st=='off'?(r.vo||r.v):r.v)),xi=extraIc(st);
   var capS=st=='stale'?'<div class="sec R shr">устарело</div>':st=='offline'?OFFN().replace('class="sec','class="sec R'):st=='nodata'?'<div class="sec R shr">нет данных</div>':st=='busy'?'<div class="sec R shr">в работе…</div>':st=='err'?'<div class="sec R shr c-err">ошибка</div>':'';
   var vb='';var pm=(dis?(st=='nodata'?'empty ':'dis '):''),pi=OFFI(r.ic=='bulb'?'sun':r.ic,st);
-  var sl=pill('h',st=='nodata'?0:(on?lv:0),pi,vtxt,pm),sl4=pill('h',st=='nodata'?0:(on?lv:0),pi,'',pm);
+  var sl=pill('h',st=='nodata'?0:(on?lv:0),pi,'',pm),sl4=pill('h',st=='nodata'?0:(on?lv:0),pi,'',pm);
   if(nb)return T(w,h,'<div class="vmin">—</div><div class="sec">нет привязки</div>',cl+(w==4?' s21':''),on);
   if(w==1&&h==1)return T(1,1,'<div class="top">'+icn(r,st)+xi+'</div>'+(cap?nm+cap:nm+'<div class="vmin">'+vtxt+'</div>'),cl,on);
   if(w==1&&h==2)return T(1,2,'<div class="top">'+icn(r,st)+xi+'</div>'+nm+(cap||'<div class="vmin">'+vtxt+'</div>')+btnc(isC?'up':'plus',isC?'down':'minus'),cl+' org12',on);
-  var row='<div class="nrow"><div class="ni">'+nm+'</div>'+(capS||(r.sw&&st!='nodata'&&!nb?'<div class="sec R shr">'+(on?'Вкл':'Выкл')+'</div>':''))+'</div>';
+  var row='<div class="nrow"><div class="ni">'+nm+'</div>'+(capS||'<div class="sec R lvv">'+(st=='off'?(r.sw?'Выкл':(r.vo||'закрыт')):r.sw?lv+' %':r.v)+'</div>')+'</div>';
   if(w==2&&h==1)return T(2,1,row+sl,cl+' plt',on);
   if(w==2&&h==2)return T(2,2,row+sl+(isC?'<div class="btn3"><span>'+ic('up')+'</span><span>'+ic('down')+'</span><span'+(r.nostop?' style="opacity:.4"':'')+'>'+ic('stop')+'</span></div>':CH4),cl,on);
   if(w==4)return T(4,1,'<div class="col" style="flex:none;width:130px">'+nm+(cap||'')+'<div class="vmin">'+vtxt+'</div></div><div style="flex:1;min-width:0;align-self:center">'+sl4+'</div>','s21 plt'+cl,on)}
@@ -639,6 +661,11 @@ function mkTile0(r,sz,st){var a=sz.split('×').map(Number),w=a[0],h=a[1],on=!(st
   var right=st=='stale'?R2('устар. 14:02'):st=='offline'?OFFN().replace('class="sec','class="sec R'):st=='busy'?R2(m.scn?'Занято':'в работе…'):st=='err'?R2('ошибка','c-err'):st=='nodata'?R2('нет данных'):st=='nobind'?R2('нет привязки'):'';
   var ono=st=='nodata'?-1:m.on,lock=dis||m.ro;
   var sg='<div class="nrow"><div class="ni">'+ic(r.ic||'lock')+'<span class="name">'+r.n+'</span></div>'+right+'</div><div class="seg"'+(lock?' style="opacity:.5"':'')+'>'+m.segs.map(function(x,i){return '<span'+(i==ono?' class="on"':'')+'>'+x+'</span>'}).join('')+'</div>';return T(2,1,sg,cl,'true')}
+ if(k=='wx'){var c=r.wx,nd=st=='nodata',tv=nd?'—':c.t,wi=nd?'cloud':c.ic,cd=nd?'':c.cond;
+  var rc=st=='offline'?OFFN().replace('class="sec','class="sec R'):cap?cap.replace('class="sec','class="sec R shr'):'';
+  if(w==2&&h==1)return T(2,1,ic(wi,'big28')+'<div class="col">'+nm+'<div class="value" style="font-size:26px;line-height:28px">'+tv+'</div>'+(cap||'<div class="sec">'+cd+'</div>')+'</div>',cl,true);
+  var low=c.fc?'<div class="wxf"'+(nd||dis?' style="opacity:.5"':'')+'>'+c.fc.map(function(f){return '<div><span class="sec">'+f[0]+'</span>'+ic(nd?'cloud':f[1])+'<b>'+(nd?'—':f[2])+'</b></div>'}).join('')+'</div>':'<div class="rows"'+(nd||dis?' style="opacity:.5"':'')+'><div><span>Влажность</span><b>'+(nd?'—':c.h)+'</b></div><div><span>Ветер</span><b>'+(nd?'—':c.w)+'</b></div></div>';
+  return T(2,2,'<div class="nrow"><div class="ni">'+nm+'</div>'+(rc||'<div class="sec R shr">'+cd+'</div>')+'</div><div class="wxm"><span class="value" style="font-size:40px;line-height:44px">'+tv+'</span>'+ic(wi)+'</div><div class="sec">'+(nd?'':'ощущается '+c.fl+(c.fc?'':' · '+c.h))+'</div>'+low,cl,true)}
  if(k=='stub')return T(w,h,'<div class="top">'+ic(r.ic)+'</div>'+nm+'<div class="sec">скоро</div>','stub',false);
  if(k0=='navx'){var xn=r.x,pan=(DEV=='p15'||DEV=='p10');return T(1,1,'<div class="top">'+ic(r.ic)+'</div>'+nm+(xn==2?'<div class="sec c-err">ошибка</div>':'')+(r.po?'<div class="sec" style="font-size:12px;line-height:16px">Только панель</div>':''),'ctr'+(xn==1&&!pan?' muted':'')+(xn==2?' eB':''),xn==1&&!pan?'false':'true')}
  if(k=='nav'){return T(w,h,'<div class="top">'+ic(r.ic)+extraIc(st)+'</div>'+(cap&&w==1?'':nm)+(cap||(r.po?'<div class="sec" style="font-size:12px;line-height:16px">Только панель</div>':'')),cl+' ctr','true')}
@@ -656,7 +683,7 @@ function mkTile0(r,sz,st){var a=sz.split('×').map(Number),w=a[0],h=a[1],on=!(st
   if(w==4)return T(4,1,icn(r,st)+'<div class="col" style="flex:none;width:130px">'+nm+(cap||'<div class="sec">'+val+'</div>')+'</div><div style="flex:1;min-width:0;align-self:center">'+PL(r,st,on,dis,lv,k)+'</div>','s21 plt'+cl,on)}
  if(k=='th')return T(2,2,thBody(r,st),cl,on);
  if(k=='clim'){
-  if(w==2&&h==2)return T(2,2,H22(nm,'')+'<div class="value" style="font-size:40px;line-height:44px">'+val+'</div>'+(cap||'<div class="sec">Клапан открыт 35 %</div>')+'<div class="sp"></div><div class="step"'+(dis?' style="opacity:.5"':'')+'><span class="rb">'+ic('minus')+'</span><span class="sp2">23 °C</span><span class="rb">'+ic('plus')+'</span></div>',cl,on)}
+  if(w==2&&h==2)return T(2,2,H22(nm,'')+'<div class="value" style="font-size:48px;line-height:52px">'+val+'</div>'+(cap||'<div class="sec">Клапан открыт 35 %</div>')+'<div class="sp"></div><div class="step"'+(dis?' style="opacity:.5"':'')+'><span class="rb">'+ic('minus')+'</span><span class="sp2">23 °C</span><span class="rb">'+ic('plus')+'</span></div>',cl,on)}
  if(k=='info'&&w==2&&h==2){return T(2,2,'<div class="top">'+icn(r,st)+extraIc(st)+'</div>'+nm+'<div class="rows"><div><span>Температура</span><b>21,5 °C</b></div><div><span>Влажность</span><b>35 %</b></div><div><span>CO₂</span><b>620 ppm</b></div></div>'+(cap||''),cl,on)}
  /* общая раскладка */
  var main=(k=='sens'||k=='sw'||k=='scn'||k=='info'||k=='clim'||k=='lvl')?val:val;
@@ -706,7 +733,7 @@ function W2(nm){var c=nm.cloneNode(true);c.style.cssText='position:absolute;visi
 function bindDim(root){root.querySelectorAll('.dim').forEach(function(d){var o=d.dataset.o,lvl=+d.dataset.lvl/100,W=d.clientWidth,H=d.clientHeight,D=o=='h'?H:W,L=o=='h'?W:H,f=d.querySelector('.dim-fill');
   d.querySelectorAll('.content').forEach(function(x){x.style.width=W+'px';x.style.height=H+'px'});
   var len=D+lvl*(L-D);if(o=='h')f.style.width=len+'px';else f.style.height=len+'px';d.classList.toggle('nogrip',lvl<0.08)})}
-function fitText(){document.querySelectorAll('.mx .tile.ctr .name,.mx .tile.ctr .sec,.mx .tile .value,.mx .tile .vmin,.mx .tile .sp2,.mx .tile .nrow .sec.R').forEach(function(el){el.style.fontSize='';var fs=parseFloat(getComputedStyle(el).fontSize),min=fs>30?30:(el.matches('.ctr .name')?12:(el.matches('.sec')?11:13));while(el.scrollWidth>el.clientWidth+0.5&&fs>min){fs-=1;el.style.fontSize=fs+'px'}});
+function fitText(){document.querySelectorAll('.mx .tile.ctr .name,.mx .tile.ctr .sec,.mx .tile .value,.mx .tile .vmin,.mx .tile .sp2,.mx .tile .nrow .sec.R').forEach(function(el){if(el.dataset.fs===undefined)el.dataset.fs=el.style.fontSize||'';el.style.fontSize=el.dataset.fs;var fs=parseFloat(getComputedStyle(el).fontSize),min=fs>30?30:(el.matches('.ctr .name')?12:(el.matches('.sec')?11:13));while(el.scrollWidth>el.clientWidth+0.5&&fs>min){fs-=1;el.style.fontSize=fs+'px'}});
  document.querySelectorAll('.mx .tile .nrow').forEach(function(n){var nm=n.querySelector('.name'),c=n.querySelector('.sec.R');if(!nm||!c)return;var fs=parseFloat(getComputedStyle(c).fontSize);while(nm.scrollWidth>nm.clientWidth+0.5&&fs>11){fs-=1;c.style.fontSize=fs+'px'}})}
 function r(){document.documentElement.dataset.theme=S.th;DEV=S.dv;
  document.getElementById('devb').innerHTML=Object.keys(DV).map(function(k){return '<button data-k="dv" data-v="'+k+'">'+DV[k][0]+'</button>'}).join('');
