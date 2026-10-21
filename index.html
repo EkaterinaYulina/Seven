@@ -777,6 +777,14 @@ input::placeholder { color: var(--a11y-ph); opacity: 1; }
 .tile .value,.tile .big{font-weight:600}
 .tile .sec{color:var(--c-text-secondary)}
 .tile svg.ic{color:color-mix(in srgb,var(--c-text-primary) 70%,transparent);stroke-width:1.6}
+
+/* раунд 21.10 (9): тише «колбаса» — ниже, светлее заливка, слабая подложка, тонкий хват */
+.dim.h{height:36px}
+.dim.h .content>.ic{top:6px}
+.dim .content>.pct{height:36px;line-height:36px}
+.dim{background:color-mix(in srgb,var(--dim-fill-bg) 14%,transparent)}
+.dim-fill{background:color-mix(in srgb,var(--dim-fill-bg) 55%,transparent)}
+.dim .grip{height:14px!important;margin-top:-7px!important;opacity:.55;box-shadow:none}
 </style>
 </head>
 <body>
