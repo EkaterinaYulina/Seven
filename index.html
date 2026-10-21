@@ -88,6 +88,18 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 body { background: var(--core-mist); font-family: "Inter", system-ui, sans-serif; color: var(--core-ink); }
 
 /* ── Обвязка прототипа (не часть продукта) ── */
+/* Переключатель страниц: «Прототип» и «Матрица плиток» (вторая — отдельный файл tile-matrix.html во встроенном окне) */
+:root { --pgbar: 44px; }
+.pgbar { position: sticky; top: 0; z-index: 50; height: var(--pgbar); display: flex; align-items: center; gap: 16px; padding: 0 24px; background: var(--core-cream); border-bottom: 1px solid var(--core-ink-10); }
+.pgbar .brand { font-size: 13px; font-weight: 500; color: var(--core-ink); white-space: nowrap; }
+.pgbar [role=tablist] { display: flex; gap: 4px; }
+.pgbar [role=tab] { height: 28px; padding: 0 12px; border: 1px solid var(--core-ink-3); border-radius: 8px; font-size: 12px; background: var(--core-cream); white-space: nowrap; }
+.pgbar [role=tab][aria-selected="true"] { background: var(--core-ink); color: var(--core-cream); }
+.pgbar [role=tab]:focus-visible { outline: 2px solid var(--core-blue-700); outline-offset: 2px; }
+.matrix-view { display: none; }
+body[data-view="matrix"] .stage { display: none; }
+body[data-view="matrix"] .matrix-view { display: block; }
+.matrix-view iframe { display: block; width: 100%; height: calc(100vh - var(--pgbar)); height: calc(100dvh - var(--pgbar)); border: 0; background: var(--core-mist); }
 .stage { display: flex; gap: 24px; justify-content: center; align-items: flex-start; flex-wrap: wrap; padding: 24px; }
 .frame { width: var(--dim-panel); }
 .controls { width: 440px; max-width: 100%; display: flex; flex-direction: column; gap: 16px; }
@@ -95,7 +107,7 @@ body { background: var(--core-mist); font-family: "Inter", system-ui, sans-serif
    прокручивается только колонка настроек справа. На узком — обычный поток. */
 @media (min-width: 1000px) and (min-height: 560px) {
   html, body { height: 100%; overflow: hidden; }
-  .stage { height: 100vh; height: 100dvh; align-items: stretch; flex-wrap: nowrap; }
+  .stage { height: calc(100vh - var(--pgbar)); height: calc(100dvh - var(--pgbar)); align-items: stretch; flex-wrap: nowrap; }
   .frame { flex: none; align-self: flex-start; }
   .controls { flex: none; overflow-y: auto; overscroll-behavior: contain; padding-right: 8px; scrollbar-gutter: stable; }
 }
@@ -793,7 +805,15 @@ input::placeholder { color: var(--a11y-ph); opacity: 1; }
   <symbol id="i-image" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="3"/><circle cx="9" cy="10" r="1.6"/><path d="M4 16.5l4.8-4.5 3.2 3 3-2.5 5 4.2"/></symbol>
 </svg>
 
-<div class="stage">
+<header class="pgbar">
+  <span class="brand">Seven assistant</span>
+  <div role="tablist" aria-label="Страницы">
+    <button role="tab" id="tab-proto" aria-controls="view-proto" aria-selected="true" data-view="proto">Прототип · Стол</button>
+    <button role="tab" id="tab-matrix" aria-controls="view-matrix" aria-selected="false" tabindex="-1" data-view="matrix">Матрица плиток</button>
+  </div>
+</header>
+
+<div class="stage" id="view-proto" role="tabpanel" aria-labelledby="tab-proto">
   <div class="frame">
     <div class="desk" id="desk">
       <!-- DeskTopStrip -->
@@ -894,6 +914,10 @@ input::placeholder { color: var(--a11y-ph); opacity: 1; }
     <h1>Прототип · Стол</h1>
     <div class="hint">Долгое нажатие на плитку или пустое место открывает правку. × убирает плитку, «Вернуть» возвращает. «Готово» выходит из правки. Слайдер тянется в обычном режиме.</div>
   </div>
+</div>
+
+<div class="matrix-view" id="view-matrix" role="tabpanel" aria-labelledby="tab-matrix">
+  <iframe id="matrixFrame" title="Матрица плиток" data-src="tile-matrix.html"></iframe>
 </div>
 
 <script>
@@ -1789,6 +1813,33 @@ render();
       }
     }
   });
+})();
+/* ───────── Страницы: «Прототип» ↔ «Матрица плиток» ─────────
+   Адрес: index.html (или #proto) — прототип, index.html#matrix — матрица. Кнопка «Назад» в браузере возвращает на прошлую страницу.
+   Матрица лежит в tile-matrix.html и открывается во встроенном окне, чтобы стили двух страниц не пересекались; грузится при первом открытии. */
+(function pages() {
+  const tabs = [...document.querySelectorAll('.pgbar [role=tab]')], frame = document.getElementById('matrixFrame');
+  const sendTheme = () => { try { frame.contentWindow.postMessage({ seven: 'theme', theme: state.theme }, '*'); } catch (e) {} };
+  const fromHash = () => location.hash === '#matrix' ? 'matrix' : 'proto';
+  function show(v) {
+    document.body.dataset.view = v;
+    tabs.forEach(t => { const on = t.dataset.view === v; t.setAttribute('aria-selected', String(on)); t.tabIndex = on ? 0 : -1; });
+    if (v === 'matrix') {
+      if (!frame.getAttribute('src')) frame.src = frame.dataset.src + '?theme=' + encodeURIComponent(state.theme);
+      else sendTheme();
+    }
+  }
+  frame.addEventListener('load', sendTheme);
+  tabs.forEach(t => t.addEventListener('click', () => { location.hash = t.dataset.view; }));
+  /* стрелки переключают вкладки; событие не уходит дальше, иначе стрелки листали бы экраны стола */
+  document.querySelector('.pgbar [role=tablist]').addEventListener('keydown', e => {
+    const i = tabs.findIndex(t => t.dataset.view === document.body.dataset.view);
+    const n = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 }[e.key];
+    if (n === undefined) return;
+    e.preventDefault(); e.stopPropagation(); const t = tabs[(n + tabs.length) % tabs.length]; location.hash = t.dataset.view; t.focus();
+  });
+  addEventListener('hashchange', () => show(fromHash()));
+  show(fromHash());
 })();
 </script>
 </body>
