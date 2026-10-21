@@ -379,13 +379,12 @@ h3.s3{font-size:16px;line-height:24px;font-weight:500;margin:20px 0 4px;color:va
 :root{--accent-on:var(--core-green-600)}[data-theme="dark"]{--accent-on:var(--core-green-300)}
 /* значение — главное; название рядом со значением и подписи уходят на второй план */
 .tile .value,.tile .big,.tile .vmin{font-weight:600}
-.tile:has(.value,.vmin,.big,.lvv) .name{font-weight:400;color:var(--page-t2)}
+.tile .name{font-weight:500;color:var(--page-text)}
 .tile .sec:not(.c-warn):not(.c-err):not(.c-off):not(.lvv){color:color-mix(in srgb,var(--page-t2) 78%,transparent)}
 .tile .sec.lvv{font-weight:600}
 /* значки: приглушены, включённое выделено зелёным (вместо светлой заливки плитки) */
-.tile>svg.ic,.tile .top>svg.ic,.tile .nrow .ni>svg.ic{color:color-mix(in srgb,var(--page-text) 58%,transparent);stroke-width:1.6}
-.tile.act>svg.ic,.tile.act .top>svg.ic,.tile.act .nrow .ni>svg.ic{color:var(--accent-on)}
-.tile svg.ic[style*="fill:currentColor"]{color:var(--accent-on)}
+.tile>svg.ic,.tile .top>svg.ic,.tile .nrow .ni>svg.ic{color:color-mix(in srgb,var(--page-text) 70%,transparent);stroke-width:1.6}
+.tile svg.ic[style*="fill:currentColor"]{color:color-mix(in srgb,var(--page-text) 70%,transparent)}
 /* кнопки и сегменты: выбранный сегмент — акцент, остальные тихие */
 .seg span:not(.on),.chips span,.btn3 span,.step .rb{color:var(--page-t2);font-weight:400}
 .seg span.on{font-weight:500}
