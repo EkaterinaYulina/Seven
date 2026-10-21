@@ -430,13 +430,18 @@ h3.s3{font-size:16px;line-height:24px;font-weight:500;margin:20px 0 4px;color:va
 .mx .tile.plt{padding-top:8px;padding-bottom:8px}
 .mx .tile:not(.tall) .nrow{min-height:24px}
 
-/* раунд 21.10 (9): тише «колбаса» — ниже, светлее заливка, слабая подложка, тонкий хват */
-.dim.h{height:36px}
-.dim.h .content>.ic{top:6px}
-.dim .content>.pct{height:36px;line-height:36px}
-.dim{background:color-mix(in srgb,var(--dim-fill-bg) 14%,transparent)}
-.dim-fill{background:color-mix(in srgb,var(--dim-fill-bg) 55%,transparent)}
-.dim .grip{height:14px!important;margin-top:-7px!important;opacity:.55;box-shadow:none}
+/* раунд 21.10 (9): «колбаса» — как в исходном стиле (мятная заливка, скруглённый край, хват), но ниже: 36px */
+.tile .dim.h{height:36px!important;margin-top:auto;margin-bottom:8px}
+.dim.h .content{display:none}
+.dim .grip{height:14px!important;margin-top:-7px!important;opacity:.8}
+
+/* точки страниц — в верхней полосе по центру */
+.pager{top:0;bottom:auto;height:32px;z-index:3;pointer-events:none}.pager .pd{pointer-events:auto}
+
+/* раунд 21.10 (10): слова-состояния («Закрыта», «Включено») — подпись, как «Вкл»: мелко и приглушённо; крупно только числа */
+.tile .value.wd,.tile .vmin.wd{font-size:14px;line-height:17px;color:var(--page-t2);font-weight:400}
+.tile .value.wd.c-warn,.tile .vmin.wd.c-warn{color:var(--state-error,var(--page-text));font-weight:500}
+.pager.nar .pd{width:12px}.pager.nar{left:auto;right:84px;width:auto}
 </style></head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -809,7 +814,7 @@ function frame(dev){var d=DV[dev],W=d[1],Ht=d[2],g=grid(W,Ht);CELL[dev]=[g.cw,g.
  var spec=g.c+'×'+g.r+' ячеек · '+L.pages.length+' '+(L.pages.length==1?'экран':(L.pages.length<5?'экрана':'экранов'))+' · плиток '+L.placed;
  var html='<div class="scrbox"><div class="scrhd"><b>'+TTL[dev]+'</b><span>'+W+'×'+Ht+' dp · '+spec+'</span></div>'+
   '<div class="scrwrap" data-dev="'+dev+'"><div class="scr mx" style="width:'+W+'px;height:'+Ht+'px"><div class="strip"><span>'+ic('menu')+'<b style="font-weight:500">Гостиная</b></span><span>14:02 '+ic('mic')+'</span></div>'+
-  '<div style="position:relative;height:'+g.H+'px">'+cells+tiles+'</div><div class="pager">'+dots+'</div></div></div></div>';
+  '<div style="position:relative;height:'+g.H+'px">'+cells+tiles+'</div><div class="pager'+(W<400?' nar':'')+'">'+dots+'</div></div></div></div>';
  return {html:html,g:g,L:L}}
 function r(){document.documentElement.dataset.theme=S.th;
  document.getElementById('stb').innerHTML=STS.map(function(s){return '<button data-k="st" data-v="'+s[0]+'">'+s[1]+'</button>'}).join('');

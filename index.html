@@ -778,13 +778,13 @@ input::placeholder { color: var(--a11y-ph); opacity: 1; }
 .tile .sec{color:var(--c-text-secondary)}
 .tile svg.ic{color:color-mix(in srgb,var(--c-text-primary) 70%,transparent);stroke-width:1.6}
 
-/* раунд 21.10 (9): тише «колбаса» — ниже, светлее заливка, слабая подложка, тонкий хват */
-.dim.h{height:36px}
-.dim.h .content>.ic{top:6px}
-.dim .content>.pct{height:36px;line-height:36px}
-.dim{background:color-mix(in srgb,var(--dim-fill-bg) 14%,transparent)}
-.dim-fill{background:color-mix(in srgb,var(--dim-fill-bg) 55%,transparent)}
-.dim .grip{height:14px!important;margin-top:-7px!important;opacity:.55;box-shadow:none}
+/* раунд 21.10 (9): «колбаса» — как в исходном стиле (мятная заливка, скруглённый край, хват), но ниже: 36px */
+.tile .dim.h{height:36px!important;margin-top:auto;margin-bottom:8px}
+.dim.h .content{display:none}
+.dim .grip{height:14px!important;margin-top:-7px!important;opacity:.8}
+
+/* точки страниц — в верхней полосе по центру */
+.dots-pager{top:0;bottom:auto;height:var(--dim-top-strip)}
 </style>
 </head>
 <body>

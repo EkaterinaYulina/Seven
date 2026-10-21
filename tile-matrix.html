@@ -412,13 +412,17 @@ h3.s3{font-size:16px;line-height:24px;font-weight:500;margin:20px 0 4px;color:va
 .mx .tile.plt{padding-top:8px;padding-bottom:8px}
 .mx .tile:not(.tall) .nrow{min-height:24px}
 
-/* раунд 21.10 (9): тише «колбаса» — ниже, светлее заливка, слабая подложка, тонкий хват */
-.dim.h{height:36px}
-.dim.h .content>.ic{top:6px}
-.dim .content>.pct{height:36px;line-height:36px}
-.dim{background:color-mix(in srgb,var(--dim-fill-bg) 14%,transparent)}
-.dim-fill{background:color-mix(in srgb,var(--dim-fill-bg) 55%,transparent)}
-.dim .grip{height:14px!important;margin-top:-7px!important;opacity:.55;box-shadow:none}
+/* раунд 21.10 (9): «колбаса» — как в исходном стиле (мятная заливка, скруглённый край, хват), но ниже: 36px */
+.tile .dim.h{height:36px!important;margin-top:auto;margin-bottom:8px}
+.dim.h .content{display:none}
+.dim .grip{height:14px!important;margin-top:-7px!important;opacity:.8}
+
+/* точки страниц — в верхней полосе по центру */
+.pager{top:0;bottom:auto;height:32px;z-index:3;pointer-events:none}.pager .pd{pointer-events:auto}
+
+/* раунд 21.10 (10): слова-состояния («Закрыта», «Включено») — подпись, как «Вкл»: мелко и приглушённо; крупно только числа */
+.tile .value.wd,.tile .vmin.wd{font-size:14px;line-height:17px;color:var(--page-t2);font-weight:400}
+.tile .value.wd.c-warn,.tile .vmin.wd.c-warn{color:var(--state-error,var(--page-text));font-weight:500}
 </style></head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
