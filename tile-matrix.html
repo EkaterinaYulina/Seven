@@ -348,6 +348,65 @@ h3.s3{font-size:16px;line-height:24px;font-weight:500;margin:20px 0 4px;color:va
 .wxm{display:flex;align-items:center;justify-content:space-between;gap:8px}.wxm .value{flex:1;min-width:0}.wxm svg.ic{width:36px;height:36px;stroke-width:1.6;flex:none}
 .wxf{display:flex;justify-content:space-between;margin-top:auto}.wxf>div{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;min-width:0}.wxf b{font-size:16px;line-height:20px;font-weight:700}.wxf .sec{font-size:14px;line-height:17px}.wxf svg.ic{width:24px;height:24px}
 .mx .tile .rows{margin-top:auto}
+
+/* ===== раунд 21.10 (3): состояния читаются оформлением плитки, а не только подписью ===== */
+/* устарело — янтарное кольцо и янтарная подпись */
+.tile.stl{box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--state-stale) 70%,transparent)}
+[data-theme="dark"] .tile.stl{box-shadow:inset 0 0 0 1.5px var(--state-stale)}
+/* нет связи — штриховка по диагонали, без тона; «нет привязки» остаётся пунктиром, ошибка — красным */
+.tile.offl{background-image:repeating-linear-gradient(135deg,transparent 0 7px,color-mix(in srgb,var(--page-text) 9%,transparent) 7px 8px)}
+.c-off{font-weight:500}
+
+/* ===== раунд 21.10 (4): тише. Один акцент на плитку, остальное — второй и третий план ===== */
+:root{--accent-on:var(--core-green-600)}[data-theme="dark"]{--accent-on:var(--core-green-300)}
+/* значение — главное; название рядом со значением и подписи уходят на второй план */
+.tile .value,.tile .big,.tile .vmin{font-weight:600}
+.tile:has(.value,.vmin,.big,.lvv) .name{font-weight:400;color:var(--page-t2)}
+.tile .sec:not(.c-warn):not(.c-err):not(.c-off):not(.lvv){color:color-mix(in srgb,var(--page-t2) 78%,transparent)}
+.tile .sec.lvv{font-weight:600}
+/* значки: приглушены, включённое выделено зелёным (вместо светлой заливки плитки) */
+.tile>svg.ic,.tile .top>svg.ic,.tile .nrow .ni>svg.ic{color:color-mix(in srgb,var(--page-text) 58%,transparent);stroke-width:1.6}
+.tile.act>svg.ic,.tile.act .top>svg.ic,.tile.act .nrow .ni>svg.ic{color:var(--accent-on)}
+.tile svg.ic[style*="fill:currentColor"]{color:var(--accent-on)}
+/* кнопки и сегменты: выбранный сегмент — акцент, остальные тихие */
+.seg span:not(.on),.chips span,.btn3 span,.step .rb{color:var(--page-t2);font-weight:400}
+.seg span.on{font-weight:500}
+/* цвет света — приглушённый круг и точки, чтобы не перекрикивать плитки вокруг */
+.wheel{opacity:.8;filter:saturate(.62)}
+.pres i:nth-child(2){background:#E39F99!important}
+[data-theme="dark"] .pres i:nth-child(1){background:#D2D0C6!important}
+
+/* ===== раунд 21.10 (5): жирное значит «число»; слова-состояния и верхняя полоса тише ===== */
+.tile .value.wd,.tile .vmin.wd,.tile .big.wd,.tile .sec.lvv.wd{font-weight:400}
+.strip span:last-child,.strip span:first-child svg.ic{color:var(--page-t2)}
+
+/* ===== раунд 21.10 (6): контролы без плашек, значки у названия ===== */
+/* сегменты — текстовые варианты, активный тёмнее и с коротким подчёркиванием (как вкладки) */
+.seg span,.seg span:not(.on),.mx .tile .seg span{background:none!important;color:var(--page-t2);font-weight:400;position:relative;border-radius:0}
+.seg span.on,.mx .tile .seg span.on{color:var(--page-text)!important;font-weight:600}
+.seg span.on::after{content:"";position:absolute;left:50%;bottom:7px;width:20px;height:2px;margin-left:-10px;border-radius:1px;background:var(--accent-on)}
+.seg{gap:0}
+/* пресеты 0/50/100, ±, вверх/вниз/стоп — без серых подложек, зона касания 48 dp прежняя */
+.chips span,.btn3 span,.step .rb,.pb,.mx .tile.org12 .btn3 span{background:none!important;color:var(--page-t2)}
+.chips span{font-weight:400}
+.step .rb svg.ic,.btn3 span svg.ic{width:28px;height:28px;stroke-width:1.5}
+
+
+/* ===== Форма ползунка света (переключатель «Форма ползунка»): p — колбаса (как было), l — тонкая линия с ручкой, b — полоска без ручки ===== */
+[data-sl=l] .dim.h,[data-sl=b] .dim.h{background:none!important;overflow:visible}
+[data-sl=l] .dim.h::before,[data-sl=b] .dim.h::before{display:none!important}
+[data-sl=l] .dim.h .dim-fill,[data-sl=b] .dim.h .dim-fill{background:none!important;overflow:visible}
+[data-sl=l] .dim.h .dim-fill .content,[data-sl=b] .dim.h .dim-fill .content,[data-sl=l] .dim.h .content>.ic,[data-sl=b] .dim.h .content>.ic{display:none}
+[data-sl=l] .dim.h>.content>.pct,[data-sl=b] .dim.h>.content>.pct{display:none}
+[data-sl=l] .dim.h::after{content:"";position:absolute;left:12px;right:12px;top:50%;height:4px;margin-top:-2px;border-radius:2px;background:color-mix(in srgb,var(--c-text-primary) 16%,transparent)}
+[data-sl=l] .dim.h .dim-fill::before{content:"";position:absolute;left:12px;right:24px;top:50%;height:4px;margin-top:-2px;border-radius:2px;background:var(--accent-on,var(--ui-primary-container))}
+[data-sl=l] .dim.h .grip{display:block!important;right:14px;left:auto;top:50%;width:20px;height:20px;margin:-10px 0 0 0;border-radius:50%;background:var(--accent-on,var(--ui-primary-container));opacity:1;box-shadow:0 0 0 3px color-mix(in srgb,var(--c-tile) 90%,#fff)}
+[data-sl=b] .dim.h::after{content:"";position:absolute;left:0;right:0;top:50%;height:10px;margin-top:-5px;border-radius:5px;background:color-mix(in srgb,var(--c-text-primary) 12%,transparent)}
+[data-sl=b] .dim.h .dim-fill::before{content:"";position:absolute;left:0;right:0;top:50%;height:10px;margin-top:-5px;border-radius:5px;background:var(--accent-on,var(--ui-primary-container))}
+[data-sl=b] .dim.h .grip{display:none!important}
+/* выключено, нет связи, нет данных: пустой кружок на левом краю (линия) или пустая дорожка (полоска) */
+[data-sl=l] .tile[data-on=false] .dim.h .grip,[data-sl=l] .dim.dis.h .grip,[data-sl=l] .dim.empty.h .grip{display:block!important;background:transparent;box-shadow:inset 0 0 0 2px var(--c-text-secondary)}
+[data-sl=l] .tile[data-on=false] .dim.h .dim-fill::before,[data-sl=l] .dim.dis.h .dim-fill::before,[data-sl=l] .dim.empty.h .dim-fill::before,[data-sl=b] .tile[data-on=false] .dim.h .dim-fill::before,[data-sl=b] .dim.dis.h .dim-fill::before,[data-sl=b] .dim.empty.h .dim-fill::before{display:none}
 </style></head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -443,6 +502,7 @@ h3.s3{font-size:16px;line-height:24px;font-weight:500;margin:20px 0 4px;color:va
  <div class="grp"><b>Устройство</b><span id="devb" style="display:flex;gap:6px;flex-wrap:wrap"></span></div>
  <div class="grp"><b>Состояние плиток</b><span id="stb" style="display:flex;gap:6px;flex-wrap:wrap"></span></div>
  <div class="grp" style="border-left:1px solid color-mix(in srgb,var(--page-text) 25%,transparent);padding-left:16px"><b title="Это выбор дизайна, а не состояние плитки: показывает варианты оформления выключенного ползунка у света и уровня">Дизайн: выключенный ползунок</b><button data-k="ds" data-v="a">Пустая</button><button data-k="ds" data-v="b">Бледная</button><button data-k="ds" data-v="c">По уровню</button><button data-k="ds" data-v="d">С подложкой</button></div>
+ <div class="grp"><b title="Форма ползунка яркости у света, уровня и штор">Форма ползунка</b><button data-k="sl" data-v="p">Колбаса</button><button data-k="sl" data-v="l">Линия с ручкой</button><button data-k="sl" data-v="b">Полоска</button></div>
 </div>
 <h2 class="s" id="s4" style="margin-top:0">4. Каталог плиток: тип × размер</h2>
 <p class="lead">Секции и номера — как в разделе 4 ТЗ. Строка — тип или вариант, столбец — размер; в шапке секции только размеры, допустимые для типа. Размер по умолчанию указан под названием строки. Состояние переключается сверху для всей матрицы</p>
@@ -461,7 +521,7 @@ h3.s3{font-size:16px;line-height:24px;font-weight:500;margin:20px 0 4px;color:va
 </div>
 <script>
 
-var S={th:'light',dv:'p15',st:'norm',ds:'a'};
+var S={th:'light',dv:'p15',st:'norm',ds:'a',sl:'p'};
 /* во встроенном окне тема приходит из прототипа: ?theme=… при открытии и сообщение при возврате на вкладку */
 (function(){var t=new URLSearchParams(location.search).get('theme');if(t==='dark'||t==='light')S.th=t;
  addEventListener('message',function(e){var d=e.data;if(e.source!==parent||!d||d.seven!=='theme'||(d.theme!=='dark'&&d.theme!=='light')||S.th===d.theme)return;S.th=d.theme;r()})})();
@@ -470,7 +530,7 @@ var CELL={p15:[105.33,94.67],p10:[95.2,111],ph:[123.67,105.2],pc:[98.15,95.5]};v
 function sz(w,h){var c=CELL[DEV];return {w:Math.round((c[0]*w-4)*10)/10,h:Math.round((c[1]*h-4)*10)/10}}
 function T(w,h,inner,cls,on){if(w==1)cls=(cls||'')+' nw';var d=sz(w,h);if(w==1&&h==1)cls=(cls||'')+' q11';if(w==2&&h==1&&inner.indexOf('class="col"')>=0)cls=(cls||'')+' s21';return '<div class="tile '+(cls||'')+'" data-on="'+(on===undefined?'true':on)+'" style="width:'+d.w+'px;height:'+d.h+'px">'+inner+'</div>'}
 function pill(o,lvl,icon,txt,mode){var c=ic(icon||'sun')+(o=='h'?'<span class="pct">'+(txt!=null?txt:lvl+' %')+'</span>':'');
- return '<div class="dim '+o+' '+(mode||'')+(o=='h'&&lvl>=50?' pl':'')+'" style="--lvl:'+(lvl/100)+'" data-lvl="'+lvl+'" data-o="'+o+'"><div class="content base">'+c+'</div><div class="dim-fill" style="--lvl:'+(lvl/100)+'"><div class="content over">'+c+'</div><i class="grip"></i></div></div>'}
+ return '<div class="dim '+o+' ni '+(mode||'')+(o=='h'&&lvl>=50?' pl':'')+'" style="--lvl:'+(lvl/100)+'" data-lvl="'+lvl+'" data-o="'+o+'"><div class="content base">'+c+'</div><div class="dim-fill" style="--lvl:'+(lvl/100)+'"><div class="content over">'+c+'</div><i class="grip"></i></div></div>'}
 function mini(lvl,mode){var l=mode=='empty'?0:lvl;return '<div class="mini'+(mode=='dis'||mode=='empty'?' dis':'')+'"><div class="track"></div><div class="thumb" style="left:calc(7px + (100% - 14px)*'+(l/100)+')"></div></div>'}
 function ctl(icon,lvl,mode){return '<div class="crow"><span class="pb">'+ic('power')+'</span>'+mini(lvl,mode)+'</div>'}
 function msl(lvl,mode){return '<div class="crow">'+mini(lvl,mode)+'</div>'}
@@ -586,7 +646,7 @@ function PL(r,st,on,dis,lv,k){var txt=st=='nodata'?'—':(!on&&(k=='lvl'||k=='cu
 function RT(st,cap,word){if(st=='offline')return OFFN().replace('class="sec','class="sec R');if(cap)return cap.replace(/<svg.*?<\/svg>/,'').replace('class="sec','class="sec R');return word?'<div class="sec R">'+word+'</div>':''}
 function stateLine(r,st,compact){
  if(st=='offline')return OFFT('нет связи');
- if(st=='stale')return '<div class="sec">'+(compact?'устарело':'устарело, 14:02')+'</div>';
+ if(st=='stale')return '<div class="sec c-warn">'+(compact?'устарело':'устарело, 14:02')+'</div>';
  if(st=='nodata')return '<div class="sec">нет данных</div>';
  if(st=='nobind')return '<div class="sec">нет привязки</div>';
  if(st=='busy')return '<div class="sec">в работе…</div>';
@@ -598,7 +658,10 @@ function icn(r,st){return r.ic=='L'?'<span class="lt">'+r.n[0]+'</span>':ic(OFFI
 var STATUS_ICON=false;/* значок состояния рядом с подписью: false — состояние говорит только подпись и оформление плитки */
 function extraIc(st){if(!STATUS_ICON)return '';return st=='nobind'?ic('info'):st=='busy'?ic('timer'):''}
 function tcls(st,w,h){var c='';if(st=='offline')c+=' offl';if(st=='offline'||st=='nodata'||st=='nobind'||st=='stale')c+=' muted';if(st=='nobind')c+=' nobind';if(st=='busy')c+=' busyB';return c}
-function mkTile(r,sz,st){var h0=mkTile0(r,sz,st);if(r.k=='scn'||r.k=='scx')h0=h0.replace(/<svg class="ic ([^"]*)"><use href="#i-(play|stop)"\/>/g,'<svg class="ic $1" style="fill:currentColor"><use href="#i-$2"/>');if(false&&st=='offline'&&h0){var a=sz.split('×').map(Number),k=(r.k=='snd'&&!(a[1]==1&&a[0]<=2))?'lvl':r.k;var nrowT=(k=='mode')||(['dim','snd','lvl','cur'].indexOf(k)>=0&&a[0]==2&&(a[1]==1||(a[1]==2&&k!='cur')));if(!nrowT)h0=h0.replace(/<\/div>$/,'<span class="stic">'+ic('wifioff','c-off')+'</span></div>')}return h0}
+var ACTK=['dim','ltx','lrl','sw','snd','alarm','lvl','cur','lvx'];
+function mkTile(r,sz,st){var h0=mkTile0(r,sz,st);
+ if(h0&&(st=='norm'||st=='busy')&&ACTK.indexOf(r.k)>=0&&h0.indexOf('data-on="true"')>=0)h0=h0.replace('class="tile ','class="tile act ');
+ if(h0&&st=='stale')h0=h0.replace('class="tile ','class="tile stl ');if(r.k=='scn'||r.k=='scx')h0=h0.replace(/<svg class="ic ([^"]*)"><use href="#i-(play|stop)"\/>/g,'<svg class="ic $1" style="fill:currentColor"><use href="#i-$2"/>');if(false&&st=='offline'&&h0){var a=sz.split('×').map(Number),k=(r.k=='snd'&&!(a[1]==1&&a[0]<=2))?'lvl':r.k;var nrowT=(k=='mode')||(['dim','snd','lvl','cur'].indexOf(k)>=0&&a[0]==2&&(a[1]==1||(a[1]==2&&k!='cur')));if(!nrowT)h0=h0.replace(/<\/div>$/,'<span class="stic">'+ic('wifioff','c-off')+'</span></div>')}return h0}
 /* Климат 2×2: показываются только заданные цели (температура, уставка, режим), клапан — подпись */
 function thBody(r,st){var c=r.th,dis=(st=='offline'||st=='nodata'||st=='nobind'),off=(st=='off'),nd=(st=='nodata');
  var cap=stateLine(r,st,true)||'';
@@ -627,29 +690,29 @@ function mkTile0(r,sz,st){var a=sz.split('×').map(Number),w=a[0],h=a[1],on=!(st
  if(k=='alarm'){var ao=(st=='off'),av=st=='nodata'?'—':(ao?'Выкл':'07:30'),ad=cap||(ao?'':'<div class="sec">пн–пт</div>'),acl=cl+(ao?' muted':'');
   if(w==2&&h==1)return T(2,1,ic(OFFI('bell',st))+'<div class="col">'+nm+'<div class="value" style="font-size:26px;line-height:28px">'+av+'</div>'+ad+'</div>',acl,!ao);
   if(w==2&&h==2)return T(2,2,H22(nmI,'<div class="sec">'+(cap||ao?'':'пн–пт')+'</div>')+(cap||'')+'<div class="value" style="font-size:56px;line-height:60px">'+av+'</div><div class="sp"></div><div class="seg" style="margin-top:0'+(dis?';opacity:.5':'')+'"><span'+(ao?'':' class="on"')+'>Вкл</span><span'+(ao?' class="on"':'')+'>Выкл</span></div>',acl,!ao)}
- if(k0=='ltx'){return T(2,2,'<div class="nrow"><div class="ni">'+nm+'</div><div class="sec R lvv">60 %</div></div><div class="chips" style="margin-top:4px"><span style="height:32px">2700 K</span><span style="height:32px">5000 K</span></div><div class="vmin" style="margin-top:6px">2703 K</div>'+mini(.2)+pill('h',60,'sun','',''),'',true)}
- if(k0=='lrl'){var lrv=st=='off'?'Выключено':st=='nodata'?'—':'Включено';return T(2,1,'<div class="nrow"><div class="ni">'+nmI+'</div>'+(st=='stale'?'<div class="sec R shr">устар.</div>':RT(st,cap,'').replace('class="sec R','class="sec R shr'))+'</div><div class="value" style="margin-top:auto">'+lrv+'</div>',cl,on)}
+ if(k0=='ltx'){return T(2,2,'<div class="nrow"><div class="ni">'+ic('bulb')+nm+'</div><div class="sec R lvv">60 %</div></div><div class="chips" style="margin-top:4px"><span style="height:32px">2700 K</span><span style="height:32px">5000 K</span></div><div class="vmin" style="margin-top:6px">2703 K</div>'+mini(.2)+pill('h',60,'sun','',''),'',true)}
+ if(k0=='lrl'){var lrv=st=='off'?'Выключено':st=='nodata'?'—':'Включено';return T(2,1,'<div class="nrow"><div class="ni">'+nmI+'</div>'+(st=='stale'?'<div class="sec R shr c-warn">устар.</div>':RT(st,cap,'').replace('class="sec R','class="sec R shr'))+'</div><div class="value" style="margin-top:auto">'+lrv+'</div>',cl,on)}
  if(k0=='dim'){
   var lt=st=='nodata'?'—':(st=='off'?'':r.lv+' %'),xi2=extraIc(st);
-  var cS=st=='stale'?'<div class="sec R shr">устарело</div>':st=='offline'?OFFN().replace('class="sec','class="sec R'):st=='nodata'?'<div class="sec R shr">нет данных</div>':st=='nobind'?'<div class="sec R shr">нет привязки</div>':st=='busy'?'<div class="sec R shr">в работе…</div>':st=='err'?'<div class="sec R shr c-err">ошибка</div>':'';
+  var cS=st=='stale'?'<div class="sec R shr c-warn">устарело</div>':st=='offline'?OFFN().replace('class="sec','class="sec R'):st=='nodata'?'<div class="sec R shr">нет данных</div>':st=='nobind'?'<div class="sec R shr">нет привязки</div>':st=='busy'?'<div class="sec R shr">в работе…</div>':st=='err'?'<div class="sec R shr c-err">ошибка</div>':'';
   var vL='';
   var sL=pill('h',st=='nodata'?0:(on?lv:0),OFFI('bulb',st),'',(dis?(st=='nodata'?'empty ':'dis '):''));
   if(w==1&&h==1)return T(1,1,'<div class="top">'+icn(r,st)+xi2+'</div>'+nm+(cap||'<div class="sec">'+(on?'Вкл':'Выкл')+'</div>'),cl,on);
   if(w==1&&h==2)return T(1,2,'<div class="top">'+icn(r,st)+xi2+'</div>'+nm+(cap||'<div class="vmin">'+(st=='off'?'Выкл':lt)+'</div>')+(nb?'':btnc('plus','minus')),cl+' org12',on);
-  var rowL='<div class="nrow"><div class="ni">'+nm+'</div>'+(cS||'<div class="sec R lvv">'+(st=='off'?'Выкл':r.lv+' %')+'</div>')+'</div>';
+  var rowL='<div class="nrow"><div class="ni">'+nmI+'</div>'+(cS||'<div class="sec R lvv">'+(st=='off'?'Выкл':r.lv+' %')+'</div>')+'</div>';
   if(w==2&&h==1)return T(2,1,rowL+sL,cl+' plt',on);
   if(w==2&&h==2)return T(2,2,rowL+'<div class="wp"'+(dis?' style="opacity:.5"':'')+'><div class="wheel"></div><div class="pres"><i style="background:#fff"></i><i style="background:#D95550"></i></div></div>'+sL,cl,on)}
  if(k0=='lvx'&&r.x.grp){var xg=r.x;return T(2,1,ic('blinds')+'<div class="col">'+nm+'<div class="value">'+xg.v+'</div><div class="sec">'+xg.cap+'</div></div>',cl,on)}
- if(k0=='lvx'){var xx=r.x;var xr2=xx.cap.charAt(0)=='→'?xx.v+' '+xx.cap:xx.v+ic('check','s');return T(2,1,'<div class="nrow"><div class="ni">'+nm+'</div><div class="sec R lvv">'+xr2+'</div></div>'+pill('h',xx.lv,'blinds','',''),'plt',true)}
+ if(k0=='lvx'){var xx=r.x;var xr2=xx.cap.charAt(0)=='→'?xx.v+' '+xx.cap:xx.v+ic('check','s');return T(2,1,'<div class="nrow"><div class="ni">'+ic('blinds')+nm+'</div><div class="sec R lvv">'+xr2+'</div></div>'+pill('h',xx.lv,'blinds','',''),'plt',true)}
  if(k0=='lvl'||k0=='cur'){
   var isC=k0=='cur',vtxt=st=='nodata'?'—':(r.sw?(st=='off'?'':lv+' %'):(st=='off'?(r.vo||r.v):r.v)),xi=extraIc(st);
-  var capS=st=='stale'?'<div class="sec R shr">устарело</div>':st=='offline'?OFFN().replace('class="sec','class="sec R'):st=='nodata'?'<div class="sec R shr">нет данных</div>':st=='busy'?'<div class="sec R shr">в работе…</div>':st=='err'?'<div class="sec R shr c-err">ошибка</div>':'';
+  var capS=st=='stale'?'<div class="sec R shr c-warn">устарело</div>':st=='offline'?OFFN().replace('class="sec','class="sec R'):st=='nodata'?'<div class="sec R shr">нет данных</div>':st=='busy'?'<div class="sec R shr">в работе…</div>':st=='err'?'<div class="sec R shr c-err">ошибка</div>':'';
   var vb='';var pm=(dis?(st=='nodata'?'empty ':'dis '):''),pi=OFFI(r.ic=='bulb'?'sun':r.ic,st);
   var sl=pill('h',st=='nodata'?0:(on?lv:0),pi,'',pm),sl4=pill('h',st=='nodata'?0:(on?lv:0),pi,'',pm);
   if(nb)return T(w,h,'<div class="vmin">—</div><div class="sec">нет привязки</div>',cl+(w==4?' s21':''),on);
   if(w==1&&h==1)return T(1,1,'<div class="top">'+icn(r,st)+xi+'</div>'+(cap?nm+cap:nm+'<div class="vmin">'+vtxt+'</div>'),cl,on);
   if(w==1&&h==2)return T(1,2,'<div class="top">'+icn(r,st)+xi+'</div>'+nm+(cap||'<div class="vmin">'+vtxt+'</div>')+btnc(isC?'up':'plus',isC?'down':'minus'),cl+' org12',on);
-  var row='<div class="nrow"><div class="ni">'+nm+'</div>'+(capS||'<div class="sec R lvv">'+(st=='off'?(r.sw?'Выкл':(r.vo||'закрыт')):r.sw?lv+' %':r.v)+'</div>')+'</div>';
+  var row='<div class="nrow"><div class="ni">'+nmI+'</div>'+(capS||'<div class="sec R lvv">'+(st=='off'?(r.sw?'Выкл':(r.vo||'закрыт')):r.sw?lv+' %':r.v)+'</div>')+'</div>';
   if(w==2&&h==1)return T(2,1,row+sl,cl+' plt',on);
   if(w==2&&h==2)return T(2,2,row+sl+(isC?'<div class="btn3"><span>'+ic('up')+'</span><span>'+ic('down')+'</span><span'+(r.nostop?' style="opacity:.4"':'')+'>'+ic('stop')+'</span></div>':CH4),cl,on);
   if(w==4)return T(4,1,'<div class="col" style="flex:none;width:130px">'+nm+(cap||'')+'<div class="vmin">'+vtxt+'</div></div><div style="flex:1;min-width:0;align-self:center">'+sl4+'</div>','s21 plt'+cl,on)}
@@ -658,7 +721,7 @@ function mkTile0(r,sz,st){var a=sz.split('×').map(Number),w=a[0],h=a[1],on=!(st
   return T(2,1,'<div class="col" style="justify-content:center">'+nm0+cap2+'</div><span style="display:flex;align-items:center;gap:8px;flex:none">'+(q.stop?ic('stop','big28'):ic(q.si,'big28'))+'</span>',ccl,'true')}
  if(k=='scn'&&w==2&&h==1)return T(2,1,'<div class="col" style="justify-content:center">'+(nb?'':nm)+(cap||'<div class="sec">'+val+'</div>')+'</div><span style="display:flex;align-items:center;flex:none">'+ic('play','big28')+'</span>',cl,on);
  if(k=='mode'){var m=r.md,R2=function(t,c){return '<div class="sec R'+(c?' '+c:'')+'">'+t+'</div>'};
-  var right=st=='stale'?R2('устар. 14:02'):st=='offline'?OFFN().replace('class="sec','class="sec R'):st=='busy'?R2(m.scn?'Занято':'в работе…'):st=='err'?R2('ошибка','c-err'):st=='nodata'?R2('нет данных'):st=='nobind'?R2('нет привязки'):'';
+  var right=st=='stale'?R2('устар. 14:02','c-warn'):st=='offline'?OFFN().replace('class="sec','class="sec R'):st=='busy'?R2(m.scn?'Занято':'в работе…'):st=='err'?R2('ошибка','c-err'):st=='nodata'?R2('нет данных'):st=='nobind'?R2('нет привязки'):'';
   var ono=st=='nodata'?-1:m.on,lock=dis||m.ro;
   var sg='<div class="nrow"><div class="ni">'+ic(r.ic||'lock')+'<span class="name">'+r.n+'</span></div>'+right+'</div><div class="seg"'+(lock?' style="opacity:.5"':'')+'>'+m.segs.map(function(x,i){return '<span'+(i==ono?' class="on"':'')+'>'+x+'</span>'}).join('')+'</div>';return T(2,1,sg,cl,'true')}
  if(k=='wx'){var c=r.wx,nd=st=='nodata',tv=nd?'—':c.t,wi=nd?'cloud':c.ic,cd=nd?'':c.cond;
@@ -739,7 +802,7 @@ function r(){document.documentElement.dataset.theme=S.th;DEV=S.dv;
  document.getElementById('devb').innerHTML=Object.keys(DV).map(function(k){return '<button data-k="dv" data-v="'+k+'">'+DV[k][0]+'</button>'}).join('');
  document.getElementById('stb').innerHTML=STS.map(function(s){return '<button data-k="st" data-v="'+s[0]+'">'+s[1]+'</button>'}).join('');
  var g=grid(DV[S.dv][1],DV[S.dv][2]);drawMx(g);
- document.querySelector('.mxw').dataset.ds=S.ds;document.querySelector('.mxw').setAttribute('data-ds',S.ds);
+ document.querySelector('.mxw').dataset.ds=S.ds;document.querySelector('.mxw').setAttribute('data-ds',S.ds);document.documentElement.setAttribute('data-sl',S.sl);
  document.querySelectorAll('.mx .tile').forEach(function(t){var n=t.querySelector('.name');if(n&&t.classList.contains('q11')&&t.scrollHeight>t.clientHeight+1)n.style.display='none'});
  fitOff();
  fitText();
@@ -748,4 +811,9 @@ function r(){document.documentElement.dataset.theme=S.th;DEV=S.dv;
 document.body.onclick=function(e){var b=e.target.closest('button');if(!b||!b.dataset.k)return;S[b.dataset.k]=b.dataset.v;r()};
 r();
 
-</script></body></html>
+</script><script>
+/* помечаем значения без цифр («Закрыта», «Включено», «Вкл») классом wd — они не жирные */
+(function(){function tag(){document.querySelectorAll('.tile .value,.tile .vmin,.tile .big,.tile .sec.lvv').forEach(function(n){n.classList.toggle('wd',!/\d/.test(n.textContent))})}
+var q=false;new MutationObserver(function(){if(q)return;q=true;requestAnimationFrame(function(){q=false;tag()})}).observe(document.body,{childList:true,subtree:true});tag()})();
+</script>
+</body></html>
