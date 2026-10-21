@@ -538,6 +538,9 @@ h3.s3{font-size:16px;line-height:24px;font-weight:500;margin:20px 0 4px;color:va
  <div class="grp"><b title="Форма ползунка яркости у света, уровня и штор">Форма ползунка</b><button data-k="sl" data-v="p">Колбаса</button><button data-k="sl" data-v="l">Линия с ручкой</button><button data-k="sl" data-v="b">Полоска</button></div>
 </div>
 <div id="screens" class="screens"></div>
+<h2 class="hd1" style="font-size:20px;line-height:26px;margin:32px 0 4px">Примеры экранов</h2>
+<p class="lead">Рабочие столы разных комнат на панели 480×480. На каждом плитки в разных статусах: у каждой плитки свой, переключатель вверху на эти экраны не влияет</p>
+<div id="examples" class="screens"></div>
 <div class="note" style="margin-top:8px"><h2>Что здесь видно</h2><ul id="obs"></ul></div>
 </div>
 <script>
@@ -829,8 +832,103 @@ function r(){document.documentElement.dataset.theme=S.th;
  document.querySelectorAll('#bar button').forEach(function(b){b.setAttribute('aria-pressed',String(S[b.dataset.k])==b.dataset.v)})}
 document.body.onclick=function(e){var b=e.target.closest('button');if(!b)return;
  if(b.dataset.pg!==undefined){S.pg[b.dataset.dev]=+b.dataset.pg;r();return}
- if(!b.dataset.k)return;S[b.dataset.k]=b.dataset.v;r()};
-r();
+ if(!b.dataset.k)return;S[b.dataset.k]=b.dataset.v;r();renderExamples()};
+
+/* ───────── Примеры экранов: у каждой плитки свой статус ───────── */
+function byT(t,k){return R.filter(function(r){return r.t===t&&(!k||r.k===k)})[0]}
+function V(r,o){return Object.assign({},r,o)}
+var STN={norm:'норма',stale:'устарело',off:'выключено',offline:'нет связи',nodata:'нет данных',nobind:'нет привязки',busy:'идёт действие',err:'ошибка'};
+/* i, j — ячейка (колонка, строка) сетки 5×4; s — размер; st — статус плитки */
+var EX=[
+ {t:'Кухня, утро',d:'почти всё в норме, одна плитка занята и у двух данные устарели',it:[
+  {r:byN('Часы','clock'),s:'2×1',i:0,j:0,st:'norm'},
+  {r:byN('Москва','wx'),s:'2×1',i:2,j:0,st:'stale'},
+  {r:V(byN('Вечер','scn'),{n:'Утро'}),s:'1×1',i:4,j:0,st:'norm'},
+  {r:V(byN('Свет','dim'),{n:'Свет'}),s:'2×2',i:0,j:1,st:'norm'},
+  {r:byN('Кухня','sens'),s:'1×1',i:2,j:1,st:'norm'},
+  {r:byN('CO₂','sens'),s:'1×1',i:3,j:1,st:'stale'},
+  {r:byN('Дверь','sens'),s:'1×1',i:4,j:1,st:'norm'},
+  {r:V(byN('Розетка','sw'),{n:'Чайник'}),s:'1×1',i:2,j:2,st:'busy'},
+  {r:V(byN('Бра','sw'),{n:'Лента'}),s:'1×1',i:3,j:2,st:'off'},
+  {r:byN('Настрой­ки','nav'),s:'1×1',i:4,j:2,st:'norm'},
+  {r:byN('Звук','snd'),s:'2×1',i:0,j:3,st:'norm'},
+  {r:V(byN('Карниз','cur'),{n:'Жалюзи'}),s:'2×1',i:2,j:3,st:'norm'},
+  {r:byN('Приложения','navx'),s:'1×1',i:4,j:3,st:'norm'}]},
+ {t:'Спальня, ночь',d:'свет выключен, будильник и охрана работают',it:[
+  {r:byN('Будильник','alarm'),s:'2×1',i:0,j:0,st:'norm'},
+  {r:V(byN('Бра','sw'),{n:'Бра слева'}),s:'1×1',i:2,j:0,st:'off'},
+  {r:V(byN('Бра','sw'),{n:'Бра справа'}),s:'1×1',i:3,j:0,st:'off'},
+  {r:byN('Дверь','sens'),s:'1×1',i:4,j:0,st:'norm'},
+  {r:byN('Свет','dim'),s:'2×2',i:0,j:1,st:'off'},
+  {r:byN('Спальня','th'),s:'2×2',i:2,j:1,st:'norm'},
+  {r:V(byN('Спальня','sens','sens'),{}),s:'1×1',i:4,j:1,st:'norm'},
+  {r:V(byN('Розетка','sw'),{n:'Лампа'}),s:'1×1',i:4,j:2,st:'off'},
+  {r:V(byN('Карниз','cur'),{n:'Шторы'}),s:'2×1',i:0,j:3,st:'off'},
+  {r:byN('Охрана','mode'),s:'2×1',i:2,j:3,st:'norm'},
+  {r:byN('Настрой­ки','nav'),s:'1×1',i:4,j:3,st:'norm'}]},
+ {t:'Уходим из дома',d:'сценарий в работе, охрана ждёт, дверь не отвечает',it:[
+  {r:byT('Ждёт подтверждения','scx'),s:'2×1',i:0,j:0,st:'norm'},
+  {r:byT('Идёт этап','scx'),s:'2×1',i:2,j:0,st:'norm'},
+  {r:byN('Дверь','sens'),s:'1×1',i:4,j:0,st:'err'},
+  {r:byN('Охрана','mode'),s:'2×1',i:0,j:1,st:'busy'},
+  {r:byN('Замок','mode'),s:'2×1',i:2,j:1,st:'norm'},
+  {r:byN('Свет','dim'),s:'2×2',i:0,j:2,st:'busy'},
+  {r:byN('Бра','sw'),s:'1×1',i:2,j:2,st:'off'},
+  {r:byN('Розетка','sw'),s:'1×1',i:3,j:2,st:'off'},
+  {r:byN('CO₂','sens'),s:'1×1',i:4,j:1,st:'norm'},
+  {r:byN('Приложения','navx'),s:'1×1',i:4,j:2,st:'norm'},
+  {r:byN('Часы','clock'),s:'2×1',i:2,j:3,st:'norm'},
+  {r:byN('Настрой­ки','nav'),s:'1×1',i:4,j:3,st:'norm'}]},
+ {t:'Дача, связь пропала',d:'контроллер не отвечает: плитки показывают, когда были данные',it:[
+  {r:byN('Часы','clock'),s:'2×1',i:0,j:0,st:'norm'},
+  {r:byN('Дача','wx'),s:'2×1',i:2,j:0,st:'offline'},
+  {r:byN('Приложения','navx'),s:'1×1',i:4,j:0,st:'norm'},
+  {r:byN('Свет','dim'),s:'2×2',i:0,j:1,st:'offline'},
+  {r:byN('Тёплый пол','th'),s:'2×2',i:2,j:1,st:'offline'},
+  {r:byN('Розетка','sw'),s:'1×1',i:4,j:1,st:'offline'},
+  {r:byN('CO₂','sens'),s:'1×1',i:4,j:2,st:'stale'},
+  {r:byN('Охрана','mode'),s:'2×1',i:0,j:3,st:'offline'},
+  {r:byN('Клапан','lvl'),s:'2×1',i:2,j:3,st:'offline'},
+  {r:byN('Настрой­ки','nav'),s:'1×1',i:4,j:3,st:'norm'}]},
+ {t:'Новая комната',d:'плитки только что добавлены: данных ещё нет, часть без привязки',it:[
+  {r:byN('Часы','clock'),s:'2×1',i:0,j:0,st:'norm'},
+  {r:byN('Вечер','scn'),s:'1×1',i:2,j:0,st:'nobind'},
+  {r:byN('Бра','sw'),s:'1×1',i:3,j:0,st:'nobind'},
+  {r:byN('Розетка','sw'),s:'1×1',i:4,j:0,st:'nobind'},
+  {r:byN('Свет','dim'),s:'2×2',i:0,j:1,st:'nobind'},
+  {r:byN('Спальня','sens','sens'),s:'1×1',i:2,j:1,st:'nodata'},
+  {r:byN('CO₂','sens'),s:'1×1',i:3,j:1,st:'nodata'},
+  {r:byN('Дверь','sens'),s:'1×1',i:4,j:1,st:'nodata'},
+  {r:byN('Спальня','info'),s:'2×2',i:2,j:2,st:'nodata'},
+  {r:byN('Приложения','navx'),s:'1×1',i:4,j:2,st:'norm'},
+  {r:byN('Замок','mode'),s:'2×1',i:0,j:3,st:'nobind'},
+  {r:byN('Настрой­ки','nav'),s:'1×1',i:4,j:3,st:'norm'}]},
+ {t:'Ванная, сбои',d:'ошибки команд и плитки, которые только показывают',it:[
+  {r:byT('Только чтение','th'),s:'2×2',i:0,j:0,st:'norm'},
+  {r:byN('Свет','dim'),s:'2×2',i:2,j:0,st:'err'},
+  {r:V(byN('Розетка','sw'),{n:'Фен'}),s:'1×1',i:4,j:0,st:'err'},
+  {r:V(byN('Бра','sw'),{n:'Зеркало'}),s:'1×1',i:4,j:1,st:'norm'},
+  {r:byN('Клапан','lvl'),s:'2×1',i:0,j:2,st:'busy'},
+  {r:byN('Спальня','sens','sens'),s:'1×1',i:2,j:2,st:'stale'},
+  {r:byN('CO₂','sens'),s:'1×1',i:3,j:2,st:'norm'},
+  {r:byN('Дверь','sens'),s:'1×1',i:4,j:2,st:'err'},
+  {r:byN('Охрана','mode'),s:'2×1',i:0,j:3,st:'err'},
+  {r:V(byN('Звук','snd'),{n:'Радио'}),s:'2×1',i:2,j:3,st:'norm'},
+  {r:byN('Настрой­ки','nav'),s:'1×1',i:4,j:3,st:'norm'}]}
+];
+function exFrame(ex){var dev='p10',d=DV[dev],W=d[1],Ht=d[2],g=grid(W,Ht);CELL[dev]=[g.cw,g.ch];DEV=dev;
+ var cells='',tiles='',used={};
+ for(var j=0;j<g.r;j++)for(var i=0;i<g.c;i++)cells+='<div class="cell" style="left:'+(2+i*g.cw)+'px;top:'+(2+j*g.ch)+'px;width:'+g.cw+'px;height:'+g.ch+'px"></div>';
+ ex.it.forEach(function(x){if(x.skip||!x.r)return;var html=mkTile(x.r,x.s,x.st);
+  tiles+='<div class="gt0" style="left:'+(2+x.i*g.cw)+'px;top:'+(2+x.j*g.ch)+'px;padding:2px">'+html+'</div>';used[x.st]=1});
+ var chips=Object.keys(used).filter(function(k){return k!='norm'}).map(function(k){return STN[k]}).join(' · ');
+ return '<div class="scrbox"><div class="scrhd"><b>'+ex.t+'</b><span>'+ex.d+(chips?'<br>Статусы: '+chips:'')+'</span></div>'+
+  '<div class="scrwrap" data-dev="'+dev+'" style="width:'+W+'px;height:'+Ht+'px"><div class="scr mx" style="width:'+W+'px;height:'+Ht+'px"><div class="strip"><span>'+ic('menu')+'<b style="font-weight:500">'+ex.t.split(',')[0]+'</b></span><span>14:02 '+ic('mic')+'</span></div>'+
+  '<div style="position:relative;height:'+g.H+'px">'+cells+tiles+'</div></div></div></div>'}
+function renderExamples(){var el=document.getElementById('examples');if(!el)return;
+ el.innerHTML=EX.map(exFrame).join('');el.setAttribute('data-ds',S.ds);
+ fitOff();fitText();bindDim(el)}
+r();renderExamples();
 </script>
 <script>
 /* помечаем значения без цифр («Закрыта», «Включено», «Вкл») классом wd — они не жирные */
