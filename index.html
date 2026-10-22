@@ -585,7 +585,7 @@ svg.ic.dots { stroke-width: 2.6; }
 .desk.edit .bar { display: flex; }
 .bar .spacer { display: none; }
 .bar .btn { flex: 1 1 0; min-width: 0; padding: 0 var(--dim-space-sm); white-space: nowrap; }   /* «Готово», «+ Виджет», «Вернуть» одной ширины и высоты */
-.bar .icon-btn { flex: none; }
+.bar .icon-btn { flex: none; background: color-mix(in srgb, var(--ui-primary-container) 18%, transparent); }   /* «⋮» того же вида, что «Вернуть» и «+ Виджет»: в панели только два вида кнопок, заливка и тональная */
 
 /* Seven / Button: 48 dp, min 90, отступы 16/12, радиус 12 */
 .btn { height: var(--dim-touch-min); min-width: 90px; padding: 0 var(--dim-gutter); border-radius: var(--dim-radius-card);
@@ -923,6 +923,7 @@ window.SEVEN_SCREENS = {
   <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></symbol>
   <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12H19M12 5V19"/></symbol>
+  <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14L4 9L9 4M4 9H14A6 6 0 0 1 14 21H11"/></symbol>
   <symbol id="i-more" viewBox="0 0 24 24"><path d="M12 5.5h.01M12 12h.01M12 18.5h.01"/></symbol>
   <symbol id="i-thermometer" viewBox="0 0 24 24"><path d="M13.5 13.4V5a2.5 2.5 0 0 0-5 0v8.4a4.7 4.7 0 1 0 5 0zM17 6h2.5M17 10h2.5"/></symbol>
   <symbol id="i-signal" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.48M7.76 16.24a6 6 0 0 1 0-8.48M19.07 4.93a10 10 0 0 1 0 14.14M4.93 19.07a10 10 0 0 1 0-14.14"/></symbol>
@@ -1038,8 +1039,8 @@ window.SEVEN_SCREENS = {
 
       <!-- EditBar -->
       <div class="bar" id="bar">
-        <button class="btn tonal" id="btnUndo" disabled>Вернуть</button>
-        <button class="btn secondary" id="btnAdd"><svg class="ic"><use href="#i-plus"/></svg>Виджет</button>
+        <button class="btn tonal" id="btnUndo" disabled><svg class="ic"><use href="#i-undo"/></svg>Вернуть</button>
+        <button class="btn tonal" id="btnAdd"><svg class="ic"><use href="#i-plus"/></svg>Виджет</button>
         <span class="spacer"></span>
         <button class="btn primary" id="btnDone">Готово</button>
         <button class="icon-btn" id="btnMore" aria-label="Ещё"><svg class="ic dots"><use href="#i-more"/></svg></button>
