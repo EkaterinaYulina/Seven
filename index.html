@@ -375,6 +375,9 @@ svg.ic.dots { stroke-width: 2.6; }
 .page .appbar.bk { padding-left: var(--dim-space-sm); padding-right: var(--dim-gutter); gap: var(--dim-space-xs, 4px); }
 .page .appbar.bk .icon-btn.bk { margin: 0; }
 .page .appbar.bk .ttl { margin-left: 0; }
+/* шапка с названием объекта второй строкой (комната, к которой относится экран): название любой длины обрезается многоточием */
+.page .appbar .ttl.two { display: flex; flex-direction: column; justify-content: center; min-width: 0; line-height: 24px; }
+.page .appbar .ttl.two .sub { display: block; font-size: 14px; line-height: 18px; font-weight: 400; color: var(--c-text-secondary); overflow: hidden; text-overflow: ellipsis; }
 /* бездействие и сон: «что произойдёт» и выбор яркости миниатюрами экрана */
 .page .mini { position: relative; flex: none; width: 100%; aspect-ratio: 4 / 3; border-radius: var(--dim-radius-chip); overflow: hidden; box-shadow: inset 0 0 0 1px var(--ui-outline-subtle); background: var(--core-green-200); }   /* картинка самого экрана панели: цвета из core, не зависят от темы */
 .page .mini i { position: absolute; top: 22%; width: 26%; height: 30%; border-radius: var(--dim-radius-field); background: var(--core-cream-40); box-shadow: 0 0 0 1px var(--core-cream-40); }
@@ -1601,7 +1604,7 @@ const ccPage = () => {
       `<div class="chiprow" style="padding-top:var(--dim-space-sm)"><button class="btn secondary" data-go="note:Виртуальные устройства: список в прототип не входит.">Виртуальные устройства</button></div>`,
     loc: () => S.empty || !S.rooms.length ? emptyState('loc') : S.rooms.map((r, i) => `<div class="room" data-room="${i}">` + grp('',
       grow(r.n, r.alt ? 'Другие названия: ' + r.alt : '', `<span class="dg" data-drag="${i}" role="button" aria-label="Перетащить, чтобы изменить порядок">${ICON('grip')}</span>`) +
-      `<button class="gr act" data-go="cc-vdevs">${ICON('devices')}<span class="tx">Виртуальные устройства</span><span class="cnt">${plr(r.v, 'устройство', 'устройства', 'устройств')}, ${plr(r.p, 'свойство', 'свойства', 'свойств')}</span><span class="go">${ICON('chev')}</span></button>`) + '</div>').join(''),
+      `<button class="gr act" data-go="vdevs:${i}">${ICON('devices')}<span class="tx">Виртуальные устройства</span><span class="cnt">${plr(r.v, 'устройство', 'устройства', 'устройств')}, ${plr(r.p, 'свойство', 'свойства', 'свойств')}</span><span class="go">${ICON('chev')}</span></button>`) + '</div>').join(''),
     conn: () => S.empty || !S.conns.length ? emptyState('conn') : S.conns.map((c, i) => grp(c.n, grow(c.t, '', sw('cn' + i, c.on), { c: c.a }) + arow('Добавить устройства', 'add-controller'))).join(''),
     dev: () => { if (S.empty) return emptyState('dev'); const by = {}; CCDEV.filter(d => S.devTab === 'all' || d[3] === S.devTab).forEach(d => (by[d[0].split(' / ')[0]] = by[d[0].split(' / ')[0]] || []).push(d));
       return Object.entries(by).map(([h, ds]) => grp(h, ds.map(d => grow(d[1], '', `<span class="go">${ICON('chev')}</span>`, { attrs: `data-go="devedit:${d[1]}"`, c: d[2] })).join(''))).join(''); },
@@ -1616,12 +1619,11 @@ const dlgHtml = () => !S.dlg ? '' : `<div class="dlg"><div class="box"><h2>Ко�
 Object.assign(PAGES, {
   cc: () => { const r = ccPage(); r.fab = (r.fab || '') + dlgHtml(); return r; },
 
-  'cc-vdevs': () => ({ back: true, title: 'Виртуальные устройства', ctx: 'Гостиная', body: (S.empty ? emptyState('vdevs') : '') + (S.empty ? '' :
-    `<div class="card2"><div class="nm" style="font-size:var(--font-name);line-height:20px">${S.vdName}</div><div class="ds">Других названий нет</div><div class="ds">Участников: 3</div><button class="btn secondary" style="margin-top:8px" data-go="cc-vdev">${ICON('list')}Настроить</button></div>` +
-    grp('', arow('Собрать из найденного', 'ph-vd-suggest', 'list')) +
+  'cc-vdevs': () => ({ back: true, title: 'Виртуальные устройства', sub: S.vdRoom || 'Гостиная', body: (S.empty ? emptyState('vdevs') : '') + (S.empty ? '' :
+    grp('', nrow(S.vdName, 'Участников: 3', 'cc-vdev', { c: S.vdAlt ? 'Другие названия: ' + S.vdAlt : '' }) + arow('Собрать из найденного', 'ph-vd-suggest', 'list')) +
     `<div class="card2" style="background:none;border-color:var(--ui-outline)"><div class="hint">${ICON('info')}Подсказка</div><p class="sd">Название виртуального устройства произносят в команде: «включи свет на кухне». Примеры названий: «свет», «шторы», «все лампы».</p><p class="sd">Если в другой комнате есть виртуальное устройство с таким же названием, фраза «выключи свет» выключит их все. Назовите устройства по-разному, чтобы управлять ими по отдельности.</p></div><div style="height:72px"></div>`),
     fab: fabGo('Создать виртуальное устройство', 'cc-vdev') }),
-  'cc-vdev': () => ({ back: true, title: 'Виртуальное устройство', ctx: 'Устройство', body:
+  'cc-vdev': () => ({ back: true, title: 'Виртуальное устройство', body:
     `<div class="fgap"><p class="sd" style="margin:0;color:var(--ui-on-surface)">Виртуальное устройство собирает свойства из разного оборудования и работает как одно: «включи свет», «шторы на 30 %». Каналы нужны, только если у устройства несколько разных функций.</p>` +
     `${tfm('vdName', 'Название', S.vdName)}${tfm('vdAlt', 'Другие названия через запятую', S.vdAlt)}<div><span class="lab" style="font-weight:400">Комната</span><div class="fld dd"><span style="color:var(--ui-on-surface)">Гостиная</span>${ICON('chev')}</div></div></div>`,
     foot: () => foot(`<button class="btn text" data-go="note:Проверка покажет, какие свойства услышит ассистент.">Проверить</button>`, `<button class="btn primary" data-go="back" ${S.vdName.trim() ? '' : 'disabled'}>Сохранить</button>`) }),
@@ -1686,10 +1688,11 @@ function goPage(name, push = true) {
   curPage = name; setScreen('page'); drawPage();
 }
 const TICON = { voice: 'mic', device: 'sliders', conn: 'signal', security: 'lock', data: 'list' };
+const escH = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 function drawPage(keepScroll = true) {
   const pg = PAGES[curPage](), el = $('#page'), old = el.querySelector('.body'), top = keepScroll && old ? old.scrollTop : 0;
   el.innerHTML = (pg.back
-    ? `<div class="appbar bk"><button class="icon-btn bk" data-go="back" aria-label="Назад">${ICON('back')}</button><div class="ttl">${pg.title}</div><span class="acts" id="acts">${pg.actions || ''}</span></div>`
+    ? `<div class="appbar bk"><button class="icon-btn bk" data-go="back" aria-label="Назад">${ICON('back')}</button><div class="ttl${pg.sub ? ' two' : ''}">${pg.title}${pg.sub ? `<span class="sub">${escH(pg.sub)}</span>` : ''}</div><span class="acts" id="acts">${pg.actions || ''}</span></div>`
     : `<div class="appbar"><div class="ttl">${pg.title}</div>` +
     `<span class="acts" id="acts">${pg.actions || ''}</span><button class="icon-btn" data-go="${pg.close ? 'close' : 'back'}" aria-label="Закрыть">${ICON('close')}</button></div>`) +
     (pg.mainTabs ? `<div class="tabs main" role="tablist">${pg.mainTabs}</div>` : '') +
@@ -1732,6 +1735,7 @@ $('#page').addEventListener('click', e => {
   if (g === 'dlg:open') { S.dlg = true; S.rName = ''; return drawPage(); }
   if (g === 'dlg:no') { S.dlg = false; return drawPage(); }
   if (g === 'dlg:ok') { S.rooms.push({ n: S.rName.trim(), alt: '', v: 0, p: 0 }); S.dlg = false; S.rName = ''; return drawPage(); }
+  if (g.startsWith('vdevs:')) { S.vdRoom = S.rooms[+g.slice(6)].n; return goPage('cc-vdevs'); }
   if (g.startsWith('devedit:')) { S.dName = g.slice(8); S.dPlace = ''; return goPage('cc-devedit'); }
   if (g.startsWith('pickstep:')) { S.steps.push(g.slice(9)); const p = pageStack.pop(); curPage = p || 'cc-scen'; return drawPage(false); }
   if (g === 'exp') { S.roomOpen = !S.roomOpen; return drawPage(); }
