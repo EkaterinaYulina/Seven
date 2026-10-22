@@ -766,6 +766,116 @@ input::placeholder { color: var(--a11y-ph); opacity: 1; }
 /* точки страниц — в верхней полосе по центру */
 .dots-pager{top:0;bottom:auto;height:var(--dim-top-strip)}
 </style>
+<style id="map-css">
+/* Карта экранов и бейдж статуса: вспомогательные части прототипа, не часть продукта */
+.stbar { display: flex; align-items: center; gap: 8px; min-height: 32px; margin-bottom: 8px; font-size: 12px; line-height: 16px; color: var(--core-ink-2); }
+.stbar .t { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--core-ink); font-weight: 500; }
+.stbar .tg { flex: none; height: 24px; padding: 0 10px; border-radius: 12px; border: 1px solid var(--core-ink-3); font-size: 12px; background: var(--core-cream); color: var(--core-ink); }
+.stbar .tg[aria-pressed="false"] { background: transparent; }
+.sp { display: inline-flex; align-items: center; gap: 6px; flex: none; height: 22px; padding: 0 10px; border-radius: 11px; font-size: 12px; font-weight: 500; white-space: nowrap; background: color-mix(in srgb, currentColor 14%, transparent); }
+.sp::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.sp.done { color: var(--core-green-800); } .sp.proto { color: var(--core-ink-2); } .sp.stub { color: var(--temp-hi); } .sp.chg { color: var(--core-blue-700); } .sp.none { color: var(--core-ink-3); }
+[data-theme="dark"] .sp.done { color: var(--core-green-300); } [data-theme="dark"] .sp.stub { color: #F0A664; } [data-theme="dark"] .sp.chg { color: var(--core-blue-300); }
+@media (min-width: 1000px) and (min-height: 560px) { .controls { padding-top: 40px; } }
+
+.controls .seg button[data-st="done"]:not([aria-pressed="true"]) { background: #CFE6D6; box-shadow: inset 0 -3px 0 #2F7D5B; }
+.controls .seg button[data-st="proto"]:not([aria-pressed="true"]) { background: #E4E3DA; }
+.controls .seg button[data-st="stub"]:not([aria-pressed="true"]) { background: #F6D9B8; box-shadow: inset 0 -3px 0 #A65410; }
+.controls .seg button[data-st="done"][aria-pressed="true"] { box-shadow: inset 0 -4px 0 #2F7D5B; }
+.controls .seg button[data-st="stub"][aria-pressed="true"] { box-shadow: inset 0 -4px 0 #A65410; }
+.stlegend .lc { padding: 4px 10px; border-radius: 6px; font-weight: 500; color: var(--core-ink); }
+.stlegend .lc[data-st="done"] { background: #CFE6D6; box-shadow: inset 0 -3px 0 #2F7D5B; }
+.stlegend .lc[data-st="proto"] { background: #E4E3DA; }
+.stlegend .lc[data-st="stub"] { background: #F6D9B8; box-shadow: inset 0 -3px 0 #A65410; }
+.stlegend { padding-left: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; line-height: 16px; color: var(--core-ink-2); }
+.stlegend b { display: block; width: 100%; font-weight: 600; color: var(--core-ink); }
+.stlegend span { display: inline-flex; align-items: center; }
+.stlegend .lg { text-decoration: none; display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; box-sizing: border-box; }
+.stlegend .lg { flex: none; } .stlegend .lg[data-st="done"] { background: #2F7D5B; border: 1.5px solid #2F7D5B; } .stlegend .lg[data-st="proto"] { border: 1.5px solid var(--core-ink-3); } .stlegend .lg[data-st="stub"] { background: var(--temp-hi); }
+.desk > .drawer { max-width: calc(100% - 24px); }
+
+.scrl { display: flex; flex-direction: column; gap: 14px; }
+.scrl h4 { font-size: 13px; font-weight: 600; color: var(--core-ink); margin: 0 0 4px; display: flex; justify-content: space-between; }
+.scrl h4 small { font-weight: 400; color: var(--core-ink-2); }
+.scrl .rows { display: flex; flex-direction: column; background: var(--core-cream); border: 1px solid #C9CBBE; border-radius: 10px; overflow: hidden; }
+.scrl button.r { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 7px 10px; cursor: pointer; border-bottom: 1px solid #E4E3DA; font-size: 13px; line-height: 18px; color: var(--core-ink); }
+.scrl button.r:last-child { border-bottom: 0; }
+.scrl button.r:focus-visible { outline: 2px solid #2F7D5B; outline-offset: -2px; }
+.scrl button.r[aria-pressed="true"] { background: var(--core-ink); color: var(--core-cream); }
+.scrl .r .n { flex: 1; min-width: 0; }
+.scrl .r .b { flex: none; width: 118px; text-align: center; font-size: 12px; font-weight: 600; border-radius: 5px; padding: 2px 6px; }
+.scrl .r .b.done { background: #CFE6D6; color: #1F5A40; }
+.scrl .r .b.proto { background: #E4E3DA; color: #505348; }
+.scrl .r .b.stub { background: #F6D9B8; color: #7A3D08; }
+.viewopts > summary { cursor: pointer; font-size: 13px; font-weight: 600; margin: 14px 0 8px; }
+</style>
+<script>
+/* Реестр экранов Seven: единый источник статусов для вкладки «Карта» и бейджа над рамкой панели.
+   Версия передачи в разработку: 3 (22.10.2026). Состав версии 3 также записан в claude/handoff-v3-snapshot.json.
+   status: done (Проработан) | proto (В прототипе, проработку подтвердит дизайнер) | stub (Не проработан, в прототипе заглушка)
+   changed: null или номер версии, в которой экран изменился относительно предыдущей передачи, например 4
+   id совпадает с ключом экрана в прототипе: settings-<вкладка>, cc-<вкладка>, либо ключ страницы (dev-lang, display, ph-gallery…) */
+window.SEVEN_SCREENS = {
+  version: 3,
+  date: '22.10.2026',
+  note: 'Тексты на экранах черновые. Тёмная тема на панели не снималась.',
+  items: [
+    { id: 'desk',            group: 'Стол и меню', title: 'Стол', status: 'done', via: 'Стартовый экран' },
+    { id: 'desk-edit',       group: 'Стол и меню', title: 'Режим правки стола', status: 'done', via: 'Меню → «Править экраны»' },
+    { id: 'sheet',           group: 'Стол и меню', title: 'Меню виджета', status: 'done', via: 'Правка → тап по плитке' },
+    { id: 'tile-form',       group: 'Стол и меню', title: 'Форма плитки', status: 'proto', via: 'Меню виджета → «Настроить»' },
+    { id: 'drawer',          group: 'Стол и меню', title: 'Боковое меню', status: 'done', via: 'Свайп от левого края или ☰' },
+    { id: 'apps',            group: 'Стол и меню', title: 'Все приложения', status: 'done', via: 'Меню → «Все приложения»' },
+    { id: 'shade',           group: 'Стол и меню', title: 'Шторка «Панель»', status: 'proto', via: 'Меню → «Панель»' },
+    { id: 'ph-gallery',      group: 'Стол и меню', title: 'Галерея «Добавить на экран»', status: 'stub', via: 'Правка → «+ Виджет»', code: 'DeskGallery' },
+    { id: 'ph-move',         group: 'Стол и меню', title: 'Перенос плитки', status: 'stub', via: 'Правка → тап по плитке → «Переместить»' },
+    { id: 'ph-more',         group: 'Стол и меню', title: 'Меню «⋮» панели правки', status: 'stub', via: 'Правка → «⋮»' },
+
+    { id: 'settings-voice',    group: 'Настройки', title: 'Голос', status: 'done', via: 'Настройки → Голос' },
+    { id: 'settings-device',   group: 'Настройки', title: 'Устройство', status: 'done', via: 'Настройки → Устройство' },
+    { id: 'settings-conn',     group: 'Настройки', title: 'Подключение', status: 'done', via: 'Настройки → Подключение' },
+    { id: 'settings-security', group: 'Настройки', title: 'Безопасность', status: 'proto', via: 'Настройки → Безопасность' },
+    { id: 'settings-data',     group: 'Настройки', title: 'Данные', status: 'proto', via: 'Настройки → Данные' },
+    { id: 'dev-lang',          group: 'Настройки', title: 'Язык', status: 'done', via: 'Устройство → Язык' },
+    { id: 'dev-room',          group: 'Настройки', title: 'Комната панели', status: 'done', via: 'Устройство → Комната панели' },
+    { id: 'wallpaper',         group: 'Настройки', title: 'Обои', status: 'proto', via: 'Устройство → Обои' },
+    { id: 'display',           group: 'Настройки', title: 'Экран', status: 'done', via: 'Устройство → Экран' },
+    { id: 'dev-launcher',      group: 'Настройки', title: 'Лаунчер', status: 'proto', via: 'Устройство → Лаунчер' },
+    { id: 'export',            group: 'Настройки', title: 'Экспорт и импорт', status: 'proto', via: 'Данные → «Экспорт и импорт»' },
+    { id: 'journal',           group: 'Настройки', title: 'Журнал команд', status: 'proto', via: 'Данные → «Журнал команд»' },
+
+    { id: 'cc-loc',          group: 'Мой дом', title: 'Локации', status: 'done', via: 'Меню → «Мой дом»' },
+    { id: 'cc-vdevs',        group: 'Мой дом', title: 'Виртуальные устройства комнаты', status: 'proto', via: 'Локации → «Виртуальные устройства»' },
+    { id: 'cc-vdev',         group: 'Мой дом', title: 'Редактор виртуального устройства', status: 'proto', via: 'Виртуальные устройства → «Настроить»' },
+    { id: 'ph-vd-suggest',   group: 'Мой дом', title: 'Собрать из найденного', status: 'stub', via: 'Виртуальные устройства → «Собрать из найденного»', code: 'VirtualDeviceSuggest' },
+    { id: 'ph-groups',       group: 'Мой дом', title: 'Группы комнат', status: 'stub', via: 'Локации → карточка комнаты → «Группы»', code: 'LocationGroups' },
+    { id: 'cc-conn',         group: 'Мой дом', title: 'Подключения', status: 'done', via: 'Мой дом → Подключения' },
+    { id: 'cc-integ',        group: 'Мой дом', title: 'Интеграция', status: 'done', via: 'Подключения → карточка интеграции' },
+    { id: 'cc-broker',       group: 'Мой дом', title: 'Брокер', status: 'proto', via: 'Подключения → карточка брокера' },
+    { id: 'cc-dev',          group: 'Мой дом', title: 'Устройства', status: 'done', via: 'Мой дом → Устройства' },
+    { id: 'cc-devedit',      group: 'Мой дом', title: 'Редактирование устройства', status: 'proto', via: 'Устройства → карточка устройства' },
+    { id: 'cc-wid',          group: 'Мой дом', title: 'Виджеты и сценарии', status: 'proto', via: 'Мой дом → Виджеты' },
+    { id: 'cc-scen',         group: 'Мой дом', title: 'Редактор сценария', status: 'proto', via: 'Виджеты → «Добавить сценарий»' },
+    { id: 'cc-pick',         group: 'Мой дом', title: 'Выбор цели шага', status: 'proto', via: 'Редактор сценария → «Добавить шаг»' },
+    { id: 'ph-se-action',    group: 'Мой дом', title: 'Сценарий: действие', status: 'stub', via: 'Редактор сценария → «Далее»', code: 'SEAction' },
+    { id: 'ph-se-order',     group: 'Мой дом', title: 'Сценарий: порядок', status: 'stub', via: 'После «Действие»', code: 'SEOrder' },
+    { id: 'ph-se-name',      group: 'Мой дом', title: 'Сценарий: название', status: 'stub', via: 'После «Порядок»', code: 'SEName' },
+    { id: 'ph-se-preview',   group: 'Мой дом', title: 'Сценарий: предпросмотр', status: 'stub', via: 'После «Название»', code: 'SEPreview' },
+
+    { id: 'add-controller',  group: 'Мастера', title: 'Добавление оборудования: контроллер', status: 'done', via: 'Подключения → «Добавить»' },
+    { id: 'add-ha',          group: 'Мастера', title: 'Добавление Home Assistant', status: 'done', via: 'Подключения → «Добавить» → Home Assistant' },
+    { id: 'add-devices',     group: 'Мастера', title: 'Добавление оборудования: устройства', status: 'done', via: 'Мастер → «Далее»' },
+    { id: 'ph-mqtt-tail',    group: 'Мастера', title: 'Мастер MQTT после «Адрес»', status: 'stub', via: 'Подключения → «Добавить» → «Брокер MQTT» → «Указать вручную»' },
+    { id: 'w1',              group: 'Мастера', title: 'Мастер первого запуска, шаг 1', status: 'proto', via: 'Настройки → Данные → «Запустить мастер»' },
+    { id: 'w2',              group: 'Мастера', title: 'Мастер первого запуска, шаг 2', status: 'proto', via: 'Шаг 1 → «Далее»' },
+    { id: 'w3',              group: 'Мастера', title: 'Мастер первого запуска, шаг 3', status: 'stub', via: 'Шаг 2 → «Далее»', code: 'FRRooms' },
+    { id: 'w4',              group: 'Мастера', title: 'Мастер первого запуска, шаг 4', status: 'stub', via: 'Шаг 3 → «Далее»', code: 'FRGroups' },
+    { id: 'w5',              group: 'Мастера', title: 'Мастер первого запуска, шаг 5', status: 'stub', via: 'Шаг 4 → «Далее»', code: 'FRImport' },
+    { id: 'w6',              group: 'Мастера', title: 'Мастер первого запуска, шаг 6', status: 'stub', via: 'Шаг 5 → «Далее»', code: 'FRSummary' }
+  ]
+};
+
+</script>
 </head>
 <body>
 
@@ -823,12 +933,13 @@ input::placeholder { color: var(--a11y-ph); opacity: 1; }
   <div role="tablist" aria-label="Страницы">
     <button role="tab" id="tab-proto" aria-controls="view-proto" aria-selected="true" data-view="proto">Прототип · Стол</button>
     <button role="tab" id="tab-matrix" aria-controls="view-matrix" aria-selected="false" tabindex="-1" data-view="matrix">Матрица плиток</button>
-    <button role="tab" id="tab-screens" aria-controls="view-screens" aria-selected="false" tabindex="-1" data-view="screens">Экраны</button>
+    <button role="tab" id="tab-screens" aria-controls="view-screens" aria-selected="false" tabindex="-1" data-view="screens">Примеры столов</button>
   </div>
 </header>
 
 <div class="stage" id="view-proto" role="tabpanel" aria-labelledby="tab-proto">
   <div class="frame">
+    <div class="stbar" id="stbar"></div>
     <div class="desk" id="desk">
       <!-- DeskTopStrip -->
       <div class="strip">
@@ -935,7 +1046,7 @@ input::placeholder { color: var(--a11y-ph); opacity: 1; }
 </div>
 
 <div class="matrix-view" id="view-screens" role="tabpanel" aria-labelledby="tab-screens">
-  <iframe id="screensFrame" title="Экраны" data-src="screens.html"></iframe>
+  <iframe id="screensFrame" title="Примеры столов" data-src="screens.html"></iframe>
 </div>
 
 <script>
@@ -1033,7 +1144,19 @@ function render() {
   const m = metrics();
   grid.replaceChildren();
   const busy = new Set();
-  tiles.forEach(t => {
+  /* на 320 dp авторская раскладка 480 dp не помещается: плитки пересобираются подряд, без потерь порядка */
+  let list = tiles;
+  if (tiles.some(t => t.col + t.w > m.columns || t.row + t.h > m.rows)) {
+    const used = new Set(); list = [];
+    tiles.forEach(t => {
+      const w = Math.min(t.w, m.columns), h = Math.min(t.h, m.rows);
+      for (let r = 0; r + h <= m.rows; r++) for (let c = 0; c + w <= m.columns; c++) {
+        let ok = true; for (let y = r; y < r + h && ok; y++) for (let x = c; x < c + w; x++) if (used.has(y + ':' + x)) { ok = false; break; }
+        if (ok) { for (let y = r; y < r + h; y++) for (let x = c; x < c + w; x++) used.add(y + ':' + x); list.push({ ...t, col: c, row: r, w, h }); return; }
+      }
+    });
+  }
+  list.forEach(t => {
     for (let r = t.row; r < t.row + t.h; r++) for (let c = t.col; c < t.col + t.w; c++) busy.add(r + ':' + c);
     const el = tileEl(t, m);
     grid.appendChild(el);
@@ -1727,7 +1850,9 @@ $('#shade').addEventListener('click', e => {
   setQuiet(!S.quiet); drawShade();
 });
 $('.scrim').addEventListener('click', () => { if (state.screen === 'shade') setScreen('desk'); });
+let panelDev = 'p10';
 const GROUPS = [
+  { label: 'Устройство', get: () => panelDev, set: v => setPanelDev(v), opts: [['p10', 'Панель 480×480 × 1,0 (480 dp)'], ['p15', 'Панель 480×480 × 1,5 (320 dp)']] },
   { label: 'Экран', cls: 'grid3', get: () => state.screen, set: v => setScreen(v),
     opts: [['desk', 'Стол'], ['drawer', 'Меню'], ['apps', 'Приложения'], ['kbd', 'Поиск + клавиатура'], ['shade', 'Панель'], ['sheet', 'Лист плитки'], ['tile', 'Плитка'], ['custom', 'Новая плитка']] },
   { label: 'Настройки', cls: 'grid3', get: () => state.screen === 'page' ? (curPage === 'settings' ? S.tab : curPage) : '', set: v => goPage(v, false),
@@ -1746,7 +1871,7 @@ const GROUPS = [
   { label: 'Мой дом', cls: 'grid3', get: () => state.screen === 'page' ? (curPage === 'cc' ? S.cct + (S.cct === 'conn' && S.fab ? '-fab' : '') : curPage) : '',
     set: v => { if (v === 'dlg') { S.cct = 'loc'; S.dlg = true; S.rName = 'Гостиная'; goPage('cc', false); return; } S.dlg = false; if (v === 'cc-scen' ) S.steps = []; if (v === 'conn-fab') { S.cct = 'conn'; S.fab = true; goPage('cc', false); } else { S.fab = false; goPage(['loc','conn','dev','wid'].includes(v) ? 'cc-' + v : v, false); } },
     opts: [['loc', 'Локации'], ['conn', 'Подключения'], ['conn-fab', 'Подключения + меню'], ['dev', 'Список устройств'], ['wid', 'Виджеты'], ['cc-integ', 'Интеграция'], ['cc-broker', 'Брокер'], ['dlg', 'Диалог «Комната»'], ['cc-vdevs', 'Виртуальные устройства'], ['cc-vdev', 'Виртуальное устройство'], ['cc-devedit', 'Правка устройства'], ['cc-scen', 'Сценарий: шаги'], ['cc-pick', 'Сценарий: что включить']] },
-  { label: 'Заглушки (нет скриншотов)', cls: 'grid3', get: () => state.screen === 'page' && (curPage in PH) ? curPage : '', set: v => { if (v === 'ph-se-action') S.steps = []; goPage(v, false); },
+  { label: 'Не проработаны (заглушки)', cls: 'grid3', get: () => state.screen === 'page' && (curPage in PH) ? curPage : '', set: v => { if (v === 'ph-se-action') S.steps = []; goPage(v, false); },
     opts: [['ph-gallery', 'Галерея'], ['ph-move', 'Переместить'], ['ph-more', 'Меню ⋮'], ['w3', 'Мастер 3'], ['w4', 'Мастер 4'], ['w5', 'Мастер 5'], ['w6', 'Мастер 6'], ['ph-se-action', 'Сценарий: действие'], ['ph-se-order', 'Сценарий: порядок'], ['ph-se-name', 'Сценарий: название'], ['ph-se-preview', 'Сценарий: просмотр'], ['ph-groups', 'Группы комнат'], ['ph-vd-suggest', 'Собрать из найденного'], ['ph-mqtt-tail', 'MQTT: хвост']] },
   { label: 'Пустые состояния',   get: () => S.empty ? 'empty' : 'full', set: v => { S.empty = v === 'empty'; if (state.screen === 'page') drawPage(false); },
     opts: [['full', 'Есть данные'], ['empty', 'Пусто']] },
@@ -1754,6 +1879,7 @@ const GROUPS = [
 ];
 const G = label => GROUPS.find(g => g.label === label);
 const controls = $('#controls');
+controls.insertAdjacentHTML('afterbegin', '<div class="stlegend"><b>Цвет кнопки = проработан экран или нет</b><span class="lc" data-st="done">Проработан</span><span class="lc" data-st="proto">Есть в прототипе, проработка не подтверждена</span><span class="lc" data-st="stub">Не проработан (заглушка)</span></div>');
 GROUPS.forEach(g => {
   const wrap = document.createElement('div'); wrap.className = 'group';
   wrap.innerHTML = `<div class="lbl">${g.label}</div><div class="seg"></div>`;
@@ -1824,6 +1950,93 @@ render();
     }
   });
 })();
+/* ───────── Реестр экранов: вкладка «Карта экранов» и бейдж статуса над рамкой ─────────
+   Статусы берутся из screens-registry.js (там же версия передачи и пометки «изменён в версии N») ── */
+const REG = window.SEVEN_SCREENS || { items: [], version: '', date: '' };
+const REG_BY_ID = Object.fromEntries(REG.items.map(i => [i.id, i]));
+const ST_LABEL = { done: 'Проработан', proto: 'В прототипе', stub: 'Не проработан' };
+let stShow = true; try { stShow = localStorage.getItem('seven-status') !== 'off'; } catch (e) {}
+function currentScreenId() {
+  const v = state.screen;
+  if (v === 'desk') return state.edit ? 'desk-edit' : 'desk';
+  if (v === 'kbd') return 'apps';
+  if (v === 'tile' || v === 'custom') return 'tile-form';
+  if (v === 'page') return curPage === 'settings' ? 'settings-' + S.tab : curPage === 'cc' ? 'cc-' + S.cct : curPage;
+  return v;
+}
+const spill = it => `<span class="sp ${it.status}">${ST_LABEL[it.status]}</span>` + (it.changed ? `<span class="sp chg">Изменён в версии ${it.changed}</span>` : '');
+function updateStatus() {
+  const bar = $('#stbar'); if (!bar) return;
+  const it = REG_BY_ID[currentScreenId()];
+  const tg = `<button class="tg" type="button" aria-pressed="${stShow}" data-st="toggle">Статус экрана</button>`;
+  bar.innerHTML = stShow ? (it ? spill(it) + `<span class="t">${it.title}</span>` : `<span class="sp none">Нет в реестре</span><span class="t"></span>`) + tg : `<span class="t"></span>` + tg;
+}
+$('#stbar').addEventListener('click', e => {
+  if (!e.target.closest('[data-st="toggle"]')) return;
+  stShow = !stShow; try { localStorage.setItem('seven-status', stShow ? 'on' : 'off'); } catch (err) {}
+  updateStatus();
+});
+/* размер панели: 480 dp (×1,0) или 320 dp (×1,5), как в «Матрице плиток» */
+function setPanelDev(v) {
+  panelDev = v;
+  document.documentElement.style.setProperty('--dim-panel', v === 'p15' ? '320px' : '480px');
+  render(); if (state.screen === 'page') drawPage(true);
+  updateDots && updateDots();
+  syncControls();
+}
+/* точки статуса на кнопках списка экранов справа */
+const BTN_ID = { 'Экран': { kbd: 'apps', tile: 'tile-form', custom: 'tile-form' }, 'Мастера': { 'add-controller-m': 'add-controller' },
+  'Мой дом': { loc: 'cc-loc', conn: 'cc-conn', 'conn-fab': 'cc-conn', dev: 'cc-dev', wid: 'cc-wid', dlg: 'cc-loc' } };
+GROUPS.forEach(g => {
+  if (!['Экран', 'Настройки', 'Мастера', 'Мой дом', 'Не проработаны (заглушки)'].includes(g.label)) return;
+  g.opts.forEach(([val], i) => {
+    let id = (BTN_ID[g.label] || {})[val] || val;
+    if (g.label === 'Настройки' && ['voice', 'device', 'conn', 'security', 'data'].includes(val)) id = 'settings-' + val;
+    const it = REG_BY_ID[id]; if (it) g.seg.children[i].dataset.st = it.status;
+  });
+});
+{ const d = new URLSearchParams(location.search).get('dev'); if (d === 'p15') setPanelDev('p15'); }
+
+/* единый список экранов со статусом словами; исходные группы кнопок прячутся, настройки просмотра уходят в «Параметры просмотра» */
+(function () {
+  const SCR = [['Экран', 'Стол и меню'], ['Настройки', 'Настройки'], ['Мой дом', 'Мой дом'], ['Мастера', 'Мастера'], ['Не проработаны (заглушки)', 'Не проработаны, макета нет']];
+  const TXT = { done: 'Проработан', proto: 'В прототипе', stub: 'Не проработан' };
+  const host = document.createElement('div'); host.className = 'scrl';
+  const rowsAll = [];
+  SCR.forEach(([label, title]) => {
+    const g = GROUPS.find(x => x.label === label); if (!g) return;
+    const kids = [...g.seg.children];
+    const sec = document.createElement('div'); const rows = document.createElement('div'); rows.className = 'rows';
+    let nDone = 0, n = 0;
+    kids.forEach(b => {
+      const st = b.dataset.st || 'proto'; n++; if (st === 'done') nDone++;
+      const r = document.createElement('button'); r.type = 'button'; r.className = 'r';
+      r.innerHTML = `<span class="n"></span><span class="b ${st}">${TXT[st]}</span>`;
+      r.firstChild.textContent = b.textContent.trim();
+      r.onclick = () => b.click();
+      rows.appendChild(r); rowsAll.push([r, b]);
+    });
+    const h = document.createElement('h4'); h.innerHTML = `<span>${title}</span><small>проработано ${nDone} из ${n}</small>`;
+    sec.append(h, rows); host.appendChild(sec);
+    g.seg.parentElement.style.display = 'none';
+  });
+  const lg = controls.querySelector('.stlegend'); if (lg) lg.remove();
+  (controls.querySelector('.hint') || controls.firstChild).after(host);
+  /* параметры просмотра: всё остальное */
+  const det = document.createElement('details'); det.className = 'viewopts'; det.open = true;
+  det.innerHTML = '<summary>Параметры просмотра (не экраны)</summary>';
+  GROUPS.forEach(g => { if (!SCR.some(x => x[0] === g.label)) det.appendChild(g.seg.parentElement); });
+  controls.appendChild(det);
+  const refresh = () => rowsAll.forEach(([r, b]) => r.setAttribute('aria-pressed', b.getAttribute('aria-pressed')));
+  syncControls = (o => function () { o.apply(this, arguments); refresh(); })(syncControls);
+  refresh();
+})();
+/* бейдж обновляется при любой навигации */
+drawPage = (orig => function (...a) { const r = orig.apply(this, a); updateStatus(); return r; })(drawPage);
+setEdit = (orig => function (...a) { const r = orig.apply(this, a); updateStatus(); return r; })(setEdit);
+setScreen = (orig => function (...a) { const r = orig.apply(this, a); updateStatus(); return r; })(setScreen);
+updateStatus();
+
 /* ───────── Страницы: «Прототип» ↔ «Матрица плиток» ↔ «Экраны» ─────────
    Адрес: index.html (или #proto) — прототип, index.html#matrix — матрица, index.html#screens — экраны. Кнопка «Назад» в браузере возвращает на прошлую страницу.
    Матрица (tile-matrix.html) и экраны (screens.html) открываются во встроенных окнах, чтобы стили страниц не пересекались; каждое грузится при первом открытии. */
