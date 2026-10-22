@@ -253,7 +253,7 @@ svg.ic.dots { stroke-width: 2.6; }
 .desk[data-screen="apps"] > .launcher, .desk[data-screen="kbd"] > .launcher { display: flex; }
 .launcher .search { margin: 0 var(--dim-space-md); height: 48px; flex: none; border-radius: var(--dim-radius-card); border: 1px solid var(--ui-outline);
   display: flex; align-items: center; gap: var(--dim-space-md); padding: 0 var(--dim-space-md); }
-.launcher .search:focus-within { border: 2px solid var(--ui-primary-container); padding: 0 calc(var(--dim-space-md) - 1px); }
+.launcher .search:focus-within { border: 2px solid var(--field-focus); padding: 0 calc(var(--dim-space-md) - 1px); }
 .launcher .search input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font: inherit; font-size: var(--font-name); color: var(--ui-on-surface); }
 .launcher .search input::placeholder { color: var(--c-text-secondary); }
 .launcher .apps { flex: 1; min-height: 0; overflow-y: auto; display: grid; grid-template-columns: repeat(4, 1fr); align-content: start; padding: var(--dim-space-md) var(--dim-space-sm); row-gap: var(--dim-space-md); }
@@ -460,7 +460,7 @@ svg.ic.dots { stroke-width: 2.6; }
 .jrow .ph { font-weight: 600; font-size: var(--font-name); line-height: 20px; margin: 2px 0; }
 .jrow .dt { color: var(--c-text-secondary); font-size: var(--font-name); line-height: 20px; }
 .page .search2 { margin: var(--dim-gutter); min-height: 56px; border: 1px solid var(--ui-outline); border-radius: var(--dim-radius-card); display: flex; align-items: center; gap: var(--dim-space-md); padding: 0 var(--dim-space-md); }
-.page .search2:focus-within { border: 2px solid var(--ui-primary); padding: 0 calc(var(--dim-space-md) - 1px); }
+.page .search2:focus-within { border: 2px solid var(--field-focus); padding: 0 calc(var(--dim-space-md) - 1px); }
 .page .search2 input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font: inherit; font-size: var(--font-name); color: var(--ui-on-surface); }
 .page .fil { display: flex; align-items: center; justify-content: space-between; padding: 0 var(--dim-gutter); height: 48px; width: 100%; font-weight: 600; font-size: var(--font-name); }
 .page .chiprow { display: flex; flex-wrap: wrap; gap: var(--dim-space-sm); padding: 0 var(--dim-gutter) var(--dim-space-sm); }
@@ -473,10 +473,10 @@ svg.ic.dots { stroke-width: 2.6; }
 .step .pbar i { display: block; height: 100%; background: var(--ui-primary); border-radius: 2px; }
 .tf { position: relative; display: block; }
 .tf input { width: 100%; height: 56px; border: 1px solid var(--ui-outline); border-radius: var(--dim-radius-card); background: transparent; padding: 0 var(--dim-gutter); font: inherit; font-size: 16px; color: var(--ui-on-surface); outline: 0; }
-.tf input:focus { border: 2px solid var(--ui-primary); padding: 0 15px; }
+.tf input:focus { border: 2px solid var(--field-focus); padding: 0 15px; }
 .tf span { position: absolute; left: 12px; top: 17px; padding: 0 4px; font-size: 16px; line-height: 22px; color: var(--c-text-secondary); background: var(--ui-surface-card); pointer-events: none; transition: all .15s ease; }
 .tf input:focus + span, .tf input:not(:placeholder-shown) + span { top: -9px; font-size: 12px; line-height: 16px; }
-.tf input:focus + span { color: var(--ui-primary); }
+.tf input:focus + span { color: var(--field-focus); }
 .frow { display: flex; gap: var(--dim-space-md); align-items: center; margin-top: var(--dim-space-md); }
 .dev { display: flex; align-items: flex-start; justify-content: space-between; }
 .dev .opt { width: auto; flex: 1; }
@@ -520,7 +520,7 @@ svg.ic.dots { stroke-width: 2.6; }
 .btn.danger { background: var(--ui-surface-card); color: var(--ui-error); border-color: var(--ui-error); }
 .lab { display: block; font-size: var(--font-name); line-height: 20px; font-weight: 600; margin: 0 0 6px; }
 .fld { display: flex; align-items: center; height: 56px; border: 1px solid var(--ui-outline); border-radius: var(--dim-radius-card); padding: 0 4px 0 var(--dim-gutter); }
-.fld:focus-within { border: 2px solid var(--ui-primary); padding: 0 3px 0 15px; }
+.fld:focus-within { border: 2px solid var(--field-focus); padding: 0 3px 0 15px; }
 .fld input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font: inherit; font-size: 16px; color: var(--ui-on-surface); }
 .fld .mi { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; color: var(--c-text-secondary); }
 .fld.dd { justify-content: space-between; padding-right: var(--dim-gutter); color: var(--c-text-secondary); }
@@ -564,7 +564,7 @@ svg.ic.dots { stroke-width: 2.6; }
 .page .search2 input, .launcher .search input, .fld input { font-size: 16px; }
 .dd { width: 100%; display: flex; align-items: center; justify-content: space-between; text-align: left; }
 .fld.dd { padding-right: 16px; }
-.tf input:focus, .fld:focus-within, .dd:focus-visible, .page .search2:focus-within, .launcher .search:focus-within { border: 2px solid var(--ui-primary); padding-left: 15px; }
+.tf input:focus, .fld:focus-within, .dd:focus-visible, .page .search2:focus-within, .launcher .search:focus-within { border: 2px solid var(--field-focus); padding-left: 15px; }
 .tf.m input:focus { padding-right: 55px; } .fld:focus-within { padding-right: 3px; } .page .search2:focus-within, .launcher .search:focus-within { padding-right: 15px; }
 /* ── Режим правки ── (TileEditOverlay) */
 .film { position: absolute; inset: 0; }                /* «плёнка»: гасит нажатия на содержимое */
@@ -657,7 +657,7 @@ svg.ic.dots { stroke-width: 2.6; }
 [data-theme="dark"] { --sheet-bg: color-mix(in srgb, #fff 9%, var(--g-mint-0)); }
 .desk > .drawer, .desk > .sheet, .desk > .shade { background: var(--sheet-bg); }
 .launcher .search { border: 0; box-shadow: inset 0 0 0 1px var(--glass-border); background: var(--glass-card); }
-.launcher .search:focus-within { border: 0; padding: 0 var(--dim-space-md); box-shadow: inset 0 0 0 2px var(--ui-primary-container); }
+.launcher .search:focus-within { border: 0; padding: 0 var(--dim-space-md); box-shadow: inset 0 0 0 2px var(--field-focus); }
 .form .vrow, .pick, .jrow { background: var(--glass-card); box-shadow: inset 0 0 0 1px var(--glass-border); }
 .form .pv .tile { background: var(--glass-card); box-shadow: inset 0 0 0 1px var(--glass-border); }
 .form .appbar { border-bottom: 0; }
@@ -665,7 +665,7 @@ svg.ic.dots { stroke-width: 2.6; }
 .dlg .box { background: var(--sheet-bg); box-shadow: inset 0 0 0 1px var(--glass-border), 0 6px 24px #0004; }
 /* поля ввода: стеклянная заливка и контур, подпись внутри сверху (без «выемки» с белой подложкой) */
 .tf input, .fld, .dd, .page .search2 { background: var(--glass-card); border: 0; box-shadow: inset 0 0 0 1px var(--glass-border); }
-.tf input:focus, .fld:focus-within, .dd:focus-visible, .page .search2:focus-within { border: 0; padding-left: 16px; box-shadow: inset 0 0 0 2px var(--ui-primary); }
+.tf input:focus, .fld:focus-within, .dd:focus-visible, .page .search2:focus-within { border: 0; padding-left: 16px; box-shadow: inset 0 0 0 2px var(--field-focus); }
 .tf.m input:focus { padding-right: 56px; } .fld:focus-within { padding-right: 4px; } .page .search2:focus-within { padding-right: 16px; }
 .tf span { left: 16px; padding: 0; background: transparent; }
 .tf input:focus + span, .tf input:not(:placeholder-shown) + span { top: 7px; }
@@ -698,7 +698,7 @@ svg.ic.dots { stroke-width: 2.6; }
 .desk > .page .tf span { background: transparent; }
 .desk > .page .gr { border-top-color: color-mix(in srgb, var(--page-text) 8%, transparent); }
 .desk > .page .dd, .desk > .page .fld, .desk > .page .tf input, .desk > .page .search2 { box-shadow: none; }
-.desk > .page .tf input:focus, .desk > .page .fld:focus-within, .desk > .page .search2:focus-within { box-shadow: inset 0 0 0 2px var(--ui-primary); }
+.desk > .page .tf input:focus, .desk > .page .fld:focus-within, .desk > .page .search2:focus-within { box-shadow: inset 0 0 0 2px var(--field-focus); }
 .desk > .page .card2[style*="background:none"] { background: none !important; box-shadow: inset 0 0 0 1px var(--glass-line); }
 
 /* ── Тёмная тема: поверхности того же мятного оттенка (≈140°), что и фон стола, и темнее. Раньше считались от оливковых graphite/ink и выглядели мутно ── */
@@ -719,13 +719,16 @@ svg.ic.dots { stroke-width: 2.6; }
 /* ── Доступность (WCAG 2.1 AA) ── */
 :root, [data-theme="light"] { --a11y-line: color-mix(in srgb, var(--page-text) 60%, transparent); --a11y-ph: #566A5D; }
 [data-theme="dark"] { --a11y-line: color-mix(in srgb, var(--page-text) 60%, transparent); --a11y-ph: #A9B8AE; }
+/* поля ввода: покой, зелёно-серая рамка (контраст ≥3:1 к фону), фокус, зелёный акцент системы, а не чернила */
+:root, [data-theme="light"] { --field-line: #5B7F6A; --field-focus: var(--core-green-600); }
+[data-theme="dark"] { --field-line: #7C9A89; --field-focus: var(--core-green-300); }
 /* 1.4.11: граница полей, вторичных кнопок и невыбранных чипов ≥3:1 */
 .desk > .page .dd, .desk > .page .fld, .desk > .page .tf input, .desk > .page .search2,
-.desk > .form .dd, .desk > .form .fld, .desk > .form .tf input, .desk > .launcher .search,
+.desk > .form .dd, .desk > .form .fld, .desk > .form .tf input, .desk > .launcher .search { box-shadow: inset 0 0 0 1px var(--field-line); border-color: transparent; }
 .desk > .form .szb, .desk > .sheet .act, .desk > .page .btn.secondary, .desk > .form .btn.secondary { box-shadow: inset 0 0 0 1px var(--a11y-line); border-color: transparent; }
 .desk > .page .chip:not([aria-pressed="true"]) { box-shadow: inset 0 0 0 1px var(--a11y-line); }
 .desk > .page .tf input:focus, .desk > .page .fld:focus-within, .desk > .page .search2:focus-within,
-.desk > .form .tf input:focus, .desk > .form .fld:focus-within, .desk > .launcher .search:focus-within { box-shadow: inset 0 0 0 2px var(--ui-primary); }
+.desk > .form .tf input:focus, .desk > .form .fld:focus-within, .desk > .launcher .search:focus-within { box-shadow: inset 0 0 0 2px var(--field-focus); }
 .launcher .search input, .page .search2 input, .fld input { outline: 0; }
 /* выключенный переключатель: обводка трека ≥3:1 */
 .sw[aria-checked="false"] .trk { box-shadow: inset 0 0 0 2px var(--a11y-line); background: transparent; }
