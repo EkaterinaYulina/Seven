@@ -33,7 +33,7 @@ window.SEVEN_SCREENS = {
     { id: 'journal',           group: 'Настройки', title: 'Журнал команд', status: 'proto', via: 'Данные → «Журнал команд»' },
 
     { id: 'cc-loc',          group: 'Мой дом', title: 'Локации', status: 'done', via: 'Меню → «Мой дом»' },
-    { id: 'cc-vdevs',        group: 'Мой дом', title: 'Виртуальные устройства комнаты', status: 'proto', via: 'Локации → «Виртуальные устройства»' },
+    { id: 'cc-vdevs',        group: 'Мой дом', title: 'Виртуальные устройства комнаты', status: 'done', via: 'Локации → «Виртуальные устройства»' },
     { id: 'cc-vdev',         group: 'Мой дом', title: 'Редактор виртуального устройства', status: 'proto', via: 'Виртуальные устройства → «Настроить»' },
     { id: 'ph-vd-suggest',   group: 'Мой дом', title: 'Собрать из найденного', status: 'stub', via: 'Виртуальные устройства → «Собрать из найденного»', code: 'VirtualDeviceSuggest' },
     { id: 'ph-groups',       group: 'Мой дом', title: 'Группы комнат', status: 'stub', via: 'Локации → карточка комнаты → «Группы»', code: 'LocationGroups' },
@@ -41,7 +41,7 @@ window.SEVEN_SCREENS = {
     { id: 'cc-integ',        group: 'Мой дом', title: 'Интеграция', status: 'done', via: 'Подключения → карточка интеграции' },
     { id: 'cc-broker',       group: 'Мой дом', title: 'Брокер', status: 'proto', via: 'Подключения → карточка брокера' },
     { id: 'cc-dev',          group: 'Мой дом', title: 'Устройства', status: 'done', via: 'Мой дом → Устройства' },
-    { id: 'cc-devedit',      group: 'Мой дом', title: 'Редактирование устройства', status: 'proto', via: 'Устройства → карточка устройства' },
+    { id: 'cc-devedit',      group: 'Мой дом', title: 'Редактирование устройства', status: 'done', via: 'Устройства → карточка устройства' },
     { id: 'cc-wid',          group: 'Мой дом', title: 'Виджеты и сценарии', status: 'proto', via: 'Мой дом → Виджеты' },
     { id: 'cc-scen',         group: 'Мой дом', title: 'Редактор сценария', status: 'proto', via: 'Виджеты → «Добавить сценарий»' },
     { id: 'cc-pick',         group: 'Мой дом', title: 'Выбор цели шага', status: 'proto', via: 'Редактор сценария → «Добавить шаг»' },
