@@ -233,8 +233,6 @@ svg.ic.dots { stroke-width: 2.6; }
       выключен — обычная поверхность и пустое кольцо. Иконки не перекрашиваем: цвет только у поверхности и точки ── */
 :root { --tone-on: var(--core-green-600); --temp-hi: #A65410; --temp-lo: var(--core-blue-700); }
 [data-theme="dark"] { --tone-on: var(--core-green-300); --temp-hi: #F0A664; --temp-lo: var(--core-blue-300); }
-.tile.switch-tile[data-on="true"] { background: color-mix(in srgb, var(--dim-fill-bg) 70%, color-mix(in srgb, var(--c-tile) 40%, transparent)); }   /* тот же зелёный, что у заливки ползунка */
-[data-theme="dark"] .tile.switch-tile[data-on="true"] { background: color-mix(in srgb, var(--dim-fill-bg) 70%, color-mix(in srgb, var(--core-paper) 11%, transparent)); }
 .tile.switch-tile .sec[data-role="state"] { display: flex; align-items: center; gap: 6px; }
 .tile.switch-tile .sec[data-role="state"]::before { content: ""; flex: none; width: 9px; height: 9px; border-radius: 50%; box-sizing: border-box; border: 1.5px solid var(--c-text-secondary); }
 .tile.switch-tile[data-on="true"] .sec[data-role="state"] { color: var(--c-text-primary); font-weight: 500; }
