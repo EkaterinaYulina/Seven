@@ -866,8 +866,10 @@ window.SEVEN_SCREENS = {
     { id: 'ph-vd-suggest',   group: 'Мой дом', title: 'Собрать из найденного', status: 'stub', via: 'Виртуальные устройства → «Собрать из найденного»', code: 'VirtualDeviceSuggest' },
     { id: 'ph-groups',       group: 'Мой дом', title: 'Группы комнат', status: 'stub', via: 'Локации → карточка комнаты → «Группы»', code: 'LocationGroups' },
     { id: 'cc-conn',         group: 'Мой дом', title: 'Подключения', status: 'done', via: 'Мой дом → Подключения' },
-    { id: 'cc-integ',        group: 'Мой дом', title: 'Интеграция', status: 'done', via: 'Подключения → карточка интеграции' },
-    { id: 'cc-broker',       group: 'Мой дом', title: 'Брокер', status: 'proto', via: 'Подключения → карточка брокера' },
+    { id: 'cc-integ',        group: 'Мой дом', title: 'Интеграция', status: 'done', via: 'Подключения → строка интеграции' },
+    { id: 'cc-broker',       group: 'Мой дом', title: 'Брокер', status: 'proto', via: 'Подключения → строка брокера' },
+    { id: 'add-systems',    group: 'Мастера', title: 'Найденные системы', status: 'proto', via: 'Подключения → «Добавить интеграцию»' },
+    { id: 'cc-ha',           group: 'Мой дом', title: 'Сервер Home Assistant', status: 'proto', via: 'Подключения → сервер HA / «Добавить»' },
     { id: 'cc-dev',          group: 'Мой дом', title: 'Устройства', status: 'done', via: 'Мой дом → Устройства' },
     { id: 'cc-devedit',      group: 'Мой дом', title: 'Редактирование устройства', status: 'done', via: 'Устройства → карточка устройства' },
     { id: 'cc-wid',          group: 'Мой дом', title: 'Виджеты и сценарии', status: 'proto', via: 'Мой дом → Виджеты' },
@@ -1589,8 +1591,7 @@ Object.assign(PAGES, {
 
 /* ───────── Мой дом ───────── */
 Object.assign(S, { empty: false, cct: 'loc', roomOpen: true, fab: false, wTab: 'scen', devTab: 'all',
-  conns: [{ n: 'wirenboard-AEYCHFJC', t: 'Wirenboard', a: '192.168.23.141:1883', on: true }, { n: 'Home Assistant', t: 'Home Assistant (MQTT Discovery)', a: '192.168.23.10:1883', on: true }],
-  iName: '', iAddr: '', iToken: '', bName: '', bAddr: '', bPort: '1883', bUser: '', bPass: '' });
+  brokers: [{ n: 'wirenboard-AEYCHFJC', a: '192.168.23.141', p: '1883', on: true, ints: [{ n: 'Wirenboard', pr: 'wirenboard', on: true }] }, { n: 'Mosquitto дома', a: '192.168.23.10', p: '1883', on: true, ints: [{ n: 'Home Assistant (MQTT Discovery)', pr: 'homeassistant', on: true }, { n: 'Zigbee2MQTT', pr: 'zigbee2mqtt', on: false }] }], has: [{ n: 'Home Assistant', a: '192.168.23.20:8123', on: true }], eb: 0, ei: 0, prot: 'zigbee2mqtt', pfx: '', iName: '', iPfx: '', iAddr: '', iToken: '', bName: '', bAddr: '', bPort: '1883', bUser: '', bPass: '' });
 Object.assign(S, { rooms: [{ n: 'Гостиная', alt: 'кухня', v: 1, p: 6 }, { n: 'Спальня', alt: '', v: 2, p: 4 }], dlg: false, rName: '', vdName: 'Свет', vdAlt: '', steps: [], dName: 'Зуммер', dPlace: '', br: 85, vol: 53, quiet: false });
 const fld = (k, v, mic = true) => `<label class="fld"><input data-in="${k}" value="${v}" autocomplete="off">${mic ? `<button type="button" class="mi" data-go="note:Голосовой ввод в этот прототип не входит." aria-label="Голосовой ввод">${ICON('mic')}</button>` : ''}</label>`;
 const fabGo = (t, go) => `<button class="fab" data-go="${go}">${ICON('plus')}${t}</button>`;
@@ -1619,7 +1620,7 @@ const ccPage = () => {
     loc: () => S.empty || !S.rooms.length ? emptyState('loc') : S.rooms.map((r, i) => `<div class="room" data-room="${i}">` + grp('',
       grow(r.n, r.alt ? 'Другие названия: ' + r.alt : '', `<span class="dg" data-drag="${i}" role="button" aria-label="Перетащить, чтобы изменить порядок">${ICON('grip')}</span>`) +
       `<button class="gr act" data-go="vdevs:${i}">${ICON('devices')}<span class="tx">Виртуальные устройства</span><span class="cnt">${plr(r.v, 'устройство', 'устройства', 'устройств')}, ${plr(r.p, 'свойство', 'свойства', 'свойств')}</span><span class="go">${ICON('chev')}</span></button>`) + '</div>').join(''),
-    conn: () => S.empty || !S.conns.length ? emptyState('conn') : S.conns.map((c, i) => grp(c.n, grow(c.t, '', sw('cn' + i, c.on), { c: c.a }) + arow('Добавить устройства', 'add-controller'))).join(''),
+    conn: () => S.empty || !S.brokers.length && !S.has.length ? emptyState('conn') : S.brokers.map((b, i) => grp('', lrow('signal', b.n, b.on ? 'Включён' : 'Выключен', 'brk:' + i) + b.ints.map((x, k) => nrow(x.n, x.on ? '' : 'Выключена', 'int:' + i + ':' + k)).join('') + arow('Добавить интеграцию', 'adds:' + i))).join('') + (S.has.length ? `<div class="sec"><h3 class="sh sm">Серверы Home Assistant</h3>` + grp('', S.has.map((h, i) => nrow(h.n, h.a, 'ha:' + i)).join('')) + '</div>' : ''),
     dev: () => { if (S.empty) return emptyState('dev'); const by = {}; CCDEV.filter(d => S.devTab === 'all' || d[3] === S.devTab).forEach(d => (by[d[0].split(' / ')[0]] = by[d[0].split(' / ')[0]] || []).push(d));
       return Object.entries(by).map(([h, ds]) => grp(h, ds.map(d => grow(d[1], '', `<span class="go">${ICON('chev')}</span>`, { attrs: `data-go="devedit:${d[1]}"`, c: d[2] })).join(''))).join(''); },
     wid: () => S.steps.length && S.wTab === 'scen' && !S.empty ? '' : emptyState('scen'),
@@ -1627,7 +1628,7 @@ const ccPage = () => {
   return { title: 'Мой дом', mainTabs: CCT.map(([k, n]) => `<button class="tab" role="tab" aria-selected="${S.cct === k}" data-go="cct:${k}">${n}</button>`).join(''), filter: S.cct === 'dev' && !S.empty ? [['all', 'Все'], ['wb', 'Wirenboard'], ['ha', 'Home Assistant (MQTT Discovery)']].map(([k, n]) => `<button class="chip" aria-pressed="${S.devTab === k}" data-go="dtab:${k}">${n}</button>`).join('') :
       S.cct === 'wid' ? [['wid', 'Виджеты'], ['scen', 'Сценарии']].map(([k, n]) => `<button class="chip" aria-pressed="${S.wTab === k}" data-go="wtab:${k}">${n}</button>`).join('') : '',
     body: S.cct === 'wid' && S.wTab === 'wid' ? emptyState('wid') : bodies[S.cct](),
-    fab: S.cct === 'loc' ? `<button class="fab" data-go="dlg:open">${ICON('plus')}Создать комнату</button>` : S.cct === 'conn' ? (S.fab ? `<div class="scrim2" data-go="fab"></div><div class="speed"><button data-go="cc-integ">Home Assistant</button><button data-go="cc-broker">Брокер MQTT</button></div>` : '') + extFab('Добавить', 'plus', true) : S.cct === 'dev' ? fabGo('Добавить', 'note:Откроется добавление устройства.') : S.cct === 'wid' && S.wTab === 'scen' ? fabGo('Добавить сценарий', 'cc-scen') : '' };
+    fab: S.cct === 'loc' ? `<button class="fab" data-go="dlg:open">${ICON('plus')}Создать комнату</button>` : S.cct === 'conn' ? (S.fab ? `<div class="scrim2" data-go="fab"></div><div class="speed"><button data-go="cc-ha">Home Assistant</button><button data-go="add-controller">Брокер MQTT</button></div>` : '') + extFab('Добавить', 'plus', true) : S.cct === 'dev' ? fabGo('Добавить', 'note:Откроется добавление устройства.') : S.cct === 'wid' && S.wTab === 'scen' ? fabGo('Добавить сценарий', 'cc-scen') : '' };
 };
 const dlgHtml = () => !S.dlg ? '' : `<div class="dlg"><div class="box"><h2>Комната</h2><div style="position:relative"><label class="tf m"><input data-in="rName" placeholder=" " value="${S.rName}" autocomplete="off"><span>Название</span><button type="button" class="mi" data-go="note:Голосовой ввод в этот прототип не входит." aria-label="Голосовой ввод">${ICON('mic')}</button></label></div><div class="ac"><button class="btn tonal" data-go="dlg:no">Отмена</button><button class="btn primary" id="dlgOk" data-go="dlg:ok" ${S.rName.trim() ? '' : 'disabled'}>Сохранить</button></div></div></div>`;
 Object.assign(PAGES, {
@@ -1654,10 +1655,18 @@ Object.assign(PAGES, {
   'cc-pick': () => ({ title: 'Новый сценарий', ctx: 'Что включить', close: true, body:
     `<div class="sec" style="border:0;padding-bottom:0"><p class="sd" style="color:var(--ui-on-surface)">Выберите, чем управляет шаг. Виртуальное устройство — сразу несколько свойств комнаты.</p></div><label class="search2" style="margin-top:0">${ICON('search')}<input type="text" placeholder="Поиск: название или комната" autocomplete="off"></label>` +
     `<div class="gh">Гостиная</div>` + [['Свет', 'Виртуальное устройство — свойств: 3 · спросит подтверждение'], ['Бра', 'спросит подтверждение'], ['Громкость', '']].map(([n, d]) => `<button class="pick" data-go="pickstep:${n}"><b>${n}</b><span>${d || '&nbsp;'}</span></button>`).join('') }),
-  'cc-integ': () => ({ back: true, title: 'Интеграция', ctx: 'Home Assistant', foot: () => `<button class="btn primary" ${S.iName.trim() && S.iAddr.trim() ? '' : 'disabled'} data-go="save:integ">Сохранить</button>`,
+  'cc-integ': () => { const b = S.brokers[S.eb], x = b.ints[S.ei]; return ({ back: true, title: x.n, ctx: 'Интеграция · ' + b.n,
+    body: grp('', srow('Включена', '', 'ix', x.on)) + `<div class="fgap" style="margin-top:var(--dim-space-md)">${tfm('iName', 'Название', S.iName)}${tfm('iPfx', 'Префикс топика', S.iPfx, 'Например, zigbee2mqtt')}</div>` + grp('', arow('Добавить устройства', 'add-devices')),
+    foot: () => `<button class="btn danger" data-go="del:integ">Удалить</button><button class="btn primary" data-go="save:integ">Сохранить</button>` }); },
+  'cc-broker': () => ({ back: true, title: S.brokers[S.eb].n, ctx: 'Брокер MQTT', body: grp('', srow('Включён', '', 'bx', S.brokers[S.eb].on)) +
+    `<div class="fgap" style="margin-top:var(--dim-space-md)">${tfm('bName', 'Название', S.bName)}<div class="frow" style="margin:0">${tfm('bAddr', 'Адрес брокера (имя или IP)', S.bAddr)}<div style="width:112px">${tfm('bPort', 'Порт', S.bPort)}</div></div>${tfm('bUser', 'Логин', S.bUser, 'Если брокер не требует вход, оставьте пустым')}${tfm('bPass', 'Пароль', S.bPass, '', true)}</div>`,
+    foot: () => `<button class="btn danger" data-go="del:broker">Удалить</button><button class="btn primary" ${S.bName.trim() && S.bAddr.trim() ? '' : 'disabled'} data-go="save:broker">Сохранить</button>` }),
+  'cc-ha': () => ({ back: true, title: 'Home Assistant', ctx: 'Сервер', foot: () => `<button class="btn primary" ${S.iName.trim() && S.iAddr.trim() ? '' : 'disabled'} data-go="save:ha">Сохранить</button>`,
     body: `<div class="fgap">${tfm('iName', 'Название', S.iName)}${tfm('iAddr', 'Адрес (имя, IP или ссылка)', S.iAddr, 'Например, 192.168.1.10:8123')}${tfm('iToken', 'Токен доступа', S.iToken, 'Создайте его в профиле Home Assistant')}</div>` }),
-  'cc-broker': () => ({ back: true, title: 'Брокер', ctx: 'MQTT', foot: () => `<button class="btn primary" ${S.bName.trim() && S.bAddr.trim() ? '' : 'disabled'} data-go="save:broker">Сохранить</button>`,
-    body: `<div class="fgap">${tfm('bName', 'Название', S.bName)}<div class="frow" style="margin:0">${tfm('bAddr', 'Адрес брокера (имя или IP)', S.bAddr)}<div style="width:112px">${tfm('bPort', 'Порт', S.bPort)}</div></div>${tfm('bUser', 'Логин', S.bUser, 'Если брокер не требует вход, оставьте пустым')}${tfm('bPass', 'Пароль', S.bPass, '', true)}</div>` }),
+  'add-systems': () => ({ back: true, title: 'Найденные системы', ctx: S.brokers[S.eb].n,
+    body: `<div class="sec"><p class="sd" style="color:var(--ui-on-surface)">Брокер уже добавлен (${S.brokers[S.eb].a}): новая интеграция подключится к нему</p><h3 class="sh sm" style="margin-top:var(--dim-space-md)">Протокол</h3>` + grp('', [['zigbee2mqtt', 'Zigbee2MQTT'], ['wirenboard', 'Wirenboard'], ['vakio', 'Vakio'], ['homeassistant', 'Home Assistant (MQTT Discovery)']].map(([v, t]) => radio('prot', v, S.prot, t)).join('')) +
+    `<div class="fgap" style="margin-top:var(--dim-space-md)">${tfm('pfx', 'Префикс топика', S.pfx, 'Необязательно')}</div></div>`,
+    foot: () => nextBtn('add-devices') }),
 });
 /* ───────── Заглушки: экраны есть в map.md, но не нарисованы. Скриншоты запрошены у Сергея, задача ALL-71 ───────── */
 const PH = {
@@ -1730,7 +1739,7 @@ function syncWp() {
 $('#page').addEventListener('click', e => {
   const t = e.target.closest('[data-tab],[data-sw],[data-radio],[data-chk],[data-chk2],[data-step],[data-go],[data-jst]'); if (!t) return;
   if (t.dataset.tab) { S.tab = t.dataset.tab; return drawPage(false); }
-  if (t.dataset.sw) { const k = t.dataset.sw; if (k.startsWith('cn')) S.conns[+k.slice(2)].on = !S.conns[+k.slice(2)].on; else S[k] = !S[k]; return drawPage(); }
+  if (t.dataset.sw) { const k = t.dataset.sw; if (k === 'ix') { const x = S.brokers[S.eb].ints[S.ei]; x.on = !x.on; } else if (k === 'bx') { const b = S.brokers[S.eb]; b.on = !b.on; } else S[k] = !S[k]; return drawPage(); }
   if (t.dataset.radio) { const g = t.dataset.radio; S[g] = g === 'broker' ? true : (['dimAfter', 'dimBright'].includes(g) ? +t.dataset.v : t.dataset.v);
     drawPage(); if (g === 'dimBright') previewDim(S.dimBright); return; }
   if (t.dataset.chk2) { S.dev[t.dataset.chk2] = !S.dev[t.dataset.chk2]; return drawPage(); }
@@ -1755,9 +1764,16 @@ $('#page').addEventListener('click', e => {
   if (g.startsWith('pickstep:')) { S.steps.push(g.slice(9)); const p = pageStack.pop(); curPage = p || 'cc-scen'; return drawPage(false); }
   if (g === 'exp') { S.roomOpen = !S.roomOpen; return drawPage(); }
   if (g === 'fab') { S.fab = !S.fab; return drawPage(); }
+  if (g.startsWith('brk:')) { S.eb = +g.slice(4); const b = S.brokers[S.eb]; S.bName = b.n; S.bAddr = b.a; S.bPort = b.p; return goPage('cc-broker'); }
+  if (g.startsWith('int:')) { const [i, k] = g.slice(4).split(':').map(Number); S.eb = i; S.ei = k; const x = S.brokers[i].ints[k]; S.iName = x.n; S.iPfx = x.pr; return goPage('cc-integ'); }
+  if (g.startsWith('adds:')) { S.eb = +g.slice(5); S.pfx = ''; return goPage('add-systems'); }
+  if (g.startsWith('ha:')) { const h = S.has[+g.slice(3)]; S.iName = h.n; S.iAddr = h.a; return goPage('cc-ha'); }
+  if (g.startsWith('del:')) { const b = S.brokers[S.eb]; if (g === 'del:integ') b.ints.splice(S.ei, 1); else S.brokers.splice(S.eb, 1); const p = pageStack.pop(); curPage = p || 'cc'; drawPage(false); return note('Удалено'); }
   if (g.startsWith('save:')) {
-    if (g === 'save:integ') { S.conns.push({ n: S.iName, t: 'Home Assistant', a: S.iAddr, on: true }); S.iName = S.iAddr = S.iToken = ''; }
-    else { S.conns.push({ n: S.bName, t: 'Брокер MQTT', a: S.bAddr + ':' + S.bPort, on: true }); S.bName = S.bAddr = S.bUser = S.bPass = ''; S.bPort = '1883'; }
+    const b = S.brokers[S.eb];
+    if (g === 'save:ha') { S.has.push({ n: S.iName, a: S.iAddr, on: true }); S.iName = S.iAddr = S.iToken = ''; }
+    else if (g === 'save:integ') { b.ints[S.ei].n = S.iName; b.ints[S.ei].pr = S.iPfx; }
+    else { b.n = S.bName; b.a = S.bAddr; b.p = S.bPort; }
     S.fab = false; S.cct = 'conn'; const p = pageStack.pop(); curPage = p || 'cc'; drawPage(false); return note('Подключение сохранено');
   }
   if (g === 'jfil') { S.jFilters = !S.jFilters; return drawPage(); }
@@ -1889,7 +1905,7 @@ const GROUPS = [
     opts: [['add-controller', 'Контроллер'], ['add-controller-m', 'Ручной ввод'], ['add-ha', 'Home Assistant'], ['add-devices', 'Устройства'], ['w1', 'Первый запуск 1'], ['w2', 'Первый запуск 2']] },
   { label: 'Мой дом', cls: 'grid3', get: () => state.screen === 'page' ? (curPage === 'cc' ? S.cct + (S.cct === 'conn' && S.fab ? '-fab' : '') : curPage) : '',
     set: v => { if (v === 'dlg') { S.cct = 'loc'; S.dlg = true; S.rName = 'Гостиная'; goPage('cc', false); return; } S.dlg = false; if (v === 'cc-scen' ) S.steps = []; if (v === 'conn-fab') { S.cct = 'conn'; S.fab = true; goPage('cc', false); } else { S.fab = false; goPage(['loc','conn','dev','wid'].includes(v) ? 'cc-' + v : v, false); } },
-    opts: [['loc', 'Локации'], ['conn', 'Подключения'], ['conn-fab', 'Подключения + меню'], ['dev', 'Список устройств'], ['wid', 'Виджеты'], ['cc-integ', 'Интеграция'], ['cc-broker', 'Брокер'], ['dlg', 'Диалог «Комната»'], ['cc-vdevs', 'Виртуальные устройства'], ['cc-vdev', 'Виртуальное устройство'], ['cc-devedit', 'Правка устройства'], ['cc-scen', 'Сценарий: шаги'], ['cc-pick', 'Сценарий: что включить']] },
+    opts: [['loc', 'Локации'], ['conn', 'Подключения'], ['conn-fab', 'Подключения + меню'], ['dev', 'Список устройств'], ['wid', 'Виджеты'], ['cc-integ', 'Интеграция'], ['cc-broker', 'Брокер'], ['add-systems', 'Найденные системы'], ['cc-ha', 'Сервер HA'], ['dlg', 'Диалог «Комната»'], ['cc-vdevs', 'Виртуальные устройства'], ['cc-vdev', 'Виртуальное устройство'], ['cc-devedit', 'Правка устройства'], ['cc-scen', 'Сценарий: шаги'], ['cc-pick', 'Сценарий: что включить']] },
   { label: 'Не проработаны (заглушки)', cls: 'grid3', get: () => state.screen === 'page' && (curPage in PH) ? curPage : '', set: v => { if (v === 'ph-se-action') S.steps = []; goPage(v, false); },
     opts: [['ph-gallery', 'Галерея'], ['ph-move', 'Переместить'], ['ph-more', 'Меню ⋮'], ['w3', 'Мастер 3'], ['w4', 'Мастер 4'], ['w5', 'Мастер 5'], ['w6', 'Мастер 6'], ['ph-se-action', 'Сценарий: действие'], ['ph-se-order', 'Сценарий: порядок'], ['ph-se-name', 'Сценарий: название'], ['ph-se-preview', 'Сценарий: просмотр'], ['ph-groups', 'Группы комнат'], ['ph-vd-suggest', 'Собрать из найденного'], ['ph-mqtt-tail', 'MQTT: хвост']] },
   { label: 'Пустые состояния',   get: () => S.empty ? 'empty' : 'full', set: v => { S.empty = v === 'empty'; if (state.screen === 'page') drawPage(false); },
