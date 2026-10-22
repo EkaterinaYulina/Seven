@@ -789,13 +789,17 @@ input::placeholder { color: var(--a11y-ph); opacity: 1; }
 [data-theme="dark"] .sp.done { color: var(--core-green-300); } [data-theme="dark"] .sp.stub { color: #F0A664; } [data-theme="dark"] .sp.chg { color: var(--core-blue-300); }
 @media (min-width: 1000px) and (min-height: 560px) { .controls { padding-top: 40px; } }
 
-.controls .seg button[data-st]::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; box-sizing: border-box; }
-.controls .seg button[data-st="done"]::before { background: var(--core-green-600); }
-.controls .seg button[data-st="proto"]::before { border: 1.5px solid var(--core-ink-3); }
-.controls .seg button[data-st="stub"]::before { background: var(--temp-hi); }
-.controls .seg button[data-st="stub"]:not([aria-pressed="true"]) { background: color-mix(in srgb, var(--temp-hi) 12%, var(--core-cream)); }
-.stlegend { padding-left: 14px; display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; line-height: 16px; color: var(--core-ink-2); }
-.stlegend b { margin-left: -14px; display: block; width: 100%; font-weight: 600; color: var(--core-ink); }
+.controls .seg button[data-st="done"]:not([aria-pressed="true"]) { background: #CFE6D6; box-shadow: inset 0 -3px 0 #2F7D5B; }
+.controls .seg button[data-st="proto"]:not([aria-pressed="true"]) { background: #E4E3DA; }
+.controls .seg button[data-st="stub"]:not([aria-pressed="true"]) { background: #F6D9B8; box-shadow: inset 0 -3px 0 #A65410; }
+.controls .seg button[data-st="done"][aria-pressed="true"] { box-shadow: inset 0 -4px 0 #2F7D5B; }
+.controls .seg button[data-st="stub"][aria-pressed="true"] { box-shadow: inset 0 -4px 0 #A65410; }
+.stlegend .lc { padding: 4px 10px; border-radius: 6px; font-weight: 500; color: var(--core-ink); }
+.stlegend .lc[data-st="done"] { background: #CFE6D6; box-shadow: inset 0 -3px 0 #2F7D5B; }
+.stlegend .lc[data-st="proto"] { background: #E4E3DA; }
+.stlegend .lc[data-st="stub"] { background: #F6D9B8; box-shadow: inset 0 -3px 0 #A65410; }
+.stlegend { padding-left: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; line-height: 16px; color: var(--core-ink-2); }
+.stlegend b { display: block; width: 100%; font-weight: 600; color: var(--core-ink); }
 .stlegend span { display: inline-flex; align-items: center; }
 .stlegend .lg { text-decoration: none; display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; box-sizing: border-box; }
 .stlegend .lg { flex: none; } .stlegend .lg[data-st="done"] { background: #2F7D5B; border: 1.5px solid #2F7D5B; } .stlegend .lg[data-st="proto"] { border: 1.5px solid var(--core-ink-3); } .stlegend .lg[data-st="stub"] { background: var(--temp-hi); }
@@ -1827,7 +1831,7 @@ const GROUPS = [
 ];
 const G = label => GROUPS.find(g => g.label === label);
 const controls = $('#controls');
-controls.insertAdjacentHTML('afterbegin', '<div class="stlegend"><b>Что проработано (точка у кнопки)</b><span><u class="lg" data-st="done"></u>Проработан</span><span><u class="lg" data-st="proto"></u>В прототипе</span><span><u class="lg" data-st="stub"></u>Не проработан, заглушка</span></div>');
+controls.insertAdjacentHTML('afterbegin', '<div class="stlegend"><b>Цвет кнопки = проработан экран или нет</b><span class="lc" data-st="done">Проработан</span><span class="lc" data-st="proto">Есть в прототипе, проработка не подтверждена</span><span class="lc" data-st="stub">Не проработан (заглушка)</span></div>');
 GROUPS.forEach(g => {
   const wrap = document.createElement('div'); wrap.className = 'group';
   wrap.innerHTML = `<div class="lbl">${g.label}</div><div class="seg"></div>`;
