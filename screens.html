@@ -142,19 +142,18 @@ h1{font-size:22px;line-height:28px;font-weight:500;margin-bottom:4px}
 .chipE svg.ic{width:14px;height:14px}
 /* ползунок света: пилюля-заливка из прототипа (TileDimmer) */
 .dim{position:relative;overflow:hidden;border-radius:999px;background:color-mix(in srgb,var(--dim-fill-bg) 24%,transparent);color:var(--c-text-secondary);flex:none}
-.dim.h{height:48px;margin-top:auto}.dim.v{width:56px;align-self:stretch}
-.dim .content{position:absolute;left:0;top:0;pointer-events:none}.dim.v .content{top:auto;bottom:0}
+.dim.h{height:48px;margin-top:auto}
+.dim .content{position:absolute;left:0;top:0;pointer-events:none}
 .dim .content>.ic{position:absolute;width:24px;height:24px}
-.dim.h .content>.ic{left:14px;top:12px}.dim.v .content>.ic{left:16px;bottom:16px}
+.dim.h .content>.ic{left:14px;top:12px}
 .dim .content>.pct{position:absolute;right:28px;top:0;height:48px;line-height:48px;font-size:var(--font-name);font-weight:500;font-variant-numeric:tabular-nums}
 .dim-fill{position:absolute;left:0;bottom:0;overflow:hidden;border-radius:inherit;background:var(--dim-fill-bg);color:var(--dim-fill-fg);--dim-fill-lo:#E6EBB8}
 [data-theme="dark"] .dim-fill{--dim-fill-lo:var(--core-olive)}
-.dim.h .dim-fill{top:0}.dim.v .dim-fill{right:0}.dim-fill .content{color:var(--dim-fill-fg)}
+.dim.h .dim-fill{top:0}.dim-fill .content{color:var(--dim-fill-fg)}
 .dim .grip{position:absolute;border-radius:2px;background:var(--core-cream);opacity:.9;box-shadow:0 0 0 .5px #0002}
-.dim.h .grip{right:8px;top:50%;width:4px;height:20px;margin-top:-10px}.dim.v .grip{top:8px;left:50%;height:4px;width:20px;margin-left:-10px}
+.dim.h .grip{right:8px;top:50%;width:4px;height:20px;margin-top:-10px}
 .dim.nogrip .grip{display:none}
 .tile .big{font-size:var(--font-value);line-height:var(--lh-value);font-weight:500;font-variant-numeric:tabular-nums}
-.tile.dim-v{flex-direction:row;gap:var(--dim-space-md)}
 /* вид заливки: a без заливки в «выкл», b бледная, c по яркости, d светлая дорожка */
 [data-ds=a] .tile[data-on=false] .dim-fill{background:transparent}[data-ds=a] .tile[data-on=false] .grip{display:none}
 .tile[data-on=false] .dim-fill{background:color-mix(in srgb,var(--ui-outline) 45%,transparent);color:var(--c-text-secondary)}
@@ -724,7 +723,7 @@ function mkTile0(r,sz,st){var a=sz.split('×').map(Number),w=a[0],h=a[1],on=!(st
  if(k=='dim'||k=='snd'){
   if(w==2&&h==1)return T(2,1,'<div class="nrow">'+nm+RT(st,cap,on?'Вкл':'Выкл')+'</div>'+PL(r,st,on,dis,lv,k),cl+' plt',on);
   if(w==1&&h==2)return T(1,2,'<div class="top">'+icn(r,st)+extraIc(st)+'</div>'+nm+(cap||'<div class="sec">'+(on?lv+' %':'Выкл')+'</div>')+(nb?'':btnc('plus','minus')),cl+' org12',on);
-  if(w==2&&h==2){var o=h==2?'h':'v';return T(2,2,'<div class="top">'+icn(r,st)+extraIc(st)+'</div>'+nm+(cap||'<div class="sec">'+(on?'Вкл':'Выкл')+'</div>')+pill('h',on?lv:0,'sun',null,dis?(st=='nodata'?'empty':'dis'):''),cl,on)}}
+  if(w==2&&h==2){return T(2,2,'<div class="top">'+icn(r,st)+extraIc(st)+'</div>'+nm+(cap||'<div class="sec">'+(on?'Вкл':'Выкл')+'</div>')+pill('h',on?lv:0,'sun',null,dis?(st=='nodata'?'empty':'dis'):''),cl,on)}}
  if(k=='lvl'||k=='cur'){
   if(w==2&&h==1)return T(2,1,'<div class="nrow">'+nm+RT(st,cap,'')+'</div>'+PL(r,st,on,dis,lv,k),cl+' plt',on);
   if(w==1&&h==2)return T(1,2,'<div class="top">'+icn(r,st)+extraIc(st)+'</div>'+nm+(cap||'<div class="sec">'+(k=='cur'?(on?lv+' %':'закрыт'):val)+'</div>')+(nb?'':k=='cur'?btnc('up','down'):btnc('plus','minus')),cl+' org12',on);
