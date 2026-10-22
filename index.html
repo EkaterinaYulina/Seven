@@ -573,6 +573,7 @@ svg.ic.dots { stroke-width: 2.6; }
   display: flex; align-items: center; justify-content: center; }
 .badge { width: var(--badge); height: var(--badge); border-radius: 50%; background: var(--ui-primary-container); color: var(--ui-on-primary-container); box-shadow: 0 1px 3px #0003; display: flex; align-items: center; justify-content: center; }
 .badge .ic { width: var(--badge); height: var(--badge); stroke-width: 2.2; }
+.tile .badge svg.ic { color: var(--ui-on-primary-container); }   /* общее правило значков плитки не должно красить значок бейджа */
 .slot { position: absolute; border-radius: var(--dim-radius-tile); background: var(--ui-slot-fill);
   border: 1px solid var(--ui-outline-subtle); color: var(--ui-outline);
   display: flex; align-items: center; justify-content: center; cursor: pointer; }
@@ -582,7 +583,9 @@ svg.ic.dots { stroke-width: 2.6; }
 .bar { left: 0; right: 0; bottom: 0; height: var(--dim-bar); display: none; align-items: center;
   padding: 0 var(--dim-space-sm) 0 var(--dim-gutter); gap: var(--dim-space-sm); background: var(--ui-surface-bar); }
 .desk.edit .bar { display: flex; }
-.bar .spacer { flex: 1; }
+.bar .spacer { display: none; }
+.bar .btn { flex: 1 1 0; min-width: 0; padding: 0 var(--dim-space-sm); white-space: nowrap; }   /* «Готово», «+ Виджет», «Вернуть» одной ширины и высоты */
+.bar .icon-btn { flex: none; }
 
 /* Seven / Button: 48 dp, min 90, отступы 16/12, радиус 12 */
 .btn { height: var(--dim-touch-min); min-width: 90px; padding: 0 var(--dim-gutter); border-radius: var(--dim-radius-card);
@@ -595,7 +598,7 @@ svg.ic.dots { stroke-width: 2.6; }
 .btn.secondary:active:not(:disabled), .btn.tonal:active:not(:disabled) { background: color-mix(in srgb, var(--ui-primary-container) 30%, transparent); border-color: transparent; }
 .btn:active:not(:disabled) { background: var(--ui-surface-card); border-color: var(--ui-on-surface); color: var(--ui-on-surface); }
 .btn:disabled { background: transparent; border: 1px solid transparent; color: color-mix(in srgb, var(--ui-on-surface) 38%, transparent); cursor: default; }
-.btn.primary:disabled, .btn.secondary:disabled { background: color-mix(in srgb, var(--ui-on-surface) 10%, transparent); }
+.btn.primary:disabled, .btn.secondary:disabled, .btn.tonal:disabled { background: color-mix(in srgb, var(--ui-on-surface) 10%, transparent); }
 .btn .ic { margin-left: -4px; }
 .btn.secondary[aria-pressed="true"] { background: color-mix(in srgb, var(--ui-primary-container) 32%, transparent); }
 .sheet .chips .btn svg.ic { margin-left: 0; }
@@ -1038,7 +1041,7 @@ window.SEVEN_SCREENS = {
         <button class="btn primary" id="btnDone">Готово</button>
         <button class="btn secondary" id="btnAdd"><svg class="ic"><use href="#i-plus"/></svg>Виджет</button>
         <span class="spacer"></span>
-        <button class="btn text" id="btnUndo" disabled>Вернуть</button>
+        <button class="btn tonal" id="btnUndo" disabled>Вернуть</button>
         <button class="icon-btn" id="btnMore" aria-label="Ещё"><svg class="ic dots"><use href="#i-more"/></svg></button>
       </div>
 
