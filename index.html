@@ -1062,7 +1062,7 @@ window.SEVEN_SCREENS = {
 
 <script>
 /* ───────── Состояние прототипа ───────── */
-const state = { edit: false, theme: 'light', dimmer: 'v', mic: 'off', showHit: false, screen: 'desk' };
+const state = { edit: false, theme: 'light', dimmer: 'h', mic: 'off', showHit: false, screen: 'desk' };
 const INITIAL = [
   { id: 'clock',       type: 'placeholder', col: 0, row: 0, w: 2, h: 1, icon: 'clock', title: 'Часы', subtitle: 'скоро' },
   { id: 'light-dimmer',type: 'switch',      col: 2, row: 0, w: 2, h: 2, icon: 'bulb',  name: 'Свет', on: false, level: 0.87 },
@@ -1894,8 +1894,6 @@ const GROUPS = [
     opts: [['normal', 'Обычный'], ['edit', 'Правка']] },
   { label: 'Тема',     get: () => state.theme, set: v => { state.theme = v; document.documentElement.dataset.theme = v; },
     opts: [['light', 'Светлая'], ['dark', 'Тёмная']] },
-  { label: 'Ползунок света', get: () => state.dimmer, set: v => { state.dimmer = v; render(); },
-    opts: [['old', 'Было'], ['h', 'Горизонтальный'], ['v', 'Вертикальный']] },
   { label: 'Микрофон', get: () => state.mic, set: v => { state.mic = v; $('#mic').dataset.state = v; },
     opts: [['off', 'Выкл'], ['listening', 'Слушает'], ['no-permission', 'Нет доступа']] },
   { label: 'Мастера', cls: 'grid3', get: () => state.screen === 'page' && curPage !== 'settings' ? (curPage === 'add-controller' && S.ctrl === 'manual' ? 'add-controller-m' : curPage) : '',
