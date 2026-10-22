@@ -591,6 +591,9 @@ svg.ic.dots { stroke-width: 2.6; }
 .btn.primary { background: var(--btn-primary-bg); color: var(--btn-primary-fg); }
 .btn.secondary { background: var(--ui-surface-card); color: var(--ui-on-surface); border-color: var(--ui-outline); }
 .btn.text { color: var(--ui-on-surface); }
+/* тональная: слегка подкрашенный зелёным фон без рамки, спокойнее залитой primary; для отмены и вторых действий рядом с primary */
+.btn.tonal { background: color-mix(in srgb, var(--ui-primary-container) 18%, transparent); color: var(--ui-on-surface); }
+.btn.tonal:active:not(:disabled) { background: color-mix(in srgb, var(--ui-primary-container) 30%, transparent); border-color: transparent; }
 .btn:active:not(:disabled) { background: var(--ui-surface-card); border-color: var(--ui-on-surface); color: var(--ui-on-surface); }
 .btn:disabled { background: transparent; border: 1px solid transparent; color: color-mix(in srgb, var(--ui-on-surface) 38%, transparent); cursor: default; }
 .btn.primary:disabled, .btn.secondary:disabled { background: color-mix(in srgb, var(--ui-on-surface) 10%, transparent); }
@@ -1624,7 +1627,7 @@ const ccPage = () => {
     body: S.cct === 'wid' && S.wTab === 'wid' ? emptyState('wid') : bodies[S.cct](),
     fab: S.cct === 'loc' ? `<button class="fab" data-go="dlg:open">${ICON('plus')}Создать комнату</button>` : S.cct === 'conn' ? (S.fab ? `<div class="scrim2" data-go="fab"></div><div class="speed"><button data-go="cc-integ">Home Assistant</button><button data-go="cc-broker">Брокер MQTT</button></div>` : '') + extFab('Добавить', 'plus', true) : S.cct === 'dev' ? fabGo('Добавить', 'note:Откроется добавление устройства.') : S.cct === 'wid' && S.wTab === 'scen' ? fabGo('Добавить сценарий', 'cc-scen') : '' };
 };
-const dlgHtml = () => !S.dlg ? '' : `<div class="dlg"><div class="box"><h2>Комната</h2><div style="position:relative"><label class="tf m"><input data-in="rName" placeholder=" " value="${S.rName}" autocomplete="off"><span>Название</span><button type="button" class="mi" data-go="note:Голосовой ввод в этот прототип не входит." aria-label="Голосовой ввод">${ICON('mic')}</button></label></div><div class="ac"><button class="btn secondary" data-go="dlg:no">Отмена</button><button class="btn primary" id="dlgOk" data-go="dlg:ok" ${S.rName.trim() ? '' : 'disabled'}>Сохранить</button></div></div></div>`;
+const dlgHtml = () => !S.dlg ? '' : `<div class="dlg"><div class="box"><h2>Комната</h2><div style="position:relative"><label class="tf m"><input data-in="rName" placeholder=" " value="${S.rName}" autocomplete="off"><span>Название</span><button type="button" class="mi" data-go="note:Голосовой ввод в этот прототип не входит." aria-label="Голосовой ввод">${ICON('mic')}</button></label></div><div class="ac"><button class="btn tonal" data-go="dlg:no">Отмена</button><button class="btn primary" id="dlgOk" data-go="dlg:ok" ${S.rName.trim() ? '' : 'disabled'}>Сохранить</button></div></div></div>`;
 Object.assign(PAGES, {
   cc: () => { const r = ccPage(); r.fab = (r.fab || '') + dlgHtml(); return r; },
 
