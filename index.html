@@ -1599,7 +1599,7 @@ Object.assign(PAGES, {
 
 /* ───────── Мой дом ───────── */
 Object.assign(S, { empty: false, cct: 'loc', roomOpen: true, fab: false, wTab: 'scen', devTab: 'all',
-  brokers: [{ n: '192.168.23.102:18901', a: '192.168.23.102', p: '18901', on: true, tls: false, ints: [{ n: 'Wirenboard', pr: 'wirenboard', pfx: '', on: true }] }, { n: '192.168.23.133:1883', a: '192.168.23.133', p: '1883', on: true, tls: false, ints: [{ n: 'wirenboard-AEYCHJC', pr: 'wirenboard', pfx: '', on: true }] }], has: [{ n: 'Home Assistant', a: '192.168.23.20:8123', on: true }], eb: 0, ei: 0, prot: 'zigbee2mqtt', pfx: '', iName: '', protOpen: false, bauth: false, iPfx: '', iAddr: '', iToken: '', bName: '', bAddr: '', bPort: '1883', bUser: '', bPass: '' });
+  brokers: [{ n: '192.168.23.102:18901', a: '192.168.23.102', p: '18901', on: true, tls: false, ints: [{ n: 'Wirenboard', pr: 'wirenboard', pfx: '', on: true }] }, { n: '192.168.23.133:1883', a: '192.168.23.133', p: '1883', on: true, tls: false, ints: [{ n: 'wirenboard-AEYCHJC', pr: 'wirenboard', pfx: '', on: true }] }], has: [{ n: 'Home Assistant', a: '192.168.23.20:8123', on: true }], eb: 0, ei: 0, prot: 'zigbee2mqtt', pfx: '', iName: '', haName: 'Home Assistant', protOpen: false, bauth: false, iPfx: '', iAddr: '', iToken: '', bName: '', bAddr: '', bPort: '1883', bUser: '', bPass: '' });
 Object.assign(S, { rooms: [{ n: 'Гостиная', alt: 'кухня', v: 1, p: 6 }, { n: 'Спальня', alt: '', v: 2, p: 4 }], dlg: false, rName: '', vdName: 'Свет', vdAlt: '', steps: [], dName: 'Зуммер', dPlace: '', br: 85, vol: 53, quiet: false });
 const fld = (k, v, mic = true) => `<label class="fld"><input data-in="${k}" value="${v}" autocomplete="off">${mic ? `<button type="button" class="mi" data-go="note:Голосовой ввод в этот прототип не входит." aria-label="Голосовой ввод">${ICON('mic')}</button>` : ''}</label>`;
 const fabGo = (t, go) => `<button class="fab" data-go="${go}">${ICON('plus')}${t}</button>`;
@@ -1678,7 +1678,7 @@ Object.assign(PAGES, {
     body: `<div class="sec"><p class="sd" style="color:var(--ui-on-surface)">Брокер уже добавлен («${S.brokers[S.eb].a}:${S.brokers[S.eb].p}»): новые системы будут добавлены к нему</p>` +
     grp('', crow('f1', S.dev.f1, 'Wirenboard', 'Устройств: 3<br>Например: WB-MR6C тест, WB-MSW v4 тест, Панель Seven 1756903f<br>Уже добавлено как «Wirenboard»', 'data-chk2') + `<button class="gr act" data-go="add-devices"><span class="tx">Добавить устройства</span></button>`) +
     grp('', crow('f2', S.dev.f2, 'Home Assistant (MQTT Discovery)', 'Префикс: homeassistant<br>Устройств: 2<br>Например: NSPanel Pro, _TZE200_znkjmih TS0601', 'data-chk2')) +
-    (S.dev.f2 ? '<p class="sd" style="color:var(--ui-on-surface)">Найдено устройств: 2. Если панели среди них нет, подождите минуту и нажмите «Проверить» с выбранным ниже Home Assistant</p>' : '') +
+    (S.dev.f2 ? '<p class="sd" style="color:var(--ui-on-surface)">Найдено устройств: 2. Если панели среди них нет, подождите минуту и нажмите «Проверить» с выбранным ниже Home Assistant</p>' + `<div class="fgap" style="margin:var(--dim-space-md) -8px 0">${tfm('haName', 'Название', S.haName)}</div>` : '') +
     `<h3 class="sh sm" style="margin-top:var(--dim-space-md)">Указать вручную</h3><div class="fgap">` +
     `<div><span class="lab" style="font-weight:400">Протокол</span><button class="fld dd" data-go="protopen"><span style="color:var(--ui-on-surface)">${protName(S.prot)}</span>${ICON('chev')}</button></div>` +
     (S.protOpen ? grp('', PROTS.map(([v, t]) => rrow('prot', v, S.prot, t)).join('')) : '') +
