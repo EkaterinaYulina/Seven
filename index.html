@@ -1676,7 +1676,7 @@ Object.assign(PAGES, {
   'add-check': () => ({ back: true, title: 'Добавление оборудования', ctx: 'Подключение', body: `<div class="chk"><span class="spin" aria-hidden="true"></span><span>Проверка брокера ${S.brokers[S.eb].a}:${S.brokers[S.eb].p}…</span></div>` }),
   'add-systems': () => ({ back: true, title: 'Добавление оборудования', ctx: 'Найденные системы',
     body: `<div class="sec"><p class="sd" style="color:var(--ui-on-surface)">Брокер уже добавлен («${S.brokers[S.eb].a}:${S.brokers[S.eb].p}»): новые системы будут добавлены к нему</p>` +
-    grp('', crow('f1', S.dev.f1, 'Wirenboard', 'Устройств: 3<br>Например: WB-MR6C тест, WB-MSW v4 тест, Панель Seven<br>Уже добавлено как «Wirenboard»', 'data-chk2') + `<button class="gr act" data-go="add-devices"><span class="tx">Добавить устройства</span></button>`) +
+    grp('', crow('f1', S.dev.f1, 'Wirenboard', 'Устройств: 3<br>Например: WB-MR6C тест, WB-MSW v4 тест, Панель Seven 1756903f<br>Уже добавлено как «Wirenboard»', 'data-chk2') + `<button class="gr act" data-go="add-devices"><span class="tx">Добавить устройства</span></button>`) +
     grp('', crow('f2', S.dev.f2, 'Home Assistant (MQTT Discovery)', 'Префикс: homeassistant<br>Устройств: 2<br>Например: NSPanel Pro, _TZE200_znkjmih TS0601', 'data-chk2')) +
     (S.dev.f2 ? '<p class="sd" style="color:var(--ui-on-surface)">Найдено устройств: 2. Если панели среди них нет, подождите минуту и нажмите «Проверить» с выбранным ниже Home Assistant</p>' : '') +
     `<h3 class="sh sm" style="margin-top:var(--dim-space-md)">Указать вручную</h3><div class="fgap">` +
