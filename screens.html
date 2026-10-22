@@ -456,6 +456,12 @@ h3.s3{font-size:16px;line-height:24px;font-weight:500;margin:20px 0 4px;color:va
 .tile[class*="tn-"]{background:color-mix(in srgb,var(--tone-c) 14%,color-mix(in srgb,var(--c-tile) 50%,transparent))}
 [data-theme="dark"] .tile[class*="tn-"]{background:color-mix(in srgb,var(--tone-c) 20%,color-mix(in srgb,#CDE7D3 10%,transparent))}
 .tile[class*="tn-"] .value,.tile[class*="tn-"] .vmin,.tile[class*="tn-"] .big{color:var(--tone-c)}
+/* нет связи: без штриховки. Плитка «призрачная»: прозрачнее поверхность и тонкий контур, приглушённое содержимое, подпись «нет связи» остаётся яркой */
+.tile.offl{background-image:none;background:color-mix(in srgb,var(--c-tile) 22%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--page-text) 14%,transparent)}
+[data-theme="dark"] .tile.offl{background:color-mix(in srgb,#CDE7D3 4%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,#CDE7D3 14%,transparent)}
+.tile.offl .name,.tile.offl .value,.tile.offl .vmin,.tile.offl .top>.ic,.tile.offl>.ic,.tile.offl .nrow>.ni>.ic,.tile.offl .mini,.tile.offl .step,.tile.offl .btn3,.tile.offl .seg,.tile.offl .chips,.tile.offl .dim,.tile.offl .rows,.tile.offl .lt{opacity:.55}
+.tile.offl .sec:not(.c-off){opacity:.55}
+.tile.offl .sec.c-off{opacity:1;font-weight:500}
 </style></head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
