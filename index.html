@@ -977,7 +977,7 @@ window.SEVEN_SCREENS = {
         <div class="gap"></div>
         <button class="item" data-go="cc"><svg class="ic"><use href="#i-cc"/></svg>Мой дом</button>
         <button class="item" data-go="apps"><svg class="ic"><use href="#i-apps"/></svg>Все приложения</button>
-        <button class="item" data-go="settings"><svg class="ic"><use href="#i-gear"/></svg>Настройки</button>
+        <button class="item" data-go="settings"><svg class="ic"><use href="#i-gear"/></svg>Настройки панели</button>
         <div class="sep" role="separator"></div>
         <button class="item" data-go="shade"><svg class="ic"><use href="#i-sliders"/></svg>Панель</button>
         <button class="item" data-go="edit"><svg class="ic"><use href="#i-pencil"/></svg>Править экраны</button>
@@ -1839,7 +1839,7 @@ function syncShadeQuiet() {
 }
 function drawShade() {
   $('#shade').innerHTML = `<div class="st">00:08 · 11.10.2026 <i></i> MQTT: на связи<span class="mc">${MIC_OFF()}</span></div>` +
-    `<div class="qs">${SBTN('quiet', S.quiet ? 'micoff' : 'mic', 'Тишина', S.quiet, S.quiet ? 'Вкл' : 'Выкл')}${SBTN('sleep', 'moon', 'Погасить')}${SBTN('wifi', S.wifi ? 'wifi' : 'wifioff', 'Wi-Fi', S.wifi, S.wifi ? 'Вкл' : 'Выкл')}${SBTN('set', 'gear', 'Настройки')}</div>` +
+    `<div class="qs">${SBTN('quiet', S.quiet ? 'micoff' : 'mic', 'Тишина', S.quiet, S.quiet ? 'Вкл' : 'Выкл')}${SBTN('sleep', 'moon', 'Погасить экран')}${SBTN('wifi', S.wifi ? 'wifi' : 'wifioff', 'Wi-Fi', S.wifi, S.wifi ? 'Вкл' : 'Выкл')}${SBTN('set', 'gear', 'Настройки')}</div>` +
     `<div class="rw"><span class="big"></span>${dimInner('h', 0, 'sun', false)}</div><div class="rw"><span class="big"></span>${dimInner('h', 0, 'vol', false)}</div><div class="grab"></div>`;
   $('#shade').querySelectorAll('.dim').forEach((dm, i) => {
     const k = i ? 'vol' : 'br', big = dm.parentNode.querySelector('.big');
