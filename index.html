@@ -439,11 +439,11 @@ svg.ic.dots { stroke-width: 2.6; }
 .sl2 { margin: var(--dim-space-sm) 0 var(--dim-space-md); }
 .sl2 .lr { display: flex; justify-content: space-between; font-size: var(--font-name); line-height: 20px; }
 .sl2 .lr b { font-weight: 500; font-variant-numeric: tabular-nums; }
-.sl2 .zone { position: relative; height: 48px; touch-action: none; cursor: pointer; }
-.sl2 .tr { position: absolute; left: 0; right: 0; top: 20px; height: 8px; border-radius: 4px; background: color-mix(in srgb, var(--ui-on-surface) 22%, transparent); }
-.sl2 .fl { position: absolute; left: 0; top: 20px; height: 8px; border-radius: 4px; background: var(--ui-primary); }
-.sl2 .th { position: absolute; top: 10px; width: 28px; height: 28px; margin-left: -14px; border-radius: 50%; background: var(--ui-surface-card); border: 2px solid var(--ui-primary); box-sizing: border-box; box-shadow: 0 1px 3px #0003; }
-.sl2 .mm { display: flex; justify-content: space-between; font-size: 11px; color: var(--c-text-secondary); margin-top: -8px; }
+.sl2 .zone { position: relative; height: 48px; border-radius: 24px; overflow: hidden; touch-action: none; cursor: pointer; }   /* «колбаса», как у ползунка плитки: мятная заливка, скруглённый край, хват */
+.sl2 .tr { position: absolute; left: 0; right: 0; top: 0; height: 48px; border-radius: 24px; background: color-mix(in srgb, var(--dim-fill-bg) 24%, transparent); }
+.sl2 .fl { position: absolute; left: 0; top: 0; height: 48px; border-radius: 24px; background: var(--dim-fill-bg); }
+.sl2 .th { position: absolute; top: 50%; width: 4px; height: 20px; margin: -10px 0 0 -12px; border-radius: 2px; background: var(--core-cream); opacity: .9; box-shadow: 0 0 0 .5px #0002; pointer-events: none; }
+.sl2 .mm { display: flex; justify-content: space-between; font-size: 11px; color: var(--c-text-secondary); margin: 4px 4px 0; }
 /* Превью обоев */
 .wp { position: relative; height: 150px; border-radius: var(--dim-radius-card); overflow: hidden; border: 1px solid var(--ui-outline-subtle); }
 .wp .wpdim { position: absolute; inset: 0; background: color-mix(in srgb, var(--core-graphite) calc(var(--wallpaper-dim) * 100%), transparent); }
