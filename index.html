@@ -524,10 +524,11 @@ svg.ic.dots { stroke-width: 2.6; }
 .fld input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font: inherit; font-size: 16px; color: var(--ui-on-surface); }
 .fld .mi { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; color: var(--c-text-secondary); }
 .fld.dd { justify-content: space-between; padding-right: var(--dim-gutter); color: var(--c-text-secondary); }
-.dlg { position: absolute; inset: 0; z-index: 6; background: color-mix(in srgb, var(--core-graphite) 40%, transparent); display: flex; align-items: flex-start; justify-content: center; padding-top: 24px; }
-.dlg .box { width: calc(100% - 64px); background: var(--ui-surface-card); border-radius: 28px; padding: 24px; box-shadow: 0 6px 24px #0004; }
+.dlg { position: absolute; inset: 0; z-index: 6; background: color-mix(in srgb, var(--core-graphite) 40%, transparent); display: flex; align-items: flex-start; justify-content: center; padding-top: var(--dim-gutter); }
+.dlg .box { width: calc(100% - 2 * var(--dim-gutter)); background: var(--ui-surface-card); border-radius: 24px; padding: 20px var(--dim-gutter) var(--dim-gutter); box-shadow: 0 6px 24px #0004; }
 .dlg h2 { margin: 0 0 var(--dim-gutter); font-size: 22px; line-height: 28px; font-weight: 400; }
-.dlg .ac { display: flex; justify-content: flex-end; gap: var(--dim-space-sm); margin-top: var(--dim-gutter); }
+.dlg .ac { display: grid; grid-template-columns: 1fr 1fr; gap: var(--dim-space-md); margin-top: var(--dim-gutter); }
+.dlg .ac .btn { width: 100%; min-width: 0; }   /* две кнопки делят окно пополам */
 .dg { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; color: var(--c-text-secondary); cursor: grab; touch-action: none; flex: none; }
 .page .gr .cnt { margin-left: auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 400; line-height: 20px; color: var(--c-text-secondary); }
 .page .room .gr { padding-right: 8px; }   /* ручка и шеврон ближе к краю карточки: оба 48px-столбца остаются на одной оси, а в строке больше места под счётчик */
@@ -1623,7 +1624,7 @@ const ccPage = () => {
     body: S.cct === 'wid' && S.wTab === 'wid' ? emptyState('wid') : bodies[S.cct](),
     fab: S.cct === 'loc' ? `<button class="fab" data-go="dlg:open">${ICON('plus')}Создать комнату</button>` : S.cct === 'conn' ? (S.fab ? `<div class="scrim2" data-go="fab"></div><div class="speed"><button data-go="cc-integ">Home Assistant</button><button data-go="cc-broker">Брокер MQTT</button></div>` : '') + extFab('Добавить', 'plus', true) : S.cct === 'dev' ? fabGo('Добавить', 'note:Откроется добавление устройства.') : S.cct === 'wid' && S.wTab === 'scen' ? fabGo('Добавить сценарий', 'cc-scen') : '' };
 };
-const dlgHtml = () => !S.dlg ? '' : `<div class="dlg"><div class="box"><h2>Комната</h2><div style="position:relative"><label class="tf m"><input data-in="rName" placeholder=" " value="${S.rName}" autocomplete="off"><span>Название</span><button type="button" class="mi" data-go="note:Голосовой ввод в этот прототип не входит." aria-label="Голосовой ввод">${ICON('mic')}</button></label></div><div class="ac"><button class="btn text" data-go="dlg:no">Отмена</button><button class="btn primary" id="dlgOk" data-go="dlg:ok" ${S.rName.trim() ? '' : 'disabled'}>Сохранить</button></div></div></div>`;
+const dlgHtml = () => !S.dlg ? '' : `<div class="dlg"><div class="box"><h2>Комната</h2><div style="position:relative"><label class="tf m"><input data-in="rName" placeholder=" " value="${S.rName}" autocomplete="off"><span>Название</span><button type="button" class="mi" data-go="note:Голосовой ввод в этот прототип не входит." aria-label="Голосовой ввод">${ICON('mic')}</button></label></div><div class="ac"><button class="btn secondary" data-go="dlg:no">Отмена</button><button class="btn primary" id="dlgOk" data-go="dlg:ok" ${S.rName.trim() ? '' : 'disabled'}>Сохранить</button></div></div></div>`;
 Object.assign(PAGES, {
   cc: () => { const r = ccPage(); r.fab = (r.fab || '') + dlgHtml(); return r; },
 
