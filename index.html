@@ -804,6 +804,21 @@ input::placeholder { color: var(--a11y-ph); opacity: 1; }
 .stlegend .lg { text-decoration: none; display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; box-sizing: border-box; }
 .stlegend .lg { flex: none; } .stlegend .lg[data-st="done"] { background: #2F7D5B; border: 1.5px solid #2F7D5B; } .stlegend .lg[data-st="proto"] { border: 1.5px solid var(--core-ink-3); } .stlegend .lg[data-st="stub"] { background: var(--temp-hi); }
 .desk > .drawer { max-width: calc(100% - 24px); }
+
+.scrl { display: flex; flex-direction: column; gap: 14px; }
+.scrl h4 { font-size: 13px; font-weight: 600; color: var(--core-ink); margin: 0 0 4px; display: flex; justify-content: space-between; }
+.scrl h4 small { font-weight: 400; color: var(--core-ink-2); }
+.scrl .rows { display: flex; flex-direction: column; background: var(--core-cream); border: 1px solid #C9CBBE; border-radius: 10px; overflow: hidden; }
+.scrl button.r { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 7px 10px; cursor: pointer; border-bottom: 1px solid #E4E3DA; font-size: 13px; line-height: 18px; color: var(--core-ink); }
+.scrl button.r:last-child { border-bottom: 0; }
+.scrl button.r:focus-visible { outline: 2px solid #2F7D5B; outline-offset: -2px; }
+.scrl button.r[aria-pressed="true"] { background: var(--core-ink); color: var(--core-cream); }
+.scrl .r .n { flex: 1; min-width: 0; }
+.scrl .r .b { flex: none; width: 118px; text-align: center; font-size: 12px; font-weight: 600; border-radius: 5px; padding: 2px 6px; }
+.scrl .r .b.done { background: #CFE6D6; color: #1F5A40; }
+.scrl .r .b.proto { background: #E4E3DA; color: #505348; }
+.scrl .r .b.stub { background: #F6D9B8; color: #7A3D08; }
+.viewopts > summary { cursor: pointer; font-size: 13px; font-weight: 600; margin: 14px 0 8px; }
 </style>
 <script src="screens-registry.js"></script>
 </head>
@@ -1948,6 +1963,41 @@ GROUPS.forEach(g => {
   });
 });
 { const d = new URLSearchParams(location.search).get('dev'); if (d === 'p15') setPanelDev('p15'); }
+
+/* единый список экранов со статусом словами; исходные группы кнопок прячутся, настройки просмотра уходят в «Параметры просмотра» */
+(function () {
+  const SCR = [['Экран', 'Стол и меню'], ['Настройки', 'Настройки'], ['Мой дом', 'Мой дом'], ['Мастера', 'Мастера'], ['Не проработаны (заглушки)', 'Не проработаны, макета нет']];
+  const TXT = { done: 'Проработан', proto: 'В прототипе', stub: 'Не проработан' };
+  const host = document.createElement('div'); host.className = 'scrl';
+  const rowsAll = [];
+  SCR.forEach(([label, title]) => {
+    const g = GROUPS.find(x => x.label === label); if (!g) return;
+    const kids = [...g.seg.children];
+    const sec = document.createElement('div'); const rows = document.createElement('div'); rows.className = 'rows';
+    let nDone = 0, n = 0;
+    kids.forEach(b => {
+      const st = b.dataset.st || 'proto'; n++; if (st === 'done') nDone++;
+      const r = document.createElement('button'); r.type = 'button'; r.className = 'r';
+      r.innerHTML = `<span class="n"></span><span class="b ${st}">${TXT[st]}</span>`;
+      r.firstChild.textContent = b.textContent.trim();
+      r.onclick = () => b.click();
+      rows.appendChild(r); rowsAll.push([r, b]);
+    });
+    const h = document.createElement('h4'); h.innerHTML = `<span>${title}</span><small>проработано ${nDone} из ${n}</small>`;
+    sec.append(h, rows); host.appendChild(sec);
+    g.seg.parentElement.style.display = 'none';
+  });
+  const lg = controls.querySelector('.stlegend'); if (lg) lg.remove();
+  (controls.querySelector('.hint') || controls.firstChild).after(host);
+  /* параметры просмотра: всё остальное */
+  const det = document.createElement('details'); det.className = 'viewopts'; det.open = true;
+  det.innerHTML = '<summary>Параметры просмотра (не экраны)</summary>';
+  GROUPS.forEach(g => { if (!SCR.some(x => x[0] === g.label)) det.appendChild(g.seg.parentElement); });
+  controls.appendChild(det);
+  const refresh = () => rowsAll.forEach(([r, b]) => r.setAttribute('aria-pressed', b.getAttribute('aria-pressed')));
+  syncControls = (o => function () { o.apply(this, arguments); refresh(); })(syncControls);
+  refresh();
+})();
 /* бейдж обновляется при любой навигации */
 drawPage = (orig => function (...a) { const r = orig.apply(this, a); updateStatus(); return r; })(drawPage);
 setEdit = (orig => function (...a) { const r = orig.apply(this, a); updateStatus(); return r; })(setEdit);
