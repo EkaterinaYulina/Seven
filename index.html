@@ -1632,7 +1632,7 @@ Object.assign(PAGES, {
   'cc-vdevs': () => ({ back: true, title: 'Виртуальные устройства', sub: S.vdRoom || 'Гостиная', body: (S.empty ? emptyState('vdevs') : '') + (S.empty ? '' :
     '<div class="vdl">' + grp('', nrow(S.vdName, 'Участников: 3', 'cc-vdev', { c: S.vdAlt ? 'Другие названия: ' + S.vdAlt : '' })) +
     grp('', arow('Собрать из найденного', 'ph-vd-suggest', 'list')) +
-    `<div class="card2 tip" style="background:none;border-color:var(--ui-outline)">${ICON('info')}<p class="sd">Виртуальное устройство вызывают по названию: «включи свет». Если в разных комнатах названия одинаковые, команда сработает во всех этих комнатах, поэтому называйте устройства по-разному</p></div><div style="height:72px"></div></div>`),
+    `<div class="card2 tip" style="background:none;border-color:var(--ui-outline)">${ICON('info')}<p class="sd">Виртуальное устройство вызывают по его названию: «включи <b>свет</b>». Если в разных комнатах названия одинаковые, команда сработает во всех этих комнатах, поэтому называйте устройства по-разному</p></div><div style="height:72px"></div></div>`),
     fab: fabGo('Создать виртуальное устройство', 'cc-vdev') }),
   'cc-vdev': () => ({ back: true, title: 'Виртуальное устройство', body:
     `<div class="fgap"><p class="sd" style="margin:0;color:var(--ui-on-surface)">Виртуальное устройство собирает свойства из разного оборудования и работает как одно: «включи свет», «шторы на 30 %». Каналы нужны, только если у устройства несколько разных функций.</p>` +
