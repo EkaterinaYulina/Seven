@@ -1620,7 +1620,8 @@ Object.assign(PAGES, {
   cc: () => { const r = ccPage(); r.fab = (r.fab || '') + dlgHtml(); return r; },
 
   'cc-vdevs': () => ({ back: true, title: 'Виртуальные устройства', sub: S.vdRoom || 'Гостиная', body: (S.empty ? emptyState('vdevs') : '') + (S.empty ? '' :
-    grp('', nrow(S.vdName, 'Участников: 3', 'cc-vdev', { c: S.vdAlt ? 'Другие названия: ' + S.vdAlt : '' }) + arow('Собрать из найденного', 'ph-vd-suggest', 'list')) +
+    grp('', nrow(S.vdName, 'Участников: 3', 'cc-vdev', { c: S.vdAlt ? 'Другие названия: ' + S.vdAlt : '' })) +
+    grp('', arow('Собрать из найденного', 'ph-vd-suggest', 'list')) +
     `<div class="card2" style="background:none;border-color:var(--ui-outline)"><div class="hint">${ICON('info')}Подсказка</div><p class="sd">Название виртуального устройства произносят в команде: «включи свет на кухне». Примеры названий: «свет», «шторы», «все лампы».</p><p class="sd">Если в другой комнате есть виртуальное устройство с таким же названием, фраза «выключи свет» выключит их все. Назовите устройства по-разному, чтобы управлять ими по отдельности.</p></div><div style="height:72px"></div>`),
     fab: fabGo('Создать виртуальное устройство', 'cc-vdev') }),
   'cc-vdev': () => ({ back: true, title: 'Виртуальное устройство', body:
