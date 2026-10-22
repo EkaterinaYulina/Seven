@@ -1522,13 +1522,13 @@ const PAGES = {
     `<div class="gh">Яркость при приглушении</div>` + `<div class="lvls" role="radiogroup">${DIM_LVL.map(([v, t, pc]) => `<button class="lvl" role="radio" aria-checked="${S.dimBright === pc}" data-radio="dimBright" data-v="${pc}">${mini(miniAlpha(pc))}<span class="nm">${t}</span></button>`).join('')}</div>` +
     `<p class="gd" style="margin-top:var(--dim-space-sm)">Коснитесь тусклого экрана, и яркость вернётся</p>` +
     '</div></div>' }),
-  export: () => ({ title: 'Экспорт и импорт', body:
+  export: () => ({ back: true, title: 'Экспорт и импорт', body:
     `<div class="sec"><h3 class="sh">Экспорт</h3><p class="sd">В файл config.json попадут комнаты, виртуальные устройства, голосовые настройки, сценарии и экраны. Пароли, настройки брокеров и будильники в него не попадут.</p>` +
     `<h3 class="sh sm" style="margin-top:var(--dim-space-md)">Экраны профилей</h3>` + grp('', crow('panel', S.exp.panel, 'Панель (это устройство)') + crow('phone', S.exp.phone, 'Телефон') + crow('pc', S.exp.pc, 'Компьютер')) +
     `<p class="sd" style="margin-top:var(--dim-space-md)">В файле: комнат 1, виртуальных устройств 1, свойств 51, сценариев 0, экранов 1 (виджетов 6)</p>` +
     `<button class="btn primary wide" data-go="note:Файл config.json сохранится на панель. В этот прототип не входит.">Сохранить в файл</button><button class="btn secondary wide" data-go="note:Конфигурация скопируется в буфер обмена.">Копировать в буфер</button></div>` +
     `<div class="sec"><h3 class="sh">Импорт</h3><p class="sd">Загрузите config.json из файла или буфера обмена. Перед заменой данных приложение покажет, что изменится.</p><button class="btn secondary wide" data-go="note:Откроется выбор файла.">Выбрать файл</button><button class="btn secondary wide" data-go="note:Конфигурация будет вставлена из буфера обмена.">Вставить из буфера</button></div>` }),
-  journal: () => ({ title: 'Журнал команд', actions: `<button class="icon-btn" data-go="note:Настройки журнала в прототип не входят." aria-label="Настройки журнала">${ICON('gear')}</button><button class="icon-btn" data-go="note:Очистка журнала запросит подтверждение. В прототип не входит." aria-label="Очистить журнал">${ICON('trash')}</button>`, body: (() => {
+  journal: () => ({ back: true, title: 'Журнал команд', actions: `<button class="icon-btn" data-go="note:Настройки журнала в прототип не входят." aria-label="Настройки журнала">${ICON('gear')}</button><button class="icon-btn" data-go="note:Очистка журнала запросит подтверждение. В прототип не входит." aria-label="Очистить журнал">${ICON('trash')}</button>`, body: (() => {
     const list = JOURNAL.filter(j => S.jstat[j[0]] && (j[2] + ' ' + j[1]).toLowerCase().includes(S.jq.toLowerCase()));
     return `<label class="search2">${ICON('search')}<input id="jq" type="text" placeholder="Поиск по фразе, комнате или устройству" value="${S.jq}" autocomplete="off"></label>` +
       `<button class="fil" data-go="jfil">Фильтры<span style="transform:rotate(${S.jFilters ? 180 : 0}deg);display:flex">${ICON('chev')}</span></button>` +
@@ -1544,11 +1544,11 @@ const foot = (...b) => b.join('');
 const nextBtn = (go, ok = true) => `<button class="btn primary" data-go="${go}" ${ok ? '' : 'disabled'}>Далее</button>`;
 const DEVS = [['a', 'NSPanel Pro', 'NsPro-1001e0aed1', 13], ['b', '_TZE200_znlqjmih TS0601', 'NsPro_0x804b50fffee0fc86', 15]];
 Object.assign(PAGES, {
-  'add-controller': () => ({ title: 'Добавление оборудования', body:
+  'add-controller': () => ({ back: true, title: 'Добавление оборудования', body:
     `<div class="sec"><h3 class="sh sm">Найдено в сети</h3>` + grp('', radio('ctrl', 'wb', S.ctrl, 'wirenboard-AEYCHFJC', '192.168.23.141 · MAC …02:cc · добавлен') + radio('ctrl', 'manual', S.ctrl, 'Указать вручную')) +
     (S.ctrl === 'manual' ? `<div class="frow">${tf('addr', 'Адрес брокера (имя или IP)', S.addr, 'style="flex:1"')}${tf('port', 'Порт', S.port, 'style="width:112px"')}</div>` : '') + '</div>',
     foot: () => nextBtn(S.ctrl === 'manual' ? 'ph-mqtt-tail' : 'add-devices', S.ctrl === 'wb' || (S.ctrl === 'manual' && S.addr.trim() !== '')) }),
-  'add-ha': () => ({ title: 'Добавить Home Assistant', body:
+  'add-ha': () => ({ back: true, title: 'Добавить Home Assistant', body:
     `<div class="sec"><h3 class="sh sm">Найдено в сети</h3><p class="sd">Серверы Home Assistant в сети не найдены. Укажите адрес вручную.</p>` + grp('', radio('ha', 'manual', 'manual', 'Указать вручную')) +
     `<div class="frow">${tf('haAddr', 'Адрес (имя, IP или ссылка)', S.haAddr, 'style="flex:1"')}</div>` +
     `<div class="frow">${tf('haPort', 'Порт', S.haPort, 'style="width:112px"')}<div class="srow" style="flex:1;align-items:center"><div class="tx" style="font-size:var(--font-name);line-height:20px">Защищённое соединение (HTTPS)</div>${sw('https', S.https)}</div></div></div>`,
@@ -1616,18 +1616,18 @@ const dlgHtml = () => !S.dlg ? '' : `<div class="dlg"><div class="box"><h2>Ко�
 Object.assign(PAGES, {
   cc: () => { const r = ccPage(); r.fab = (r.fab || '') + dlgHtml(); return r; },
 
-  'cc-vdevs': () => ({ title: 'Виртуальные устройства', ctx: 'Гостиная', body: (S.empty ? emptyState('vdevs') : '') + (S.empty ? '' :
+  'cc-vdevs': () => ({ back: true, title: 'Виртуальные устройства', ctx: 'Гостиная', body: (S.empty ? emptyState('vdevs') : '') + (S.empty ? '' :
     `<div class="card2"><div class="nm" style="font-size:var(--font-name);line-height:20px">${S.vdName}</div><div class="ds">Других названий нет</div><div class="ds">Участников: 3</div><button class="btn secondary" style="margin-top:8px" data-go="cc-vdev">${ICON('list')}Настроить</button></div>` +
     grp('', arow('Собрать из найденного', 'ph-vd-suggest', 'list')) +
     `<div class="card2" style="background:none;border-color:var(--ui-outline)"><div class="hint">${ICON('info')}Подсказка</div><p class="sd">Название виртуального устройства произносят в команде: «включи свет на кухне». Примеры названий: «свет», «шторы», «все лампы».</p><p class="sd">Если в другой комнате есть виртуальное устройство с таким же названием, фраза «выключи свет» выключит их все. Назовите устройства по-разному, чтобы управлять ими по отдельности.</p></div><div style="height:72px"></div>`),
     fab: fabGo('Создать виртуальное устройство', 'cc-vdev') }),
-  'cc-vdev': () => ({ title: 'Виртуальное устройство', ctx: 'Устройство', body:
+  'cc-vdev': () => ({ back: true, title: 'Виртуальное устройство', ctx: 'Устройство', body:
     `<div class="fgap"><p class="sd" style="margin:0;color:var(--ui-on-surface)">Виртуальное устройство собирает свойства из разного оборудования и работает как одно: «включи свет», «шторы на 30 %». Каналы нужны, только если у устройства несколько разных функций.</p>` +
     `${tfm('vdName', 'Название', S.vdName)}${tfm('vdAlt', 'Другие названия через запятую', S.vdAlt)}<div><span class="lab" style="font-weight:400">Комната</span><div class="fld dd"><span style="color:var(--ui-on-surface)">Гостиная</span>${ICON('chev')}</div></div></div>`,
     foot: () => foot(`<button class="btn text" data-go="note:Проверка покажет, какие свойства услышит ассистент.">Проверить</button>`, `<button class="btn primary" data-go="back" ${S.vdName.trim() ? '' : 'disabled'}>Сохранить</button>`) }),
-  'cc-devedit': () => ({ title: 'Редактирование устройства', foot: () => `<button class="btn primary" data-go="back" ${S.dName.trim() ? '' : 'disabled'}>Сохранить</button>`, body:
-    `<div class="fgap">${tfm('dName', 'Наименование', S.dName).replace(' m"', ' m"')}${tfm('dPlace', 'Место размещения', S.dPlace)}<button class="btn danger" style="align-self:center" data-go="note:Удаление устройства запросит подтверждение.">Удалить</button></div>` }),
-  'cc-scen': () => ({ title: 'Новый сценарий', ctx: 'Шаги сценария', body:
+  'cc-devedit': () => ({ back: true, title: 'Редактирование устройства', foot: () => `<button class="btn danger" style="margin-right:auto" data-go="note:Удаление устройства запросит подтверждение.">Удалить</button><button class="btn primary" data-go="back" ${S.dName.trim() ? '' : 'disabled'}>Сохранить</button>`, body:
+    `<div class="fgap">${tfm('dName', 'Наименование', S.dName).replace(' m"', ' m"')}${tfm('dPlace', 'Место размещения', S.dPlace)}</div>` }),
+  'cc-scen': () => ({ back: true, title: 'Новый сценарий', ctx: 'Шаги сценария', body:
     `<div class="sec" style="border:0"><p class="sd" style="color:var(--ui-on-surface)">Шаги идут сверху вниз. «Вместе с предыдущим» — в то же время, что шаг выше; иначе перед шагом можно сделать паузу.</p>` +
     (S.steps.length ? '' : `<p class="sd" style="color:var(--ui-on-surface)">Шагов пока нет. Добавьте первый: выберите, что включить или выключить.</p>`) + '</div>' +
     S.steps.map((x, i) => `<div class="jrow"><div class="ph">${i + 1}. Включить: ${x}</div><div class="dt">Спросит подтверждение</div></div>`).join('') +
@@ -1637,9 +1637,9 @@ Object.assign(PAGES, {
   'cc-pick': () => ({ title: 'Новый сценарий', ctx: 'Что включить', close: true, body:
     `<div class="sec" style="border:0;padding-bottom:0"><p class="sd" style="color:var(--ui-on-surface)">Выберите, чем управляет шаг. Виртуальное устройство — сразу несколько свойств комнаты.</p></div><label class="search2" style="margin-top:0">${ICON('search')}<input type="text" placeholder="Поиск: название или комната" autocomplete="off"></label>` +
     `<div class="gh">Гостиная</div>` + [['Свет', 'Виртуальное устройство — свойств: 3 · спросит подтверждение'], ['Бра', 'спросит подтверждение'], ['Громкость', '']].map(([n, d]) => `<button class="pick" data-go="pickstep:${n}"><b>${n}</b><span>${d || '&nbsp;'}</span></button>`).join('') }),
-  'cc-integ': () => ({ title: 'Интеграция', ctx: 'Home Assistant', foot: () => `<button class="btn primary" ${S.iName.trim() && S.iAddr.trim() ? '' : 'disabled'} data-go="save:integ">Сохранить</button>`,
+  'cc-integ': () => ({ back: true, title: 'Интеграция', ctx: 'Home Assistant', foot: () => `<button class="btn primary" ${S.iName.trim() && S.iAddr.trim() ? '' : 'disabled'} data-go="save:integ">Сохранить</button>`,
     body: `<div class="fgap">${tfm('iName', 'Название', S.iName)}${tfm('iAddr', 'Адрес (имя, IP или ссылка)', S.iAddr, 'Например, 192.168.1.10:8123')}${tfm('iToken', 'Токен доступа', S.iToken, 'Создайте его в профиле Home Assistant')}</div>` }),
-  'cc-broker': () => ({ title: 'Брокер', ctx: 'MQTT', foot: () => `<button class="btn primary" ${S.bName.trim() && S.bAddr.trim() ? '' : 'disabled'} data-go="save:broker">Сохранить</button>`,
+  'cc-broker': () => ({ back: true, title: 'Брокер', ctx: 'MQTT', foot: () => `<button class="btn primary" ${S.bName.trim() && S.bAddr.trim() ? '' : 'disabled'} data-go="save:broker">Сохранить</button>`,
     body: `<div class="fgap">${tfm('bName', 'Название', S.bName)}<div class="frow" style="margin:0">${tfm('bAddr', 'Адрес брокера (имя или IP)', S.bAddr)}<div style="width:112px">${tfm('bPort', 'Порт', S.bPort)}</div></div>${tfm('bUser', 'Логин', S.bUser, 'Если брокер не требует вход, оставьте пустым')}${tfm('bPass', 'Пароль', S.bPass, '', true)}</div>` }),
 });
 /* ───────── Заглушки: экраны есть в map.md, но не нарисованы. Скриншоты запрошены у Сергея, задача ALL-71 ───────── */
@@ -1671,7 +1671,7 @@ const PH = {
 };
 Object.keys(PH).forEach(k => {
   const c = PH[k];
-  PAGES[k] = () => ({ title: c.title, ctx: c.ctx, close: c.close, foot: c.foot ? () => c.foot : undefined,
+  PAGES[k] = () => ({ back: ['ph-groups', 'ph-vd-suggest'].includes(k), title: c.title, ctx: c.ctx, close: c.close, foot: c.foot ? () => c.foot : undefined,
     body: (c.step ? stepBar(c.step, c.name) : '') +
       `<div class="phbox"><span class="stl warn">${ICON('info')}Заглушка</span><h3>Экран ещё не нарисован</h3><p>${c.has}</p>` +
       `<dl><dt>Экран в коде</dt><dd><code>${c.code}</code></dd><dt>Как открыть</dt><dd>${c.via}</dd><dt>Скриншот</dt><dd>${c.shot}</dd></dl>` +
