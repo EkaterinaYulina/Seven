@@ -517,7 +517,7 @@ svg.ic.dots { stroke-width: 2.6; }
 .fgap { display: flex; flex-direction: column; gap: var(--dim-gutter); padding: var(--dim-gutter); }
 .fgap .hp { font-size: 12px; line-height: 16px; color: var(--c-text-secondary); margin: -10px 0 0 var(--dim-space-md); }
 
-.btn.danger { background: var(--ui-surface-card); color: var(--ui-error); border-color: var(--ui-error); }
+.btn.danger { background: color-mix(in srgb, var(--ui-error) 12%, transparent); color: var(--ui-error); border-color: transparent; }
 .lab { display: block; font-size: var(--font-name); line-height: 20px; font-weight: 600; margin: 0 0 6px; }
 .fld { display: flex; align-items: center; height: 56px; border: 1px solid var(--ui-outline); border-radius: var(--dim-radius-card); padding: 0 4px 0 var(--dim-gutter); }
 .fld:focus-within { border: 2px solid var(--field-focus); padding: 0 3px 0 15px; }
@@ -589,16 +589,15 @@ svg.ic.dots { stroke-width: 2.6; }
   display: inline-flex; align-items: center; justify-content: center; gap: var(--dim-space-sm);
   font-size: var(--font-name); line-height: var(--lh-name); font-weight: 500; border: 1px solid transparent; }
 .btn.primary { background: var(--btn-primary-bg); color: var(--btn-primary-fg); }
-.btn.secondary { background: var(--ui-surface-card); color: var(--ui-on-surface); border-color: var(--ui-outline); }
 .btn.text { color: var(--ui-on-surface); }
 /* тональная: слегка подкрашенный зелёным фон без рамки, спокойнее залитой primary; для отмены и вторых действий рядом с primary */
-.btn.tonal { background: color-mix(in srgb, var(--ui-primary-container) 18%, transparent); color: var(--ui-on-surface); }
-.btn.tonal:active:not(:disabled) { background: color-mix(in srgb, var(--ui-primary-container) 30%, transparent); border-color: transparent; }
+.btn.secondary, .btn.tonal { background: color-mix(in srgb, var(--ui-primary-container) 18%, transparent); color: var(--ui-on-surface); border-color: transparent; }
+.btn.secondary:active:not(:disabled), .btn.tonal:active:not(:disabled) { background: color-mix(in srgb, var(--ui-primary-container) 30%, transparent); border-color: transparent; }
 .btn:active:not(:disabled) { background: var(--ui-surface-card); border-color: var(--ui-on-surface); color: var(--ui-on-surface); }
 .btn:disabled { background: transparent; border: 1px solid transparent; color: color-mix(in srgb, var(--ui-on-surface) 38%, transparent); cursor: default; }
 .btn.primary:disabled, .btn.secondary:disabled { background: color-mix(in srgb, var(--ui-on-surface) 10%, transparent); }
 .btn .ic { margin-left: -4px; }
-.btn.secondary[aria-pressed="true"] { border-color: var(--ui-on-surface); background: color-mix(in srgb, var(--ui-on-surface) 8%, var(--ui-surface-card)); }
+.btn.secondary[aria-pressed="true"] { background: color-mix(in srgb, var(--ui-primary-container) 32%, transparent); }
 .sheet .chips .btn svg.ic { margin-left: 0; }
 .icon-btn { width: var(--dim-touch-min); height: var(--dim-touch-min); display: flex; align-items: center; justify-content: center; color: var(--ui-on-surface); border-radius: var(--dim-radius-card); }
 
@@ -665,7 +664,7 @@ svg.ic.dots { stroke-width: 2.6; }
 .form .vrow, .pick, .jrow { background: var(--glass-card); box-shadow: inset 0 0 0 1px var(--glass-border); }
 .form .pv .tile { background: var(--glass-card); box-shadow: inset 0 0 0 1px var(--glass-border); }
 .form .appbar { border-bottom: 0; }
-.btn.secondary, .form .szb { background: var(--glass-card); border-color: var(--glass-border); }
+.form .szb { background: var(--glass-card); border-color: var(--glass-border); }
 .dlg .box { background: var(--sheet-bg); box-shadow: inset 0 0 0 1px var(--glass-border), 0 6px 24px #0004; }
 /* поля ввода: стеклянная заливка и контур, подпись внутри сверху (без «выемки» с белой подложкой) */
 .tf input, .fld, .dd, .page .search2 { background: var(--glass-card); border: 0; box-shadow: inset 0 0 0 1px var(--glass-border); }
@@ -674,7 +673,6 @@ svg.ic.dots { stroke-width: 2.6; }
 .tf span { left: 16px; padding: 0; background: transparent; }
 .tf input:focus + span, .tf input:not(:placeholder-shown) + span { top: 7px; }
 .tf input:focus, .tf input:not(:placeholder-shown) { padding-top: 18px; }
-.btn.danger { background: var(--glass-card); }
 .desk > .bar { background: var(--glass-card); box-shadow: inset 0 1px 0 var(--glass-border); }
 /* тексты разделов страниц — на той же линии 24, что заголовок и вкладки */
 .page .sec { padding-left: calc(var(--dim-gutter) + 8px); padding-right: calc(var(--dim-gutter) + 8px); }
@@ -729,7 +727,7 @@ svg.ic.dots { stroke-width: 2.6; }
 /* 1.4.11: граница полей, вторичных кнопок и невыбранных чипов ≥3:1 */
 .desk > .page .dd, .desk > .page .fld, .desk > .page .tf input, .desk > .page .search2,
 .desk > .form .dd, .desk > .form .fld, .desk > .form .tf input, .desk > .launcher .search { box-shadow: inset 0 0 0 1px var(--field-line); border-color: transparent; }
-.desk > .form .szb, .desk > .sheet .act, .desk > .page .btn.secondary, .desk > .form .btn.secondary { box-shadow: inset 0 0 0 1px var(--a11y-line); border-color: transparent; }
+.desk > .form .szb, .desk > .sheet .act { box-shadow: inset 0 0 0 1px var(--a11y-line); border-color: transparent; }
 .desk > .page .chip:not([aria-pressed="true"]) { box-shadow: inset 0 0 0 1px var(--a11y-line); }
 .desk > .page .tf input:focus, .desk > .page .fld:focus-within, .desk > .page .search2:focus-within,
 .desk > .form .tf input:focus, .desk > .form .fld:focus-within, .desk > .launcher .search:focus-within { box-shadow: inset 0 0 0 2px var(--field-focus); }
