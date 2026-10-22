@@ -394,6 +394,9 @@ svg.ic.dots { stroke-width: 2.6; }
 .page .dimflash { position: absolute; inset: 0; z-index: 70; background: #000; opacity: 0; pointer-events: none; transition: opacity .3s ease; }
 .page .flush .gh { padding-left: var(--dim-gutter); padding-right: var(--dim-gutter); }   /* заголовки и подсказка — по краю блоков, а не по линии текста */
 .page .flush .gd { margin-left: var(--dim-gutter); margin-right: var(--dim-gutter); }
+.page .grp.bk { margin-top: var(--dim-space-md); }
+.page .grp.bk:first-child { margin-top: var(--dim-gutter); }
+.page .grp.bk .gr:not(.ls):not(.act) { padding-left: calc(var(--dim-gutter) + 36px); }
 .page .grp + .grp.sep { margin-top: var(--dim-space-md); }   /* ссылка-переход отдельно от списка выбора */
 .page .body > .gd:first-child { margin-top: var(--dim-gutter); }
 .page .gr .mk { flex: none; width: 20px; height: 20px; border: 2px solid var(--ui-on-surface); border-radius: 50%; box-sizing: border-box; position: relative; }
@@ -1620,7 +1623,7 @@ const ccPage = () => {
     loc: () => S.empty || !S.rooms.length ? emptyState('loc') : S.rooms.map((r, i) => `<div class="room" data-room="${i}">` + grp('',
       grow(r.n, r.alt ? 'Другие названия: ' + r.alt : '', `<span class="dg" data-drag="${i}" role="button" aria-label="Перетащить, чтобы изменить порядок">${ICON('grip')}</span>`) +
       `<button class="gr act" data-go="vdevs:${i}">${ICON('devices')}<span class="tx">Виртуальные устройства</span><span class="cnt">${plr(r.v, 'устройство', 'устройства', 'устройств')}, ${plr(r.p, 'свойство', 'свойства', 'свойств')}</span><span class="go">${ICON('chev')}</span></button>`) + '</div>').join(''),
-    conn: () => S.empty || !S.brokers.length && !S.has.length ? emptyState('conn') : S.brokers.map((b, i) => grp('', lrow('signal', b.n, b.on ? 'Включён' : 'Выключен', 'brk:' + i) + b.ints.map((x, k) => nrow(x.n, x.on ? '' : 'Выключена', 'int:' + i + ':' + k)).join('') + arow('Добавить интеграцию', 'adds:' + i))).join('') + (S.has.length ? `<div class="sec"><h3 class="sh sm">Серверы Home Assistant</h3>` + grp('', S.has.map((h, i) => nrow(h.n, h.a, 'ha:' + i)).join('')) + '</div>' : ''),
+    conn: () => S.empty || !S.brokers.length && !S.has.length ? emptyState('conn') : S.brokers.map((b, i) => grp('', lrow('signal', b.n, b.on ? 'Включён' : 'Выключен', 'brk:' + i) + b.ints.map((x, k) => nrow(x.n, x.on ? '' : 'Выключена', 'int:' + i + ':' + k)).join('') + arow('Добавить интеграцию', 'adds:' + i)).replace('class="grp nt"', 'class="grp bk"')).join('') + (S.has.length ? `<div class="sec"><h3 class="sh sm">Серверы Home Assistant</h3>` + grp('', S.has.map((h, i) => nrow(h.n, h.a, 'ha:' + i)).join('')) + '</div>' : ''),
     dev: () => { if (S.empty) return emptyState('dev'); const by = {}; CCDEV.filter(d => S.devTab === 'all' || d[3] === S.devTab).forEach(d => (by[d[0].split(' / ')[0]] = by[d[0].split(' / ')[0]] || []).push(d));
       return Object.entries(by).map(([h, ds]) => grp(h, ds.map(d => grow(d[1], '', `<span class="go">${ICON('chev')}</span>`, { attrs: `data-go="devedit:${d[1]}"`, c: d[2] })).join(''))).join(''); },
     wid: () => S.steps.length && S.wTab === 'scen' && !S.empty ? '' : emptyState('scen'),
