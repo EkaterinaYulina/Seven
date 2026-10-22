@@ -443,6 +443,19 @@ h3.s3{font-size:16px;line-height:24px;font-weight:500;margin:20px 0 4px;color:va
 .tile .value.wd,.tile .vmin.wd{font-size:14px;line-height:17px;color:var(--page-t2);font-weight:400}
 .tile .value.wd.c-warn,.tile .vmin.wd.c-warn{color:var(--state-error,var(--page-text));font-weight:500}
 .pager.nar .pd{width:12px}.pager.nar{left:auto;right:84px;width:auto}
+/* состояние выключателя: включён — зелёная поверхность (как заливка ползунка) и залитая точка перед словом, выключен — пустое кольцо;
+   температура: низкая / высокая — тонированная поверхность и цветное число, норма без акцента */
+:root{--temp-hi:#A65410;--temp-lo:var(--core-blue-700)}
+[data-theme="dark"]{--temp-hi:#F0A664;--temp-lo:var(--core-blue-300)}
+.tile.swon{background:color-mix(in srgb,var(--dim-fill-bg) 70%,color-mix(in srgb,var(--c-tile) 40%,transparent))}
+[data-theme="dark"] .tile.swon{background:color-mix(in srgb,var(--dim-fill-bg) 70%,color-mix(in srgb,#CDE7D3 10%,transparent))}
+.tile .sd{display:inline-block;flex:none;width:9px;height:9px;border-radius:50%;box-sizing:border-box;border:1.5px solid currentColor;margin-right:6px;vertical-align:middle;opacity:.75}
+.tile .sec .sd{margin-right:2px}
+.tile.swon .sd{background:var(--accent-on);border-color:var(--accent-on);opacity:1}
+.tile.tn-hi{--tone-c:var(--temp-hi)}.tile.tn-lo{--tone-c:var(--temp-lo)}
+.tile[class*="tn-"]{background:color-mix(in srgb,var(--tone-c) 14%,color-mix(in srgb,var(--c-tile) 50%,transparent))}
+[data-theme="dark"] .tile[class*="tn-"]{background:color-mix(in srgb,var(--tone-c) 20%,color-mix(in srgb,#CDE7D3 10%,transparent))}
+.tile[class*="tn-"] .value,.tile[class*="tn-"] .vmin,.tile[class*="tn-"] .big{color:var(--tone-c)}
 </style></head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -641,7 +654,16 @@ var STATUS_ICON=false;/* значок состояния рядом с подп�
 function extraIc(st){if(!STATUS_ICON)return '';return st=='nobind'?ic('info'):st=='busy'?ic('timer'):''}
 function tcls(st,w,h){var c='';if(st=='offline')c+=' offl';if(st=='offline'||st=='nodata'||st=='nobind'||st=='stale')c+=' muted';if(st=='nobind')c+=' nobind';if(st=='busy')c+=' busyB';return c}
 var ACTK=['dim','ltx','lrl','sw','snd','alarm','lvl','cur','lvx'];
-function mkTile(r,sz,st){var h0=mkTile0(r,sz,st);
+/* состояние выключателя и уровень температуры: единый слой поверх готовой плитки */
+var TEMP_LV={lo:18,hi:25},SWK=['sw','dim','lrl','snd','alarm'];
+function tempTone(r){var s=r.k=='th'?(r.th&&!r.th.grp?r.th.t:''):((r.ic=='thermometer'&&(r.k=='sens'||r.k=='info'||r.k=='clim'))?r.v:'');var n=parseFloat(String(s||'').replace(',','.'));return isNaN(n)?'':n<TEMP_LV.lo?'lo':n>TEMP_LV.hi?'hi':''}
+function decorate(r,st,h0){if(!h0)return h0;
+ if(st=='norm'){var tn=tempTone(r);if(tn)h0=h0.replace('class="tile ','class="tile tn-'+tn+' ')}
+ if(SWK.indexOf(r.k)>=0&&(st=='norm'||st=='busy'||st=='off')){
+  if(h0.indexOf('data-on="true"')>=0)h0=h0.replace('class="tile ','class="tile swon ');
+  h0=h0.replace(/>(Вкл|Выкл|Включено|Выключено)<\/div>/,'><i class="sd"></i>$1</div>')}
+ return h0}
+function mkTile(r,sz,st){var h0=decorate(r,st,mkTile0(r,sz,st));
  if(h0&&(st=='norm'||st=='busy')&&ACTK.indexOf(r.k)>=0&&h0.indexOf('data-on="true"')>=0)h0=h0.replace('class="tile ','class="tile act ');
  if(h0&&st=='stale')h0=h0.replace('class="tile ','class="tile stl ');if(r.k=='scn'||r.k=='scx')h0=h0.replace(/<svg class="ic ([^"]*)"><use href="#i-(play|stop)"\/>/g,'<svg class="ic $1" style="fill:currentColor"><use href="#i-$2"/>');if(false&&st=='offline'&&h0){var a=sz.split('×').map(Number),k=(r.k=='snd'&&!(a[1]==1&&a[0]<=2))?'lvl':r.k;var nrowT=(k=='mode')||(['dim','snd','lvl','cur'].indexOf(k)>=0&&a[0]==2&&(a[1]==1||(a[1]==2&&k!='cur')));if(!nrowT)h0=h0.replace(/<\/div>$/,'<span class="stic">'+ic('wifioff','c-off')+'</span></div>')}return h0}
 /* Климат 2×2: показываются только заданные цели (температура, уставка, режим), клапан — подпись */
@@ -862,7 +884,7 @@ var EX=[
   {r:byN('Дверь','sens'),s:'1×1',i:4,j:0,st:'norm'},
   {r:byN('Свет','dim'),s:'2×2',i:0,j:1,st:'off'},
   {r:byN('Спальня','th'),s:'2×2',i:2,j:1,st:'norm'},
-  {r:V(byN('Спальня','sens','sens'),{}),s:'1×1',i:4,j:1,st:'norm'},
+  {r:V(byN('Спальня','sens','sens'),{v:'16,8 °C'}),s:'1×1',i:4,j:1,st:'norm'},
   {r:V(byN('Розетка','sw'),{n:'Лампа'}),s:'1×1',i:4,j:2,st:'off'},
   {r:V(byN('Карниз','cur'),{n:'Шторы'}),s:'2×1',i:0,j:3,st:'off'},
   {r:byN('Охрана','mode'),s:'2×1',i:2,j:3,st:'norm'},
