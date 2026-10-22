@@ -183,29 +183,19 @@ svg.ic.dots { stroke-width: 2.6; }
 
 
 /* ползунок яркости: «пилюля-заливка» (TileDimmer) */
-.tile.dim-v { flex-direction: row; gap: var(--dim-space-md); }
-.tile .col { display: flex; flex-direction: column; flex: 1; min-width: 0; }
-.tile .col > .ic + .name { margin-top: var(--dim-gap); }
-.tile .sp { flex: 1; }
-.tile .big { font-size: var(--font-value); line-height: var(--lh-value); font-weight: 500; font-variant-numeric: tabular-nums; }
 .dim { position: relative; overflow: hidden; border-radius: 999px; touch-action: none; cursor: pointer;
   background: color-mix(in srgb, var(--dim-fill-bg) 24%, transparent); color: var(--c-text-secondary); flex: none; }
 .dim.h { height: 48px; margin-top: auto; }
-.dim.v { width: 56px; align-self: stretch; }
 .dim .content { position: absolute; left: 0; top: 0; pointer-events: none; }
-.dim.v .content { top: auto; bottom: 0; }
 .dim .content > .ic { position: absolute; width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .dim.h .content > .ic { left: 14px; top: 12px; }
-.dim.v .content > .ic { left: 16px; bottom: 16px; }
 .dim .content > .pct { position: absolute; right: 28px; top: 0; height: 48px; line-height: 48px; font-size: var(--font-name); font-weight: 500; font-variant-numeric: tabular-nums; }
 .dim-fill { position: absolute; left: 0; bottom: 0; overflow: hidden; border-radius: inherit;
   background: var(--dim-fill-bg); color: var(--dim-fill-fg); transition: background .2s; }
 .dim.h .dim-fill { top: 0; }
-.dim.v .dim-fill { right: 0; }
 .dim-fill .content { color: var(--dim-fill-fg); }
 .dim .grip { position: absolute; border-radius: 2px; background: var(--core-cream); opacity: .9; box-shadow: 0 0 0 .5px #0002; pointer-events: none; }
 .dim.h .grip { right: 8px; top: 50%; width: 4px; height: 20px; margin-top: -10px; }
-.dim.v .grip { top: 8px; left: 50%; height: 4px; width: 20px; margin-left: -10px; }
 .dim.nogrip .grip { display: none; }
 
 /* варианты вида ползунка (превью): a — без заливки в «выкл», b — бледная заливка, c — цвет по яркости, d — светлая дорожка */
@@ -213,7 +203,6 @@ svg.ic.dots { stroke-width: 2.6; }
 [data-theme="dark"] .dim-fill { --dim-fill-lo: var(--core-olive); }
 .desk[data-dstyle="a"] .tile[data-on="false"] .dim-fill { background: transparent; }
 .desk[data-dstyle="a"] .tile[data-on="false"] .grip { display: none; }
-.desk.edit .dim.v { margin-top: 24px; } /* бейдж не перекрывает пилюлю */
 .tile[data-on="false"] .dim-fill { background: color-mix(in srgb, var(--ui-outline) 45%, transparent); color: var(--c-text-secondary); }
 .tile[data-on="false"] .dim-fill .content { color: var(--c-text-secondary); }
 /* тёмная тема: плитки светлее фона + тонкий контур */
@@ -765,7 +754,7 @@ input::placeholder { color: var(--a11y-ph); opacity: 1; }
 
 /* тихая иерархия плиток (21.10): название 500 тёмное, число 600, подписи приглушены, значки одного нейтрального цвета */
 .tile .name{font-weight:500;color:var(--c-text-primary)}
-.tile .value,.tile .big{font-weight:600}
+.tile .value{font-weight:600}
 .tile .sec{color:var(--c-text-secondary)}
 .tile svg.ic{color:color-mix(in srgb,var(--c-text-primary) 70%,transparent);stroke-width:1.6}
 
@@ -951,7 +940,7 @@ input::placeholder { color: var(--a11y-ph); opacity: 1; }
 
 <script>
 /* ───────── Состояние прототипа ───────── */
-const state = { edit: false, theme: 'light', dimmer: 'v', mic: 'off', showHit: false, screen: 'desk' };
+const state = { edit: false, theme: 'light', dimmer: 'h', mic: 'off', showHit: false, screen: 'desk' };
 const INITIAL = [
   { id: 'clock',       type: 'placeholder', col: 0, row: 0, w: 2, h: 1, icon: 'clock', title: 'Часы', subtitle: 'скоро' },
   { id: 'light-dimmer',type: 'switch',      col: 2, row: 0, w: 2, h: 2, icon: 'bulb',  name: 'Свет', on: false, level: 0.87 },
@@ -1023,12 +1012,11 @@ function switchInner(t) {
   const stateRow = `<div class="sec" data-role="state">${t.on ? 'Включен' : 'Выключен'}</div>`;
   if (t.level == null) return `${ICON(t.icon)}<div class="name">${t.name}</div>${stateRow}`;
   if (state.dimmer === 'old') return `${ICON(t.icon)}<div class="name">${t.name}</div>${stateRow}<div class="slider"><div class="track"></div><div class="thumb"></div></div>`;
-  if (state.dimmer === 'h') return `${ICON(t.icon)}<div class="name">${t.name}</div>${stateRow}${dimInner('h', t)}`;
-  return `<div class="col">${ICON(t.icon)}<div class="name">${t.name}</div>${stateRow}<div class="sp"></div><div class="big" data-role="pct"></div></div>${dimInner('v', t)}`;
+  return `${ICON(t.icon)}<div class="name">${t.name}</div>${stateRow}${dimInner('h', t)}`;
 }
 function tileEl(t, m) {
   const el = document.createElement('div');
-  el.className = `tile ${t.type}-tile` + (t.level != null && state.dimmer === 'v' ? ' dim-v' : '');
+  el.className = `tile ${t.type}-tile`;
   el.dataset.on = String(!!t.on);
   el.dataset.id = t.id;
   el.dataset.w = String(t.w);
@@ -1070,49 +1058,28 @@ function render() {
 
 /* ───────── TileSlider: значение 0..1, ползунок не выходит за дорожку ───────── */
 function bindDim(dim, t, tileEl) {
-  const h = dim.classList.contains('h');
-  const W = dim.clientWidth, H = dim.clientHeight, D = h ? H : W, L = h ? W : H;
+  const W = dim.clientWidth, H = dim.clientHeight, D = H, L = W;
   dim.querySelectorAll('.content').forEach(c => { c.style.width = W + 'px'; c.style.height = H + 'px'; });
   const fill = dim.querySelector('.dim-fill');
   const paint = () => {
     const len = D + t.level * (L - D);
-    if (h) fill.style.width = len + 'px'; else fill.style.height = len + 'px';
+    fill.style.width = len + 'px';
     dim.classList.toggle('nogrip', t.level < 0.08);
     const txt = t.on ? pctOf(t) + '%' : '';   /* у выключенного света числа нет: «Выключен · 87 %» читается как противоречие */
     dim.querySelectorAll('.pct').forEach(n => n.textContent = txt);
-    const big = tileEl.querySelector('[data-role="pct"]'); if (big) big.textContent = txt;
     dim.style.setProperty('--lvl', t.level); fill.style.setProperty('--lvl', t.level);
     dim.setAttribute('aria-valuenow', pctOf(t)); if (t.onChange) t.onChange();
   };
   dim.setAttribute('role', 'slider'); dim.setAttribute('aria-label', 'Яркость'); dim.setAttribute('aria-valuemin', 1); dim.setAttribute('aria-valuemax', 100);
   const set = e => {
     const r = dim.getBoundingClientRect();
-    const p = h ? e.clientX - r.left : r.bottom - e.clientY;
+    const p = e.clientX - r.left;
     t.level = Math.min(1, Math.max(0, (p - D / 2) / (L - D)));
     if (!t.on) { t.on = true; tileEl.dataset.on = 'true'; tileEl.querySelector('[data-role="state"]').textContent = 'Включен'; }
     paint();
   };
-  if (h) {
-    dim.addEventListener('pointerdown', e => { if (state.edit) return; dim.setPointerCapture(e.pointerId); set(e); e.stopPropagation(); });
-    dim.addEventListener('pointermove', e => { if (dim.hasPointerCapture(e.pointerId)) set(e); });
-  } else {
-    /* вертикальный ползунок: тянет только вертикальный жест, горизонтальный уходит в свайп между экранами стола;
-       касание без движения ставит значение при отпускании */
-    let st = null;
-    dim.addEventListener('pointerdown', e => { if (!state.edit) st = { x: e.clientX, y: e.clientY, id: e.pointerId, mode: null }; });
-    dim.addEventListener('pointermove', e => {
-      if (!st || e.pointerId !== st.id) return;
-      if (!st.mode) {
-        const dx = e.clientX - st.x, dy = e.clientY - st.y;
-        if (Math.hypot(dx, dy) < 8) return;
-        if (Math.abs(dy) < Math.abs(dx)) { st.mode = 'pass'; return; }
-        st.mode = 'slide'; dim.setPointerCapture(e.pointerId); set({ clientX: st.x, clientY: st.y });
-      }
-      if (st.mode === 'slide') set(e);
-    });
-    const done = e => { if (st && e.pointerId === st.id) { if (!st.mode && e.type === 'pointerup') set(e); st = null; } };
-    dim.addEventListener('pointerup', done); dim.addEventListener('pointercancel', done);
-  }
+  dim.addEventListener('pointerdown', e => { if (state.edit) return; dim.setPointerCapture(e.pointerId); set(e); e.stopPropagation(); });
+  dim.addEventListener('pointermove', e => { if (dim.hasPointerCapture(e.pointerId)) set(e); });
   dim.addEventListener('click', e => e.stopPropagation());
   tileEl._paint = paint;   /* тап по плитке переключает вкл/выкл и перерисовывает число */
   paint();
@@ -1770,7 +1737,7 @@ const GROUPS = [
   { label: 'Тема',     get: () => state.theme, set: v => { state.theme = v; document.documentElement.dataset.theme = v; },
     opts: [['light', 'Светлая'], ['dark', 'Тёмная']] },
   { label: 'Ползунок света', get: () => state.dimmer, set: v => { state.dimmer = v; render(); },
-    opts: [['old', 'Было'], ['h', 'Горизонтальный'], ['v', 'Вертикальный']] },
+    opts: [['old', 'Было'], ['h', 'Колбаса']] },
   { label: 'Микрофон', get: () => state.mic, set: v => { state.mic = v; $('#mic').dataset.state = v; },
     opts: [['off', 'Выкл'], ['listening', 'Слушает'], ['no-permission', 'Нет доступа']] },
   { label: 'Мастера', cls: 'grid3', get: () => state.screen === 'page' && curPage !== 'settings' ? (curPage === 'add-controller' && S.ctrl === 'manual' ? 'add-controller-m' : curPage) : '',
