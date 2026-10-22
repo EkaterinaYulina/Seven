@@ -497,6 +497,9 @@ svg.ic.dots { stroke-width: 2.6; }
 .card2 { margin: 0 var(--dim-gutter) var(--dim-space-sm); border: 1px solid var(--ui-outline-subtle); border-radius: var(--dim-radius-card); padding: var(--dim-space-md); background: color-mix(in srgb, var(--ui-on-surface) 4%, transparent); }
 .card2 .hd, button.card2 { text-align: left; } .card2 .hd { display: flex; align-items: center; gap: var(--dim-space-md); width: 100%; text-align: left; min-height: 48px; }
 .card2 .hd .tx { flex: 1; min-width: 0; }
+.card2.tip { display: flex; align-items: flex-start; gap: var(--dim-space-md); }
+.card2.tip .ic { flex: none; margin-top: 2px; }
+.card2.tip .sd { margin: 0; }
 .card2 .cap { font-size: 12px; line-height: 16px; color: var(--c-text-secondary); overflow-wrap: anywhere; }
 .card2 .nm { font-size: 16px; line-height: 22px; font-weight: 600; }
 .card2 .ds { font-size: var(--font-name); line-height: 20px; color: var(--c-text-secondary); }
@@ -1622,7 +1625,7 @@ Object.assign(PAGES, {
   'cc-vdevs': () => ({ back: true, title: 'Виртуальные устройства', sub: S.vdRoom || 'Гостиная', body: (S.empty ? emptyState('vdevs') : '') + (S.empty ? '' :
     grp('', nrow(S.vdName, 'Участников: 3', 'cc-vdev', { c: S.vdAlt ? 'Другие названия: ' + S.vdAlt : '' })) +
     grp('', arow('Собрать из найденного', 'ph-vd-suggest', 'list')) +
-    `<div class="card2" style="background:none;border-color:var(--ui-outline)"><div class="hint">${ICON('info')}Подсказка</div><p class="sd">Название виртуального устройства произносят в команде: «включи свет на кухне». Примеры названий: «свет», «шторы», «все лампы».</p><p class="sd">Если в другой комнате есть виртуальное устройство с таким же названием, фраза «выключи свет» выключит их все. Назовите устройства по-разному, чтобы управлять ими по отдельности.</p></div><div style="height:72px"></div>`),
+    `<div class="card2 tip" style="background:none;border-color:var(--ui-outline)">${ICON('info')}<p class="sd">Название произносят в команде: «включи свет». Одинаковые названия в разных комнатах сработают вместе, поэтому называйте их по-разному.</p></div><div style="height:72px"></div>`),
     fab: fabGo('Создать виртуальное устройство', 'cc-vdev') }),
   'cc-vdev': () => ({ back: true, title: 'Виртуальное устройство', body:
     `<div class="fgap"><p class="sd" style="margin:0;color:var(--ui-on-surface)">Виртуальное устройство собирает свойства из разного оборудования и работает как одно: «включи свет», «шторы на 30 %». Каналы нужны, только если у устройства несколько разных функций.</p>` +
