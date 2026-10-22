@@ -871,6 +871,7 @@ window.SEVEN_SCREENS = {
     { id: 'cc-conn',         group: 'Мой дом', title: 'Подключения', status: 'done', via: 'Мой дом → Подключения' },
     { id: 'cc-integ',        group: 'Мой дом', title: 'Интеграция', status: 'done', via: 'Подключения → строка интеграции' },
     { id: 'cc-broker',       group: 'Мой дом', title: 'Брокер', status: 'proto', via: 'Подключения → строка брокера' },
+    { id: 'add-check',      group: 'Мастера', title: 'Проверка брокера', status: 'proto', via: '«Добавить интеграцию» → проверка → «Найденные системы»' },
     { id: 'add-systems',    group: 'Мастера', title: 'Найденные системы', status: 'proto', via: 'Подключения → «Добавить интеграцию»' },
     { id: 'cc-ha',           group: 'Мой дом', title: 'Сервер Home Assistant', status: 'proto', via: 'Подключения → сервер HA / «Добавить»' },
     { id: 'cc-dev',          group: 'Мой дом', title: 'Устройства', status: 'done', via: 'Мой дом → Устройства' },
@@ -1594,7 +1595,7 @@ Object.assign(PAGES, {
 
 /* ───────── Мой дом ───────── */
 Object.assign(S, { empty: false, cct: 'loc', roomOpen: true, fab: false, wTab: 'scen', devTab: 'all',
-  brokers: [{ n: 'wirenboard-AEYCHFJC', a: '192.168.23.141', p: '1883', on: true, ints: [{ n: 'Wirenboard', pr: 'wirenboard', on: true }] }, { n: 'Mosquitto дома', a: '192.168.23.10', p: '1883', on: true, ints: [{ n: 'Home Assistant через MQTT', pr: 'homeassistant', on: true }, { n: 'Zigbee2MQTT', pr: 'zigbee2mqtt', on: false }] }], has: [{ n: 'Home Assistant через API', a: '192.168.23.20:8123', on: true }], eb: 0, ei: 0, prot: 'zigbee2mqtt', pfx: '', iName: '', bauth: false, iPfx: '', iAddr: '', iToken: '', bName: '', bAddr: '', bPort: '1883', bUser: '', bPass: '' });
+  brokers: [{ n: 'wirenboard-AEYCHFJC', a: '192.168.23.141', p: '1883', on: true, ints: [{ n: 'Wirenboard', pr: 'wirenboard', on: true }] }, { n: 'Mosquitto дома', a: '192.168.23.10', p: '1883', on: true, ints: [{ n: 'Home Assistant через MQTT', pr: 'homeassistant', on: true }, { n: 'Zigbee2MQTT', pr: 'zigbee2mqtt', on: false }] }], has: [{ n: 'Home Assistant через API', a: '192.168.23.20:8123', on: true }], eb: 0, ei: 0, prot: 'zigbee2mqtt', pfx: '', iName: '', protOpen: false, bauth: false, iPfx: '', iAddr: '', iToken: '', bName: '', bAddr: '', bPort: '1883', bUser: '', bPass: '' });
 Object.assign(S, { rooms: [{ n: 'Гостиная', alt: 'кухня', v: 1, p: 6 }, { n: 'Спальня', alt: '', v: 2, p: 4 }], dlg: false, rName: '', vdName: 'Свет', vdAlt: '', steps: [], dName: 'Зуммер', dPlace: '', br: 85, vol: 53, quiet: false });
 const fld = (k, v, mic = true) => `<label class="fld"><input data-in="${k}" value="${v}" autocomplete="off">${mic ? `<button type="button" class="mi" data-go="note:Голосовой ввод в этот прототип не входит." aria-label="Голосовой ввод">${ICON('mic')}</button>` : ''}</label>`;
 const fabGo = (t, go) => `<button class="fab" data-go="${go}">${ICON('plus')}${t}</button>`;
@@ -1602,6 +1603,9 @@ const CCT = [['loc', 'Локации', 'pin', 'Комнаты и виртуал�
 const CCDEV = [['wirenboard-AEYCHFJC / wb-mr6c_105', 'Реле 1', 'wb-mr6c_105/K1', 'wb'], ['wirenboard-AEYCHFJC / wb-msw-v3_21', 'Датчик движения', 'wb-msw-v3_21/Motion', 'wb'],
   ['Home Assistant / NsPro-1001e0aed1', 'NSPanel Pro', 'NsPro-1001e0aed1', 'ha'], ['Home Assistant / NsPro_0x804b50fffee0fc86', '_TZE200_znlqjmih TS0601', 'NsPro_0x804b50fffee0fc86', 'ha']];
 const extFab = (t, ic = 'plus', exp) => `<button class="fab" data-go="${exp ? 'fab' : 'note:' + t}" ${exp ? `aria-expanded="${S.fab}"` : ''}>${ICON(ic)}${S.fab && exp ? 'Добавить' : t}</button>`;
+const PROTS = [['zigbee2mqtt', 'Zigbee2MQTT'], ['wirenboard', 'Wirenboard'], ['vakio', 'Vakio'], ['welrok', 'Welrok'], ['homeassistant', 'Home Assistant через MQTT']];
+const protName = v => (PROTS.find(p => p[0] === v) || [0, v])[1];
+const roField = (lab, v) => `<div><span class="lab" style="font-weight:400">${lab}</span><div class="fld dd"><span style="color:var(--ui-on-surface)">${v}</span></div></div>`;
 const tfm = (k, label, v, hp = '', pw = false) => `<div><label class="tf m"><input data-in="${k}" placeholder=" " value="${v}" ${pw ? 'type="password"' : ''} autocomplete="off"><span>${label}</span><button type="button" class="mi" data-go="note:Голосовой ввод в этот прототип не входит." aria-label="Голосовой ввод">${ICON('mic')}</button></label>${hp ? `<div class="hp" style="margin-top:4px">${hp}</div>` : ''}</div>`;
 /* Пустое состояние: значок, заголовок, одна строка пояснения. Кнопки нет: действие всегда одно и всегда в одном месте, это FAB справа внизу */
 const EMPTY = {
@@ -1659,16 +1663,21 @@ Object.assign(PAGES, {
     `<div class="sec" style="border:0;padding-bottom:0"><p class="sd" style="color:var(--ui-on-surface)">Выберите, чем управляет шаг. Виртуальное устройство — сразу несколько свойств комнаты.</p></div><label class="search2" style="margin-top:0">${ICON('search')}<input type="text" placeholder="Поиск: название или комната" autocomplete="off"></label>` +
     `<div class="gh">Гостиная</div>` + [['Свет', 'Виртуальное устройство — свойств: 3 · спросит подтверждение'], ['Бра', 'спросит подтверждение'], ['Громкость', '']].map(([n, d]) => `<button class="pick" data-go="pickstep:${n}"><b>${n}</b><span>${d || '&nbsp;'}</span></button>`).join('') }),
   'cc-integ': () => { const b = S.brokers[S.eb], x = b.ints[S.ei]; return ({ back: true, title: x.n, ctx: 'Интеграция · ' + b.n,
-    body: grp('', srow('Включена', '', 'ix', x.on)) + `<div class="fgap" style="margin-top:var(--dim-space-md)">${tfm('iName', 'Название', S.iName)}${tfm('iPfx', 'Префикс топика', S.iPfx, 'Например, zigbee2mqtt')}</div>` + grp('', arow('Добавить устройства', 'add-devices')),
+    body: grp('', srow('Включена', '', 'ix', x.on)) + `<div class="fgap" style="margin-top:var(--dim-space-md)">${tfm('iName', 'Название', S.iName)}${roField('Протокол', protName(x.pr))}${roField('Брокер', b.a + ':' + b.p)}${tfm('iPfx', 'Префикс топика', S.iPfx, 'Если пусто, префикс не используется')}</div>` + grp('', arow('Добавить устройства', 'add-devices')),
     foot: () => `<button class="btn danger" data-go="del:integ">Удалить</button><button class="btn primary" data-go="save:integ">Сохранить</button>` }); },
   'cc-broker': () => ({ back: true, title: S.brokers[S.eb].n, ctx: 'Брокер MQTT', body: grp('', srow('Включён', '', 'bx', S.brokers[S.eb].on)) +
     `<div class="fgap" style="margin-top:var(--dim-space-md)">${tfm('bName', 'Название', S.bName)}<div class="frow" style="margin:0">${tfm('bAddr', 'Адрес брокера (имя или IP)', S.bAddr)}<div style="width:112px">${tfm('bPort', 'Порт', S.bPort)}</div></div></div>` + grp('', srow('Брокер защищён паролем', '', 'bauth', S.bauth)) + (S.bauth ? `<div class="fgap" style="margin-top:var(--dim-space-md)">${tfm('bUser', 'Логин', S.bUser)}${tfm('bPass', 'Пароль', S.bPass, '', true)}</div>` : '') + `<div class="sec"><h3 class="sh sm">Интеграции</h3>` + grp('', S.brokers[S.eb].ints.map((x, j) => nrow(x.n, x.on ? '' : 'Выключена', 'int:' + S.eb + ':' + j)).join('') + arow('Добавить интеграцию', 'adds:' + S.eb)) + '</div>',
     foot: () => `<button class="btn danger" data-go="del:broker">Удалить</button><button class="btn primary" ${S.bName.trim() && S.bAddr.trim() ? '' : 'disabled'} data-go="save:broker">Сохранить</button>` }),
   'cc-ha': () => ({ back: true, title: 'Home Assistant', ctx: 'Сервер', foot: () => `<button class="btn primary" ${S.iName.trim() && S.iAddr.trim() ? '' : 'disabled'} data-go="save:ha">Сохранить</button>`,
     body: `<div class="fgap">${tfm('iName', 'Название', S.iName)}${tfm('iAddr', 'Адрес (имя, IP или ссылка)', S.iAddr, 'Например, 192.168.1.10:8123')}${tfm('iToken', 'Токен доступа', S.iToken, 'Создайте его в профиле Home Assistant')}</div>` }),
+  'add-check': () => ({ back: true, title: 'Добавление оборудования', ctx: S.brokers[S.eb].n, body: `<div class="empty"><i class="eic">${ICON('signal')}</i><b>Проверка брокера</b>${S.brokers[S.eb].a}:${S.brokers[S.eb].p}</div>` }),
   'add-systems': () => ({ back: true, title: 'Найденные системы', ctx: S.brokers[S.eb].n,
-    body: `<div class="sec"><p class="sd" style="color:var(--ui-on-surface)">Брокер уже добавлен (${S.brokers[S.eb].a}): новая интеграция подключится к нему</p><h3 class="sh sm" style="margin-top:var(--dim-space-md)">Протокол</h3>` + grp('', [['zigbee2mqtt', 'Zigbee2MQTT'], ['wirenboard', 'Wirenboard'], ['vakio', 'Vakio'], ['welrok', 'Welrok'], ['homeassistant', 'Home Assistant через MQTT']].map(([v, t]) => radio('prot', v, S.prot, t)).join('')) +
-    `<div class="fgap" style="margin-top:var(--dim-space-md)">${tfm('pfx', 'Префикс топика', S.pfx, 'Необязательно')}</div></div>`,
+    body: `<div class="sec"><p class="sd" style="color:var(--ui-on-surface)">Брокер уже добавлен (${S.brokers[S.eb].a}:${S.brokers[S.eb].p}): новые системы будут добавлены к нему</p>` +
+    grp('', [['f1', 'Zigbee2MQTT', 'Префикс zigbee2mqtt · устройств: 12'], ['f2', 'Welrok', 'Префикс welrok · устройств: 3']].map(([k, n, d]) => crow(k, S.dev[k], n, d, 'data-chk2')).join('')) +
+    `<h3 class="sh sm" style="margin-top:var(--dim-space-md)">Указать вручную</h3><div class="fgap">` +
+    `<div><span class="lab" style="font-weight:400">Протокол</span><button class="fld dd" data-go="protopen"><span style="color:var(--ui-on-surface)">${protName(S.prot)}</span>${ICON('chev')}</button></div>` +
+    (S.protOpen ? grp('', PROTS.map(([v, t]) => rrow('prot', v, S.prot, t)).join('')) : '') +
+    `${tfm('pfx', 'Префикс (необязательно)', S.pfx)}<button class="btn secondary" data-go="note:Проверяем префикс в брокере">Проверить</button></div></div>`,
     foot: () => nextBtn('add-devices') }),
 });
 /* ───────── Заглушки: экраны есть в map.md, но не нарисованы. Скриншоты запрошены у Сергея, задача ALL-71 ───────── */
@@ -1769,7 +1778,8 @@ $('#page').addEventListener('click', e => {
   if (g === 'fab') { S.fab = !S.fab; return drawPage(); }
   if (g.startsWith('brk:')) { S.eb = +g.slice(4); const b = S.brokers[S.eb]; S.bName = b.n; S.bAddr = b.a; S.bPort = b.p; return goPage('cc-broker'); }
   if (g.startsWith('int:')) { const [i, k] = g.slice(4).split(':').map(Number); S.eb = i; S.ei = k; const x = S.brokers[i].ints[k]; S.iName = x.n; S.iPfx = x.pr; return goPage('cc-integ'); }
-  if (g.startsWith('adds:')) { S.eb = +g.slice(5); S.pfx = ''; return goPage('add-systems'); }
+  if (g.startsWith('adds:')) { S.eb = +g.slice(5); S.pfx = ''; S.protOpen = false; S.dev.f1 = S.dev.f2 = false; goPage('add-check'); setTimeout(() => { if (curPage === 'add-check') { curPage = 'add-systems'; drawPage(false); } }, 1400); return; }
+  if (g === 'protopen') { S.protOpen = !S.protOpen; return drawPage(); }
   if (g.startsWith('ha:')) { const h = S.has[+g.slice(3)]; S.iName = h.n; S.iAddr = h.a; return goPage('cc-ha'); }
   if (g.startsWith('del:')) { const b = S.brokers[S.eb]; if (g === 'del:integ') b.ints.splice(S.ei, 1); else S.brokers.splice(S.eb, 1); const p = pageStack.pop(); curPage = p || 'cc'; drawPage(false); return note('Удалено'); }
   if (g.startsWith('save:')) {

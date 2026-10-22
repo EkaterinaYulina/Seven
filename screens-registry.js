@@ -40,6 +40,7 @@ window.SEVEN_SCREENS = {
     { id: 'cc-conn',         group: 'Мой дом', title: 'Подключения', status: 'done', via: 'Мой дом → Подключения' },
     { id: 'cc-integ',        group: 'Мой дом', title: 'Интеграция', status: 'done', via: 'Подключения → строка интеграции' },
     { id: 'cc-broker',       group: 'Мой дом', title: 'Брокер', status: 'proto', via: 'Подключения → строка брокера' },
+    { id: 'add-check',      group: 'Мастера', title: 'Проверка брокера', status: 'proto', via: '«Добавить интеграцию» → проверка → «Найденные системы»' },
     { id: 'add-systems',    group: 'Мастера', title: 'Найденные системы', status: 'proto', via: 'Подключения → «Добавить интеграцию»' },
     { id: 'cc-ha',           group: 'Мой дом', title: 'Сервер Home Assistant', status: 'proto', via: 'Подключения → сервер HA / «Добавить»' },
     { id: 'cc-dev',          group: 'Мой дом', title: 'Устройства', status: 'done', via: 'Мой дом → Устройства' },
