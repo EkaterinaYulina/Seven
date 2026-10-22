@@ -1902,7 +1902,7 @@ render();
     tabs.forEach(t => { const on = t.dataset.view === v; t.setAttribute('aria-selected', String(on)); t.tabIndex = on ? 0 : -1; });
     const frame = frames[v];
     if (frame) {
-      if (!frame.getAttribute('src')) frame.src = frame.dataset.src + '?theme=' + encodeURIComponent(state.theme);
+      if (!frame.getAttribute('src')) frame.src = frame.dataset.src + '?theme=' + encodeURIComponent(state.theme) + '&v=' + Date.now();   /* без кэша: вкладки «Матрица» и «Экраны» всегда свежие */
       else sendTheme(frame);
     }
   }
