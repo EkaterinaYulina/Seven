@@ -1580,8 +1580,8 @@ Object.assign(PAGES, {
     `<div class="frow">${tf('haAddr', 'Адрес (имя, IP или ссылка)', S.haAddr, 'style="flex:1"')}</div>` +
     `<div class="frow">${tf('haPort', 'Порт', S.haPort, 'style="width:112px"')}<div class="srow" style="flex:1;align-items:center"><div class="tx" style="font-size:var(--font-name);line-height:20px">Защищённое соединение (HTTPS)</div>${sw('https', S.https)}</div></div></div>`,
     foot: () => nextBtn('add-devices', S.haAddr.trim() !== '') }),
-  'add-devices': () => ({ title: 'Добавление оборудования', close: true, body:
-    `<div class="sec"><p class="sd" style="color:var(--ui-on-surface)">Можно не выбирать устройства: соединение сохранится, устройства добавите позже</p><h3 class="sh sm" style="margin-top:var(--dim-space-md)">Home Assistant · Home Assistant через MQTT</h3>` +
+  'add-devices': () => ({ back: true, title: 'Добавление оборудования', body:
+    `<div class="sec"><p class="sd" style="color:var(--ui-on-surface)">Можно не выбирать устройства: соединение сохранится, устройства добавите позже</p><h3 class="sh sm" style="margin-top:var(--dim-space-md)">Home Assistant · Home Assistant (MQTT Discovery)</h3>` +
     DEVS.map(([k, n, id, c]) => grp('', crow(k, S.dev[k], n, `${id}<br>часть добавлена<br>Новых свойств: ${c}`, 'data-chk2') + `<button class="gr act" data-go="note:Откроется список свойств устройства."><span class="tx">Свойства</span></button>`)).join('') + '</div>',
     foot: () => nextBtn('note:Мастер завершён: оборудование добавится в «Мой дом → Подключения». В прототип этот экран не входит.') }),
   w1: () => ({ title: 'Мастер настройки', body: stepBar(1, 'Приветствие') +
