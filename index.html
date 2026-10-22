@@ -213,16 +213,6 @@ svg.ic.dots { stroke-width: 2.6; }
 [data-theme="dark"] .dim-fill { --dim-fill-lo: var(--core-olive); }
 .desk[data-dstyle="a"] .tile[data-on="false"] .dim-fill { background: transparent; }
 .desk[data-dstyle="a"] .tile[data-on="false"] .grip { display: none; }
-.desk[data-dstyle="b"] .tile[data-on="false"] .dim-fill { background: color-mix(in srgb, var(--dim-fill-bg) 40%, transparent); color: var(--dim-fill-fg); }
-.desk[data-dstyle="b"] .tile[data-on="false"] .dim-fill .content { color: var(--dim-fill-fg); }
-.desk[data-dstyle="c"] .tile[data-on="true"] .dim-fill { background: color-mix(in srgb, var(--dim-fill-bg) calc(var(--lvl) * 100%), var(--dim-fill-lo)); }
-.desk[data-dstyle="c"] .tile[data-on="false"] .dim-fill { background: transparent; }
-.desk[data-dstyle="c"] .tile[data-on="false"] .grip { display: none; }
-.desk[data-dstyle="d"] .dim { background: color-mix(in srgb, var(--core-cream) 55%, transparent); }
-[data-theme="dark"] .desk[data-dstyle="d"] .dim { background: color-mix(in srgb, var(--core-paper) 16%, transparent); }
-.desk[data-dstyle="d"] .tile[data-on="false"] .dim-fill { background: transparent; }
-.desk[data-dstyle="d"] .grip { opacity: 1; box-shadow: 0 1px 3px #0004; }
-.desk[data-dstyle="d"] .tile[data-on="false"] .grip { display: none; }
 .desk.edit .dim.v { margin-top: 24px; } /* бейдж не перекрывает пилюлю */
 .tile[data-on="false"] .dim-fill { background: color-mix(in srgb, var(--ui-outline) 45%, transparent); color: var(--c-text-secondary); }
 .tile[data-on="false"] .dim-fill .content { color: var(--c-text-secondary); }
@@ -771,24 +761,7 @@ input::placeholder { color: var(--a11y-ph); opacity: 1; }
 .phbox dd code { font-family: ui-monospace, Menlo, monospace; font-size: 13px; }
 .phbox .stl { padding: 0; }
 
-/* ===== Форма ползунка света (переключатель «Форма ползунка»): p — колбаса (как было), l — тонкая линия с ручкой, b — полоска без ручки ===== */
-[data-sl=l] .dim.h,[data-sl=b] .dim.h{background:none!important;overflow:visible}
-[data-sl=l] .dim.h::before,[data-sl=b] .dim.h::before{display:none!important}
-[data-sl=l] .dim.h .dim-fill,[data-sl=b] .dim.h .dim-fill{background:none!important;overflow:visible}
-[data-sl=l] .dim.h .dim-fill .content,[data-sl=b] .dim.h .dim-fill .content,[data-sl=l] .dim.h .content>.ic,[data-sl=b] .dim.h .content>.ic{display:none}
-[data-sl=l] .dim.h::after{content:"";position:absolute;left:12px;right:12px;top:50%;height:4px;margin-top:-2px;border-radius:2px;background:color-mix(in srgb,var(--c-text-primary) 16%,transparent)}
-[data-sl=l] .dim.h .dim-fill::before{content:"";position:absolute;left:12px;right:24px;top:50%;height:4px;margin-top:-2px;border-radius:2px;background:var(--accent-on,var(--ui-primary-container))}
-[data-sl=l] .dim.h .grip{display:block!important;right:14px;left:auto;top:50%;width:20px;height:20px;margin:-10px 0 0 0;border-radius:50%;background:var(--accent-on,var(--ui-primary-container));opacity:1;box-shadow:0 0 0 3px color-mix(in srgb,var(--c-tile) 90%,#fff)}
-[data-sl=b] .dim.h::after{content:"";position:absolute;left:0;right:0;top:50%;height:10px;margin-top:-5px;border-radius:5px;background:color-mix(in srgb,var(--c-text-primary) 12%,transparent)}
-[data-sl=b] .dim.h .dim-fill::before{content:"";position:absolute;left:0;right:0;top:50%;height:10px;margin-top:-5px;border-radius:5px;background:var(--accent-on,var(--ui-primary-container))}
-[data-sl=b] .dim.h .grip{display:none!important}
 /* выключено, нет связи, нет данных: пустой кружок на левом краю (линия) или пустая дорожка (полоска) */
-[data-sl=l] .tile[data-on=false] .dim.h .grip,[data-sl=l] .dim.dis.h .grip,[data-sl=l] .dim.empty.h .grip{display:block!important;background:transparent;box-shadow:inset 0 0 0 2px var(--c-text-secondary)}
-[data-sl=l] .tile[data-on=false] .dim.h .dim-fill::before,[data-sl=l] .dim.dis.h .dim-fill::before,[data-sl=l] .dim.empty.h .dim-fill::before,[data-sl=b] .tile[data-on=false] .dim.h .dim-fill::before,[data-sl=b] .dim.dis.h .dim-fill::before,[data-sl=b] .dim.empty.h .dim-fill::before{display:none}
-[data-sl=l] .desk .dim.h>.content>.pct,[data-sl=b] .desk .dim.h>.content>.pct{display:block;right:2px;top:1px;height:18px;line-height:18px;font-size:12px;color:var(--c-text-secondary)}
-[data-sl=l] .desk .dim.h::after,[data-sl=b] .desk .dim.h::after{top:34px}
-[data-sl=l] .desk .dim.h .dim-fill::before,[data-sl=b] .desk .dim.h .dim-fill::before{top:34px}
-[data-sl=l] .desk .dim.h .grip{top:34px}
 
 /* тихая иерархия плиток (21.10): название 500 тёмное, число 600, подписи приглушены, значки одного нейтрального цвета */
 .tile .name{font-weight:500;color:var(--c-text-primary)}
@@ -1798,10 +1771,6 @@ const GROUPS = [
     opts: [['light', 'Светлая'], ['dark', 'Тёмная']] },
   { label: 'Ползунок света', get: () => state.dimmer, set: v => { state.dimmer = v; render(); },
     opts: [['old', 'Было'], ['h', 'Горизонтальный'], ['v', 'Вертикальный']] },
-  { label: 'Вид ползунка', get: () => desk.dataset.dstyle || 'a', set: v => { desk.dataset.dstyle = v; },
-    opts: [['a', '1 Без заливки'], ['b', '2 Бледная'], ['c', '3 По яркости'], ['d', '4 Светлая']] },
-  { label: 'Форма ползунка', get: () => document.documentElement.dataset.sl || 'p', set: v => { document.documentElement.dataset.sl = v; },
-    opts: [['p', 'Колбаса'], ['l', 'Линия с ручкой'], ['b', 'Полоска']] },
   { label: 'Микрофон', get: () => state.mic, set: v => { state.mic = v; $('#mic').dataset.state = v; },
     opts: [['off', 'Выкл'], ['listening', 'Слушает'], ['no-permission', 'Нет доступа']] },
   { label: 'Мастера', cls: 'grid3', get: () => state.screen === 'page' && curPage !== 'settings' ? (curPage === 'add-controller' && S.ctrl === 'manual' ? 'add-controller-m' : curPage) : '',
@@ -1845,8 +1814,7 @@ function syncControls() {
 /* ?mode=edit&theme=dark&mic=listening: открыть сразу в нужном состоянии */
 const q = new URLSearchParams(location.search);
 if (q.get('theme')) G('Тема').set(q.get('theme'));
-G('Вид ползунка').set(q.get('dstyle') || 'a');
-G('Форма ползунка').set(q.get('sl') || 'p');
+desk.dataset.dstyle = 'a';
 if (q.get('dimmer')) state.dimmer = q.get('dimmer');
 if (q.get('mic')) G('Микрофон').set(q.get('mic'));
 if (q.get('empty')) S.empty = q.get('empty') === '1';
