@@ -157,12 +157,6 @@ h1{font-size:22px;line-height:28px;font-weight:500;margin-bottom:4px}
 .tile.dim-v{flex-direction:row;gap:var(--dim-space-md)}
 /* вид заливки: a без заливки в «выкл», b бледная, c по яркости, d светлая дорожка */
 [data-ds=a] .tile[data-on=false] .dim-fill{background:transparent}[data-ds=a] .tile[data-on=false] .grip{display:none}
-[data-ds=b] .tile[data-on=false] .dim-fill{background:color-mix(in srgb,var(--dim-fill-bg) 40%,transparent)}
-[data-ds=c] .tile[data-on=true] .dim-fill{background:color-mix(in srgb,var(--dim-fill-bg) calc(var(--lvl) * 100%),var(--dim-fill-lo))}
-[data-ds=c] .tile[data-on=false] .dim-fill{background:transparent}[data-ds=c] .tile[data-on=false] .grip{display:none}
-[data-ds=d] .dim{background:color-mix(in srgb,var(--core-cream) 55%,transparent)}
-[data-theme="dark"] [data-ds=d] .dim{background:color-mix(in srgb,var(--core-paper) 16%,transparent)}
-[data-ds=d] .tile[data-on=false] .dim-fill{background:transparent}[data-ds=d] .tile[data-on=false] .grip{display:none}[data-ds=d] .grip{opacity:1;box-shadow:0 1px 3px #0004}
 .tile[data-on=false] .dim-fill{background:color-mix(in srgb,var(--ui-outline) 45%,transparent);color:var(--c-text-secondary)}
 .tile[data-on=false] .dim-fill .content{color:var(--c-text-secondary)}
 /* состояния пилюли (новое): нет связи — заливка нейтральная, ручки нет; нет данных — пустая */
@@ -410,21 +404,7 @@ h3.s3{font-size:16px;line-height:24px;font-weight:500;margin:20px 0 4px;color:va
 .step .rb svg.ic,.btn3 span svg.ic{width:28px;height:28px;stroke-width:1.5}
 
 
-/* ===== Форма ползунка света (переключатель «Форма ползунка»): p — колбаса (как было), l — тонкая линия с ручкой, b — полоска без ручки ===== */
-[data-sl=l] .dim.h,[data-sl=b] .dim.h{background:none!important;overflow:visible}
-[data-sl=l] .dim.h::before,[data-sl=b] .dim.h::before{display:none!important}
-[data-sl=l] .dim.h .dim-fill,[data-sl=b] .dim.h .dim-fill{background:none!important;overflow:visible}
-[data-sl=l] .dim.h .dim-fill .content,[data-sl=b] .dim.h .dim-fill .content,[data-sl=l] .dim.h .content>.ic,[data-sl=b] .dim.h .content>.ic{display:none}
-[data-sl=l] .dim.h>.content>.pct,[data-sl=b] .dim.h>.content>.pct{display:none}
-[data-sl=l] .dim.h::after{content:"";position:absolute;left:12px;right:12px;top:50%;height:4px;margin-top:-2px;border-radius:2px;background:color-mix(in srgb,var(--c-text-primary) 16%,transparent)}
-[data-sl=l] .dim.h .dim-fill::before{content:"";position:absolute;left:12px;right:24px;top:50%;height:4px;margin-top:-2px;border-radius:2px;background:var(--accent-on,var(--ui-primary-container))}
-[data-sl=l] .dim.h .grip{display:block!important;right:14px;left:auto;top:50%;width:20px;height:20px;margin:-10px 0 0 0;border-radius:50%;background:var(--accent-on,var(--ui-primary-container));opacity:1;box-shadow:0 0 0 3px color-mix(in srgb,var(--c-tile) 90%,#fff)}
-[data-sl=b] .dim.h::after{content:"";position:absolute;left:0;right:0;top:50%;height:10px;margin-top:-5px;border-radius:5px;background:color-mix(in srgb,var(--c-text-primary) 12%,transparent)}
-[data-sl=b] .dim.h .dim-fill::before{content:"";position:absolute;left:0;right:0;top:50%;height:10px;margin-top:-5px;border-radius:5px;background:var(--accent-on,var(--ui-primary-container))}
-[data-sl=b] .dim.h .grip{display:none!important}
 /* выключено, нет связи, нет данных: пустой кружок на левом краю (линия) или пустая дорожка (полоска) */
-[data-sl=l] .tile[data-on=false] .dim.h .grip,[data-sl=l] .dim.dis.h .grip,[data-sl=l] .dim.empty.h .grip{display:block!important;background:transparent;box-shadow:inset 0 0 0 2px var(--c-text-secondary)}
-[data-sl=l] .tile[data-on=false] .dim.h .dim-fill::before,[data-sl=l] .dim.dis.h .dim-fill::before,[data-sl=l] .dim.empty.h .dim-fill::before,[data-sl=b] .tile[data-on=false] .dim.h .dim-fill::before,[data-sl=b] .dim.dis.h .dim-fill::before,[data-sl=b] .dim.empty.h .dim-fill::before{display:none}
 
 /* ===== раунд 21.10 (8): все значки-метки в плитках одного размера — 24 px; крупнее только значок погоды и кнопки управления ===== */
 .tile>svg.ic,.tile .top>svg.ic,.tile .nrow .ni>svg.ic,.mx .tile .nrow .ni>svg.ic,.tile>svg.ic.big28,.tile>span>svg.ic.big28{width:24px!important;height:24px!important}
@@ -552,8 +532,6 @@ h3.s3{font-size:16px;line-height:24px;font-weight:500;margin:20px 0 4px;color:va
 <div class="bar bar2" id="bar">
  <div class="grp"><b>Тема</b><button data-k="th" data-v="light">Светлая</button><button data-k="th" data-v="dark">Тёмная</button></div>
  <div class="grp"><b>Состояние плиток</b><span id="stb" style="display:flex;gap:6px;flex-wrap:wrap"></span></div>
- <div class="grp"><b title="Вид выключенного ползунка у света">Выключенный ползунок</b><button data-k="ds" data-v="a">Пустая</button><button data-k="ds" data-v="b">Бледная</button><button data-k="ds" data-v="c">По уровню</button><button data-k="ds" data-v="d">С подложкой</button></div>
- <div class="grp"><b title="Форма ползунка яркости у света, уровня и штор">Форма ползунка</b><button data-k="sl" data-v="p">Колбаса</button><button data-k="sl" data-v="l">Линия с ручкой</button><button data-k="sl" data-v="b">Полоска</button></div>
 </div>
 <div id="screens" class="screens"></div>
 <h2 class="hd1" style="font-size:20px;line-height:26px;margin:32px 0 4px">Примеры экранов</h2>
