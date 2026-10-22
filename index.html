@@ -779,8 +779,6 @@ input::placeholder { color: var(--a11y-ph); opacity: 1; }
 </style>
 <style id="map-css">
 /* Карта экранов и бейдж статуса: вспомогательные части прототипа, не часть продукта */
-body[data-view="map"] .stage { display: none; }
-body[data-view="map"] #view-map { display: block; }
 .stbar { display: flex; align-items: center; gap: 8px; min-height: 32px; margin-bottom: 8px; font-size: 12px; line-height: 16px; color: var(--core-ink-2); }
 .stbar .t { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--core-ink); font-weight: 500; }
 .stbar .tg { flex: none; height: 24px; padding: 0 10px; border-radius: 12px; border: 1px solid var(--core-ink-3); font-size: 12px; background: var(--core-cream); color: var(--core-ink); }
@@ -788,21 +786,20 @@ body[data-view="map"] #view-map { display: block; }
 .sp { display: inline-flex; align-items: center; gap: 6px; flex: none; height: 22px; padding: 0 10px; border-radius: 11px; font-size: 12px; font-weight: 500; white-space: nowrap; background: color-mix(in srgb, currentColor 14%, transparent); }
 .sp::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
 .sp.done { color: var(--core-green-800); } .sp.proto { color: var(--core-ink-2); } .sp.stub { color: var(--temp-hi); } .sp.chg { color: var(--core-blue-700); } .sp.none { color: var(--core-ink-3); }
-.mapv { max-width: 1000px; margin: 0 auto; padding: 24px; color: var(--core-ink); }
-.mapv h1 { font-size: 24px; line-height: 30px; font-weight: 600; margin: 0 0 4px; }
-.mapv .sub { color: var(--core-ink-2); font-size: 14px; line-height: 20px; }
-.mapv .flt { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 4px; }
-.mapv .flt button { height: 32px; padding: 0 14px; border-radius: 16px; border: 1px solid var(--core-ink-3); background: var(--core-cream); font-size: 13px; }
-.mapv .flt button[aria-pressed="true"] { background: var(--core-ink); color: var(--core-cream); border-color: var(--core-ink); }
-.mapv h2 { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--core-ink-2); margin: 24px 0 8px; font-weight: 600; }
-.mapv .rows { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 8px; }
-.mapv .row { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; text-align: left; background: var(--core-cream); border: 1px solid var(--core-ink-10); border-radius: 12px; padding: 12px 14px; }
-.mapv .row:hover, .mapv .row:focus-visible { border-color: var(--core-green-600); outline: none; }
-.mapv .row .n { font-size: 15px; font-weight: 600; line-height: 20px; }
-.mapv .row .v { font-size: 12px; line-height: 16px; color: var(--core-ink-2); }
-.mapv .row .ps { display: flex; flex-wrap: wrap; gap: 6px; }
 [data-theme="dark"] .sp.done { color: var(--core-green-300); } [data-theme="dark"] .sp.stub { color: #F0A664; } [data-theme="dark"] .sp.chg { color: var(--core-blue-300); }
 @media (min-width: 1000px) and (min-height: 560px) { .controls { padding-top: 40px; } }
+
+.controls .seg button[data-st]::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; box-sizing: border-box; }
+.controls .seg button[data-st="done"]::before { background: var(--core-green-600); }
+.controls .seg button[data-st="proto"]::before { border: 1.5px solid var(--core-ink-3); }
+.controls .seg button[data-st="stub"]::before { background: var(--temp-hi); }
+.controls .seg button[data-st="stub"]:not([aria-pressed="true"]) { background: color-mix(in srgb, var(--temp-hi) 12%, var(--core-cream)); }
+.stlegend { padding-left: 14px; display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; line-height: 16px; color: var(--core-ink-2); }
+.stlegend b { margin-left: -14px; display: block; width: 100%; font-weight: 600; color: var(--core-ink); }
+.stlegend span { display: inline-flex; align-items: center; }
+.stlegend .lg { text-decoration: none; display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; box-sizing: border-box; }
+.stlegend .lg { flex: none; } .stlegend .lg[data-st="done"] { background: #2F7D5B; border: 1.5px solid #2F7D5B; } .stlegend .lg[data-st="proto"] { border: 1.5px solid var(--core-ink-3); } .stlegend .lg[data-st="stub"] { background: var(--temp-hi); }
+.desk > .drawer { max-width: calc(100% - 24px); }
 </style>
 <script src="screens-registry.js"></script>
 </head>
@@ -860,7 +857,6 @@ body[data-view="map"] #view-map { display: block; }
 <header class="pgbar">
   <span class="brand">Seven assistant</span>
   <div role="tablist" aria-label="Страницы">
-    <button role="tab" id="tab-map" aria-controls="view-map" aria-selected="false" tabindex="-1" data-view="map">Карта экранов</button>
     <button role="tab" id="tab-proto" aria-controls="view-proto" aria-selected="true" data-view="proto">Прототип · Стол</button>
     <button role="tab" id="tab-matrix" aria-controls="view-matrix" aria-selected="false" tabindex="-1" data-view="matrix">Матрица плиток</button>
     <button role="tab" id="tab-screens" aria-controls="view-screens" aria-selected="false" tabindex="-1" data-view="screens">Примеры столов</button>
@@ -971,8 +967,6 @@ body[data-view="map"] #view-map { display: block; }
   </div>
 </div>
 
-<div class="matrix-view" id="view-map" role="tabpanel" aria-labelledby="tab-map"></div>
-
 <div class="matrix-view" id="view-matrix" role="tabpanel" aria-labelledby="tab-matrix">
   <iframe id="matrixFrame" title="Матрица плиток" data-src="tile-matrix.html"></iframe>
 </div>
@@ -1077,7 +1071,19 @@ function render() {
   const m = metrics();
   grid.replaceChildren();
   const busy = new Set();
-  tiles.forEach(t => {
+  /* на 320 dp авторская раскладка 480 dp не помещается: плитки пересобираются подряд, без потерь порядка */
+  let list = tiles;
+  if (tiles.some(t => t.col + t.w > m.columns || t.row + t.h > m.rows)) {
+    const used = new Set(); list = [];
+    tiles.forEach(t => {
+      const w = Math.min(t.w, m.columns), h = Math.min(t.h, m.rows);
+      for (let r = 0; r + h <= m.rows; r++) for (let c = 0; c + w <= m.columns; c++) {
+        let ok = true; for (let y = r; y < r + h && ok; y++) for (let x = c; x < c + w; x++) if (used.has(y + ':' + x)) { ok = false; break; }
+        if (ok) { for (let y = r; y < r + h; y++) for (let x = c; x < c + w; x++) used.add(y + ':' + x); list.push({ ...t, col: c, row: r, w, h }); return; }
+      }
+    });
+  }
+  list.forEach(t => {
     for (let r = t.row; r < t.row + t.h; r++) for (let c = t.col; c < t.col + t.w; c++) busy.add(r + ':' + c);
     const el = tileEl(t, m);
     grid.appendChild(el);
@@ -1792,7 +1798,9 @@ $('#shade').addEventListener('click', e => {
   setQuiet(!S.quiet); drawShade();
 });
 $('.scrim').addEventListener('click', () => { if (state.screen === 'shade') setScreen('desk'); });
+let panelDev = 'p10';
 const GROUPS = [
+  { label: 'Устройство', get: () => panelDev, set: v => setPanelDev(v), opts: [['p10', 'Панель 480×480 × 1,0 (480 dp)'], ['p15', 'Панель 480×480 × 1,5 (320 dp)']] },
   { label: 'Экран', cls: 'grid3', get: () => state.screen, set: v => setScreen(v),
     opts: [['desk', 'Стол'], ['drawer', 'Меню'], ['apps', 'Приложения'], ['kbd', 'Поиск + клавиатура'], ['shade', 'Панель'], ['sheet', 'Лист плитки'], ['tile', 'Плитка'], ['custom', 'Новая плитка']] },
   { label: 'Настройки', cls: 'grid3', get: () => state.screen === 'page' ? (curPage === 'settings' ? S.tab : curPage) : '', set: v => goPage(v, false),
@@ -1811,7 +1819,7 @@ const GROUPS = [
   { label: 'Мой дом', cls: 'grid3', get: () => state.screen === 'page' ? (curPage === 'cc' ? S.cct + (S.cct === 'conn' && S.fab ? '-fab' : '') : curPage) : '',
     set: v => { if (v === 'dlg') { S.cct = 'loc'; S.dlg = true; S.rName = 'Гостиная'; goPage('cc', false); return; } S.dlg = false; if (v === 'cc-scen' ) S.steps = []; if (v === 'conn-fab') { S.cct = 'conn'; S.fab = true; goPage('cc', false); } else { S.fab = false; goPage(['loc','conn','dev','wid'].includes(v) ? 'cc-' + v : v, false); } },
     opts: [['loc', 'Локации'], ['conn', 'Подключения'], ['conn-fab', 'Подключения + меню'], ['dev', 'Список устройств'], ['wid', 'Виджеты'], ['cc-integ', 'Интеграция'], ['cc-broker', 'Брокер'], ['dlg', 'Диалог «Комната»'], ['cc-vdevs', 'Виртуальные устройства'], ['cc-vdev', 'Виртуальное устройство'], ['cc-devedit', 'Правка устройства'], ['cc-scen', 'Сценарий: шаги'], ['cc-pick', 'Сценарий: что включить']] },
-  { label: 'Заглушки (нет скриншотов)', cls: 'grid3', get: () => state.screen === 'page' && (curPage in PH) ? curPage : '', set: v => { if (v === 'ph-se-action') S.steps = []; goPage(v, false); },
+  { label: 'Не проработаны (заглушки)', cls: 'grid3', get: () => state.screen === 'page' && (curPage in PH) ? curPage : '', set: v => { if (v === 'ph-se-action') S.steps = []; goPage(v, false); },
     opts: [['ph-gallery', 'Галерея'], ['ph-move', 'Переместить'], ['ph-more', 'Меню ⋮'], ['w3', 'Мастер 3'], ['w4', 'Мастер 4'], ['w5', 'Мастер 5'], ['w6', 'Мастер 6'], ['ph-se-action', 'Сценарий: действие'], ['ph-se-order', 'Сценарий: порядок'], ['ph-se-name', 'Сценарий: название'], ['ph-se-preview', 'Сценарий: просмотр'], ['ph-groups', 'Группы комнат'], ['ph-vd-suggest', 'Собрать из найденного'], ['ph-mqtt-tail', 'MQTT: хвост']] },
   { label: 'Пустые состояния',   get: () => S.empty ? 'empty' : 'full', set: v => { S.empty = v === 'empty'; if (state.screen === 'page') drawPage(false); },
     opts: [['full', 'Есть данные'], ['empty', 'Пусто']] },
@@ -1819,6 +1827,7 @@ const GROUPS = [
 ];
 const G = label => GROUPS.find(g => g.label === label);
 const controls = $('#controls');
+controls.insertAdjacentHTML('afterbegin', '<div class="stlegend"><b>Что проработано (точка у кнопки)</b><span><u class="lg" data-st="done"></u>Проработан</span><span><u class="lg" data-st="proto"></u>В прототипе</span><span><u class="lg" data-st="stub"></u>Не проработан, заглушка</span></div>');
 GROUPS.forEach(g => {
   const wrap = document.createElement('div'); wrap.className = 'group';
   wrap.innerHTML = `<div class="lbl">${g.label}</div><div class="seg"></div>`;
@@ -1895,7 +1904,6 @@ const REG = window.SEVEN_SCREENS || { items: [], version: '', date: '' };
 const REG_BY_ID = Object.fromEntries(REG.items.map(i => [i.id, i]));
 const ST_LABEL = { done: 'Проработан', proto: 'В прототипе', stub: 'Не проработан' };
 let stShow = true; try { stShow = localStorage.getItem('seven-status') !== 'off'; } catch (e) {}
-let mapFilter = 'all';
 function currentScreenId() {
   const v = state.screen;
   if (v === 'desk') return state.edit ? 'desk-edit' : 'desk';
@@ -1916,40 +1924,26 @@ $('#stbar').addEventListener('click', e => {
   stShow = !stShow; try { localStorage.setItem('seven-status', stShow ? 'on' : 'off'); } catch (err) {}
   updateStatus();
 });
-/* открыть экран из карты */
-const OPEN = {
-  'desk': () => setScreen('desk'),
-  'desk-edit': () => { setScreen('desk'); setEdit(true); },
-  'sheet': () => setScreen('sheet'),
-  'tile-form': () => setScreen('tile'),
-  'drawer': () => setScreen('drawer'),
-  'apps': () => setScreen('apps'),
-  'shade': () => setScreen('shade'),
-};
-function openScreen(id) {
-  if (state.edit && !['desk-edit', 'sheet', 'tile-form'].includes(id)) setEdit(false);
-  if (OPEN[id]) { if (state.screen === 'page') setScreen('desk'); OPEN[id](); }
-  else goPage(id.startsWith('settings-') ? id.slice(9) : id, false);
-  updateStatus();
+/* размер панели: 480 dp (×1,0) или 320 dp (×1,5), как в «Матрице плиток» */
+function setPanelDev(v) {
+  panelDev = v;
+  document.documentElement.style.setProperty('--dim-panel', v === 'p15' ? '320px' : '480px');
+  render(); if (state.screen === 'page') drawPage(true);
+  updateDots && updateDots();
+  syncControls();
 }
-function renderMap() {
-  const root = $('#view-map'); if (!root) return;
-  const items = REG.items, cnt = k => items.filter(i => i.status === k).length, chg = items.filter(i => i.changed).length;
-  const flt = [['all', 'Все', items.length], ['done', 'Проработан', cnt('done')], ['proto', 'В прототипе', cnt('proto')], ['stub', 'Не проработан', cnt('stub')]];
-  if (chg) flt.push(['chg', 'Изменён', chg]);
-  const shown = items.filter(i => mapFilter === 'all' || (mapFilter === 'chg' ? i.changed : i.status === mapFilter));
-  const groups = [...new Set(items.map(i => i.group))];
-  root.innerHTML = `<div class="mapv"><h1>Карта экранов</h1>
-    <div class="sub">Версия передачи ${REG.version}, ${REG.date}. Нажмите на экран, чтобы открыть его в прототипе. ${REG.note || ''}</div>
-    <div class="flt" role="group" aria-label="Фильтр по статусу">${flt.map(([k, n, c]) => `<button type="button" data-f="${k}" aria-pressed="${mapFilter === k}">${n} ${c}</button>`).join('')}</div>
-    ${groups.map(g => { const gi = shown.filter(i => i.group === g); return gi.length ? `<h2>${g}</h2><div class="rows">${gi.map(i => `<button class="row" type="button" data-open="${i.id}"><span class="n">${i.title}</span><span class="ps">${spill(i)}</span><span class="v">${i.via || ''}</span></button>`).join('')}</div>` : ''; }).join('')}
-  </div>`;
-}
-$('#view-map').addEventListener('click', e => {
-  const f = e.target.closest('[data-f]'); if (f) { mapFilter = f.dataset.f; renderMap(); return; }
-  const o = e.target.closest('[data-open]'); if (!o) return;
-  openScreen(o.dataset.open); location.hash = '#proto';
+/* точки статуса на кнопках списка экранов справа */
+const BTN_ID = { 'Экран': { kbd: 'apps', tile: 'tile-form', custom: 'tile-form' }, 'Мастера': { 'add-controller-m': 'add-controller' },
+  'Мой дом': { loc: 'cc-loc', conn: 'cc-conn', 'conn-fab': 'cc-conn', dev: 'cc-dev', wid: 'cc-wid', dlg: 'cc-loc' } };
+GROUPS.forEach(g => {
+  if (!['Экран', 'Настройки', 'Мастера', 'Мой дом', 'Не проработаны (заглушки)'].includes(g.label)) return;
+  g.opts.forEach(([val], i) => {
+    let id = (BTN_ID[g.label] || {})[val] || val;
+    if (g.label === 'Настройки' && ['voice', 'device', 'conn', 'security', 'data'].includes(val)) id = 'settings-' + val;
+    const it = REG_BY_ID[id]; if (it) g.seg.children[i].dataset.st = it.status;
+  });
 });
+{ const d = new URLSearchParams(location.search).get('dev'); if (d === 'p15') setPanelDev('p15'); }
 /* бейдж обновляется при любой навигации */
 drawPage = (orig => function (...a) { const r = orig.apply(this, a); updateStatus(); return r; })(drawPage);
 setEdit = (orig => function (...a) { const r = orig.apply(this, a); updateStatus(); return r; })(setEdit);
@@ -1963,10 +1957,9 @@ updateStatus();
   const tabs = [...document.querySelectorAll('.pgbar [role=tab]')];
   const frames = { matrix: document.getElementById('matrixFrame'), screens: document.getElementById('screensFrame') };
   const sendTheme = f => { try { f.contentWindow.postMessage({ seven: 'theme', theme: state.theme }, '*'); } catch (e) {} };
-  const fromHash = () => location.hash === '#map' ? 'map' : location.hash === '#matrix' ? 'matrix' : location.hash === '#screens' ? 'screens' : 'proto';
+  const fromHash = () => location.hash === '#matrix' ? 'matrix' : location.hash === '#screens' ? 'screens' : 'proto';
   function show(v) {
     document.body.dataset.view = v;
-    if (v === 'map') renderMap();
     tabs.forEach(t => { const on = t.dataset.view === v; t.setAttribute('aria-selected', String(on)); t.tabIndex = on ? 0 : -1; });
     const frame = frames[v];
     if (frame) {
