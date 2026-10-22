@@ -777,6 +777,34 @@ input::placeholder { color: var(--a11y-ph); opacity: 1; }
 /* точки страниц — в верхней полосе по центру */
 .dots-pager{top:0;bottom:auto;height:var(--dim-top-strip)}
 </style>
+<style id="map-css">
+/* Карта экранов и бейдж статуса: вспомогательные части прототипа, не часть продукта */
+body[data-view="map"] .stage { display: none; }
+body[data-view="map"] #view-map { display: block; }
+.stbar { display: flex; align-items: center; gap: 8px; min-height: 32px; margin-bottom: 8px; font-size: 12px; line-height: 16px; color: var(--core-ink-2); }
+.stbar .t { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--core-ink); font-weight: 500; }
+.stbar .tg { flex: none; height: 24px; padding: 0 10px; border-radius: 12px; border: 1px solid var(--core-ink-3); font-size: 12px; background: var(--core-cream); color: var(--core-ink); }
+.stbar .tg[aria-pressed="false"] { background: transparent; }
+.sp { display: inline-flex; align-items: center; gap: 6px; flex: none; height: 22px; padding: 0 10px; border-radius: 11px; font-size: 12px; font-weight: 500; white-space: nowrap; background: color-mix(in srgb, currentColor 14%, transparent); }
+.sp::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.sp.done { color: var(--core-green-800); } .sp.proto { color: var(--core-ink-2); } .sp.stub { color: var(--temp-hi); } .sp.chg { color: var(--core-blue-700); } .sp.none { color: var(--core-ink-3); }
+.mapv { max-width: 1000px; margin: 0 auto; padding: 24px; color: var(--core-ink); }
+.mapv h1 { font-size: 24px; line-height: 30px; font-weight: 600; margin: 0 0 4px; }
+.mapv .sub { color: var(--core-ink-2); font-size: 14px; line-height: 20px; }
+.mapv .flt { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 4px; }
+.mapv .flt button { height: 32px; padding: 0 14px; border-radius: 16px; border: 1px solid var(--core-ink-3); background: var(--core-cream); font-size: 13px; }
+.mapv .flt button[aria-pressed="true"] { background: var(--core-ink); color: var(--core-cream); border-color: var(--core-ink); }
+.mapv h2 { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--core-ink-2); margin: 24px 0 8px; font-weight: 600; }
+.mapv .rows { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 8px; }
+.mapv .row { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; text-align: left; background: var(--core-cream); border: 1px solid var(--core-ink-10); border-radius: 12px; padding: 12px 14px; }
+.mapv .row:hover, .mapv .row:focus-visible { border-color: var(--core-green-600); outline: none; }
+.mapv .row .n { font-size: 15px; font-weight: 600; line-height: 20px; }
+.mapv .row .v { font-size: 12px; line-height: 16px; color: var(--core-ink-2); }
+.mapv .row .ps { display: flex; flex-wrap: wrap; gap: 6px; }
+[data-theme="dark"] .sp.done { color: var(--core-green-300); } [data-theme="dark"] .sp.stub { color: #F0A664; } [data-theme="dark"] .sp.chg { color: var(--core-blue-300); }
+@media (min-width: 1000px) and (min-height: 560px) { .controls { padding-top: 40px; } }
+</style>
+<script src="screens-registry.js"></script>
 </head>
 <body>
 
@@ -832,14 +860,16 @@ input::placeholder { color: var(--a11y-ph); opacity: 1; }
 <header class="pgbar">
   <span class="brand">Seven assistant</span>
   <div role="tablist" aria-label="Страницы">
+    <button role="tab" id="tab-map" aria-controls="view-map" aria-selected="false" tabindex="-1" data-view="map">Карта экранов</button>
     <button role="tab" id="tab-proto" aria-controls="view-proto" aria-selected="true" data-view="proto">Прототип · Стол</button>
     <button role="tab" id="tab-matrix" aria-controls="view-matrix" aria-selected="false" tabindex="-1" data-view="matrix">Матрица плиток</button>
-    <button role="tab" id="tab-screens" aria-controls="view-screens" aria-selected="false" tabindex="-1" data-view="screens">Экраны</button>
+    <button role="tab" id="tab-screens" aria-controls="view-screens" aria-selected="false" tabindex="-1" data-view="screens">Примеры столов</button>
   </div>
 </header>
 
 <div class="stage" id="view-proto" role="tabpanel" aria-labelledby="tab-proto">
   <div class="frame">
+    <div class="stbar" id="stbar"></div>
     <div class="desk" id="desk">
       <!-- DeskTopStrip -->
       <div class="strip">
@@ -941,12 +971,14 @@ input::placeholder { color: var(--a11y-ph); opacity: 1; }
   </div>
 </div>
 
+<div class="matrix-view" id="view-map" role="tabpanel" aria-labelledby="tab-map"></div>
+
 <div class="matrix-view" id="view-matrix" role="tabpanel" aria-labelledby="tab-matrix">
   <iframe id="matrixFrame" title="Матрица плиток" data-src="tile-matrix.html"></iframe>
 </div>
 
 <div class="matrix-view" id="view-screens" role="tabpanel" aria-labelledby="tab-screens">
-  <iframe id="screensFrame" title="Экраны" data-src="screens.html"></iframe>
+  <iframe id="screensFrame" title="Примеры столов" data-src="screens.html"></iframe>
 </div>
 
 <script>
@@ -1857,6 +1889,73 @@ render();
     }
   });
 })();
+/* ───────── Реестр экранов: вкладка «Карта экранов» и бейдж статуса над рамкой ─────────
+   Статусы берутся из screens-registry.js (там же версия передачи и пометки «изменён в версии N») ── */
+const REG = window.SEVEN_SCREENS || { items: [], version: '', date: '' };
+const REG_BY_ID = Object.fromEntries(REG.items.map(i => [i.id, i]));
+const ST_LABEL = { done: 'Проработан', proto: 'В прототипе', stub: 'Не проработан' };
+let stShow = true; try { stShow = localStorage.getItem('seven-status') !== 'off'; } catch (e) {}
+let mapFilter = 'all';
+function currentScreenId() {
+  const v = state.screen;
+  if (v === 'desk') return state.edit ? 'desk-edit' : 'desk';
+  if (v === 'kbd') return 'apps';
+  if (v === 'tile' || v === 'custom') return 'tile-form';
+  if (v === 'page') return curPage === 'settings' ? 'settings-' + S.tab : curPage === 'cc' ? 'cc-' + S.cct : curPage;
+  return v;
+}
+const spill = it => `<span class="sp ${it.status}">${ST_LABEL[it.status]}</span>` + (it.changed ? `<span class="sp chg">Изменён в версии ${it.changed}</span>` : '');
+function updateStatus() {
+  const bar = $('#stbar'); if (!bar) return;
+  const it = REG_BY_ID[currentScreenId()];
+  const tg = `<button class="tg" type="button" aria-pressed="${stShow}" data-st="toggle">Статус экрана</button>`;
+  bar.innerHTML = stShow ? (it ? spill(it) + `<span class="t">${it.title}</span>` : `<span class="sp none">Нет в реестре</span><span class="t"></span>`) + tg : `<span class="t"></span>` + tg;
+}
+$('#stbar').addEventListener('click', e => {
+  if (!e.target.closest('[data-st="toggle"]')) return;
+  stShow = !stShow; try { localStorage.setItem('seven-status', stShow ? 'on' : 'off'); } catch (err) {}
+  updateStatus();
+});
+/* открыть экран из карты */
+const OPEN = {
+  'desk': () => setScreen('desk'),
+  'desk-edit': () => { setScreen('desk'); setEdit(true); },
+  'sheet': () => setScreen('sheet'),
+  'tile-form': () => setScreen('tile'),
+  'drawer': () => setScreen('drawer'),
+  'apps': () => setScreen('apps'),
+  'shade': () => setScreen('shade'),
+};
+function openScreen(id) {
+  if (state.edit && !['desk-edit', 'sheet', 'tile-form'].includes(id)) setEdit(false);
+  if (OPEN[id]) { if (state.screen === 'page') setScreen('desk'); OPEN[id](); }
+  else goPage(id.startsWith('settings-') ? id.slice(9) : id, false);
+  updateStatus();
+}
+function renderMap() {
+  const root = $('#view-map'); if (!root) return;
+  const items = REG.items, cnt = k => items.filter(i => i.status === k).length, chg = items.filter(i => i.changed).length;
+  const flt = [['all', 'Все', items.length], ['done', 'Проработан', cnt('done')], ['proto', 'В прототипе', cnt('proto')], ['stub', 'Не проработан', cnt('stub')]];
+  if (chg) flt.push(['chg', 'Изменён', chg]);
+  const shown = items.filter(i => mapFilter === 'all' || (mapFilter === 'chg' ? i.changed : i.status === mapFilter));
+  const groups = [...new Set(items.map(i => i.group))];
+  root.innerHTML = `<div class="mapv"><h1>Карта экранов</h1>
+    <div class="sub">Версия передачи ${REG.version}, ${REG.date}. Нажмите на экран, чтобы открыть его в прототипе. ${REG.note || ''}</div>
+    <div class="flt" role="group" aria-label="Фильтр по статусу">${flt.map(([k, n, c]) => `<button type="button" data-f="${k}" aria-pressed="${mapFilter === k}">${n} ${c}</button>`).join('')}</div>
+    ${groups.map(g => { const gi = shown.filter(i => i.group === g); return gi.length ? `<h2>${g}</h2><div class="rows">${gi.map(i => `<button class="row" type="button" data-open="${i.id}"><span class="n">${i.title}</span><span class="ps">${spill(i)}</span><span class="v">${i.via || ''}</span></button>`).join('')}</div>` : ''; }).join('')}
+  </div>`;
+}
+$('#view-map').addEventListener('click', e => {
+  const f = e.target.closest('[data-f]'); if (f) { mapFilter = f.dataset.f; renderMap(); return; }
+  const o = e.target.closest('[data-open]'); if (!o) return;
+  openScreen(o.dataset.open); location.hash = '#proto';
+});
+/* бейдж обновляется при любой навигации */
+drawPage = (orig => function (...a) { const r = orig.apply(this, a); updateStatus(); return r; })(drawPage);
+setEdit = (orig => function (...a) { const r = orig.apply(this, a); updateStatus(); return r; })(setEdit);
+setScreen = (orig => function (...a) { const r = orig.apply(this, a); updateStatus(); return r; })(setScreen);
+updateStatus();
+
 /* ───────── Страницы: «Прототип» ↔ «Матрица плиток» ↔ «Экраны» ─────────
    Адрес: index.html (или #proto) — прототип, index.html#matrix — матрица, index.html#screens — экраны. Кнопка «Назад» в браузере возвращает на прошлую страницу.
    Матрица (tile-matrix.html) и экраны (screens.html) открываются во встроенных окнах, чтобы стили страниц не пересекались; каждое грузится при первом открытии. */
@@ -1864,9 +1963,10 @@ render();
   const tabs = [...document.querySelectorAll('.pgbar [role=tab]')];
   const frames = { matrix: document.getElementById('matrixFrame'), screens: document.getElementById('screensFrame') };
   const sendTheme = f => { try { f.contentWindow.postMessage({ seven: 'theme', theme: state.theme }, '*'); } catch (e) {} };
-  const fromHash = () => location.hash === '#matrix' ? 'matrix' : location.hash === '#screens' ? 'screens' : 'proto';
+  const fromHash = () => location.hash === '#map' ? 'map' : location.hash === '#matrix' ? 'matrix' : location.hash === '#screens' ? 'screens' : 'proto';
   function show(v) {
     document.body.dataset.view = v;
+    if (v === 'map') renderMap();
     tabs.forEach(t => { const on = t.dataset.view === v; t.setAttribute('aria-selected', String(on)); t.tabIndex = on ? 0 : -1; });
     const frame = frames[v];
     if (frame) {
