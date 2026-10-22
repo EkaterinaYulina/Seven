@@ -394,6 +394,9 @@ svg.ic.dots { stroke-width: 2.6; }
 .page .dimflash { position: absolute; inset: 0; z-index: 70; background: #000; opacity: 0; pointer-events: none; transition: opacity .3s ease; }
 .page .flush .gh { padding-left: var(--dim-gutter); padding-right: var(--dim-gutter); }   /* заголовки и подсказка — по краю блоков, а не по линии текста */
 .page .flush .gd { margin-left: var(--dim-gutter); margin-right: var(--dim-gutter); }
+.chk { display: flex; align-items: center; gap: var(--dim-space-md); padding: var(--dim-gutter); font-size: var(--font-name); color: var(--ui-on-surface); }
+.spin { flex: none; width: 20px; height: 20px; border-radius: 50%; border: 3px solid color-mix(in srgb, var(--ui-primary-container) 25%, transparent); border-top-color: var(--ui-primary-container); animation: spin .9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 .page .grp.bk { margin-top: var(--dim-space-md); }
 .page .grp.bk:first-child { margin-top: var(--dim-gutter); }
 .page .grp + .grp.sep { margin-top: var(--dim-space-md); }   /* ссылка-переход отдельно от списка выбора */
@@ -870,7 +873,7 @@ window.SEVEN_SCREENS = {
     { id: 'cc-conn',         group: 'Мой дом', title: 'Подключения', status: 'done', via: 'Мой дом → Подключения' },
     { id: 'cc-integ',        group: 'Мой дом', title: 'Интеграция', status: 'done', via: 'Подключения → строка интеграции' },
     { id: 'cc-broker',       group: 'Мой дом', title: 'Брокер', status: 'proto', via: 'Подключения → строка брокера' },
-    { id: 'add-check',      group: 'Мастера', title: 'Проверка брокера', status: 'proto', via: '«Добавить интеграцию» → проверка → «Найденные системы»' },
+    { id: 'add-check',      group: 'Мастера', title: 'Проверка брокера', status: 'proto', via: '«Добавить интеграцию» или «Добавить устройства» → проверка → «Добавление оборудования»' },
     { id: 'add-systems',    group: 'Мастера', title: 'Найденные системы', status: 'proto', via: 'Подключения → «Добавить интеграцию»' },
     { id: 'cc-ha',           group: 'Мой дом', title: 'Сервер Home Assistant', status: 'proto', via: 'Подключения → «Добавить» → Home Assistant (API)' },
     { id: 'cc-dev',          group: 'Мой дом', title: 'Устройства', status: 'done', via: 'Мой дом → Устройства' },
@@ -1664,13 +1667,13 @@ Object.assign(PAGES, {
     `<div class="sec" style="border:0;padding-bottom:0"><p class="sd" style="color:var(--ui-on-surface)">Выберите, чем управляет шаг. Виртуальное устройство — сразу несколько свойств комнаты.</p></div><label class="search2" style="margin-top:0">${ICON('search')}<input type="text" placeholder="Поиск: название или комната" autocomplete="off"></label>` +
     `<div class="gh">Гостиная</div>` + [['Свет', 'Виртуальное устройство — свойств: 3 · спросит подтверждение'], ['Бра', 'спросит подтверждение'], ['Громкость', '']].map(([n, d]) => `<button class="pick" data-go="pickstep:${n}"><b>${n}</b><span>${d || '&nbsp;'}</span></button>`).join('') }),
   'cc-integ': () => { const b = S.brokers[S.eb], x = b.ints[S.ei]; return ({ back: true, title: 'Интеграция',
-    body: `<div class="fgap">${tfm('iName', 'Название', S.iName)}${roField('Протокол', protName(x.pr))}${roField('Брокер', b.n)}${tfm('iPfx', 'Префикс топиков', S.iPfx, 'Обычно пусто. Нужно, если контроллер публикует топики с префиксом, для «site1/devices/…» укажите «site1»')}</div>` + grp('', arow('Добавить устройства', 'add-devices'))  ,
+    body: `<div class="fgap">${tfm('iName', 'Название', S.iName)}${roField('Протокол', protName(x.pr))}${roField('Брокер', b.n)}${tfm('iPfx', 'Префикс топиков', S.iPfx, 'Обычно пусто. Нужно, если контроллер публикует топики с префиксом, для «site1/devices/…» укажите «site1»')}</div>` + grp('', arow('Добавить устройства', 'adds:' + S.eb))  ,
     foot: () => `<button class="btn danger" data-go="del:integ">Удалить</button><button class="btn primary" data-go="save:integ">Сохранить</button>` }); },
   'cc-broker': () => ({ back: true, title: 'Брокер', body: `<div class="fgap">${tfm('bName', 'Название', S.bName, 'Если оставить пустым, название будет «адрес:порт»')}${tfm('bAddr', 'Адрес (имя или IP)', S.bAddr)}${tfm('bPort', 'Порт', S.bPort)}</div><div style="margin-top:var(--dim-space-md)">` + grp('', srow('Защищённое соединение (TLS)', '', 'btls', S.brokers[S.eb].tls)) + `</div>` + `<div class="sec"><h3 class="sh sm">Интеграции</h3>` + S.brokers[S.eb].ints.map((x, j) => card('', x.n, protName(x.pr) + (x.pfx ? ' · префикс ' + x.pfx : ' · без префикса'), 'ik' + j, x.on, 'int:' + S.eb + ':' + j)).join('') + `</div>`,
     foot: () => `<button class="btn secondary" style="margin-right:auto" data-go="adds:${S.eb}">${ICON('plus')} Добавить интеграцию</button><button class="btn danger" data-go="del:broker">Удалить</button><button class="btn primary" ${S.bAddr.trim() ? '' : 'disabled'} data-go="save:broker">Сохранить</button>` }),
   'cc-ha': () => ({ back: true, title: 'Home Assistant', ctx: 'Сервер', foot: () => `<button class="btn primary" ${S.iName.trim() && S.iAddr.trim() ? '' : 'disabled'} data-go="save:ha">Сохранить</button>`,
     body: `<div class="fgap">${tfm('iName', 'Название', S.iName)}${tfm('iAddr', 'Адрес (имя, IP или ссылка)', S.iAddr, 'Например, 192.168.1.10:8123')}${tfm('iToken', 'Токен доступа', S.iToken, 'Создайте его в профиле Home Assistant')}</div>` }),
-  'add-check': () => ({ back: true, title: 'Добавление оборудования', ctx: 'Подключение', body: `<div class="empty"><i class="eic">${ICON('signal')}</i><b>Проверка брокера ${S.brokers[S.eb].a}:${S.brokers[S.eb].p}…</b></div>` }),
+  'add-check': () => ({ back: true, title: 'Добавление оборудования', ctx: 'Подключение', body: `<div class="chk"><span class="spin" aria-hidden="true"></span><span>Проверка брокера ${S.brokers[S.eb].a}:${S.brokers[S.eb].p}…</span></div>` }),
   'add-systems': () => ({ back: true, title: 'Добавление оборудования', ctx: 'Найденные системы',
     body: `<div class="sec"><p class="sd" style="color:var(--ui-on-surface)">Брокер уже добавлен («${S.brokers[S.eb].a}:${S.brokers[S.eb].p}»): новые системы будут добавлены к нему</p>` +
     grp('', crow('f1', S.dev.f1, 'Wirenboard', 'Устройств: 3<br>Например: WB-MR6C тест, WB-MSW v4 тест, Панель Seven<br>Уже добавлено как «Wirenboard»', 'data-chk2') + `<button class="gr act" data-go="add-devices"><span class="tx">Добавить устройства</span></button>`) +
@@ -1780,7 +1783,7 @@ $('#page').addEventListener('click', e => {
   if (g === 'fab') { S.fab = !S.fab; return drawPage(); }
   if (g.startsWith('brk:')) { S.eb = +g.slice(4); const b = S.brokers[S.eb]; S.bName = b.n; S.bAddr = b.a; S.bPort = b.p; return goPage('cc-broker'); }
   if (g.startsWith('int:')) { const [i, k] = g.slice(4).split(':').map(Number); S.eb = i; S.ei = k; const x = S.brokers[i].ints[k]; S.iName = x.n; S.iPfx = x.pfx || ''; return goPage('cc-integ'); }
-  if (g.startsWith('adds:')) { S.eb = +g.slice(5); S.pfx = ''; S.protOpen = false; S.dev.f1 = S.dev.f2 = false; goPage('add-check'); setTimeout(() => { if (curPage === 'add-check') { curPage = 'add-systems'; drawPage(false); } }, 1400); return; }
+  if (g.startsWith('adds:')) { S.eb = +g.slice(5); S.pfx = ''; S.protOpen = false; S.dev.f1 = S.dev.f2 = false; goPage('add-check'); setTimeout(() => { if (curPage === 'add-check') { curPage = 'add-systems'; drawPage(false); } }, 2500); return; }
   if (g === 'protopen') { S.protOpen = !S.protOpen; return drawPage(); }
   if (g.startsWith('ha:')) { const h = S.has[+g.slice(3)]; S.iName = h.n; S.iAddr = h.a; return goPage('cc-ha'); }
   if (g.startsWith('del:')) { const b = S.brokers[S.eb]; if (g === 'del:integ') b.ints.splice(S.ei, 1); else S.brokers.splice(S.eb, 1); const p = pageStack.pop(); curPage = p || 'cc'; drawPage(false); return note('Удалено'); }
