@@ -843,13 +843,12 @@ window.SEVEN_SCREENS = {
   items: [
     { id: 'desk',            group: 'Стол и меню', title: 'Стол', status: 'done', via: 'Стартовый экран' },
     { id: 'desk-edit',       group: 'Стол и меню', title: 'Режим правки стола', status: 'done', via: 'Меню → «Править экраны»' },
-    { id: 'sheet',           group: 'Стол и меню', title: 'Меню виджета', status: 'done', via: 'Правка → тап по плитке' },
-    { id: 'tile-form',       group: 'Стол и меню', title: 'Форма плитки', status: 'proto', via: 'Меню виджета → «Настроить»' },
+    { id: 'tile-form',       group: 'Стол и меню', title: 'Плитка', status: 'proto', via: 'Правка → тап по плитке или долгое нажатие на плитке' },
     { id: 'drawer',          group: 'Стол и меню', title: 'Боковое меню', status: 'done', via: 'Свайп от левого края или ☰' },
     { id: 'apps',            group: 'Стол и меню', title: 'Все приложения', status: 'done', via: 'Меню → «Все приложения»' },
     { id: 'shade',           group: 'Стол и меню', title: 'Шторка «Панель»', status: 'proto', via: 'Меню → «Панель»' },
-    { id: 'ph-gallery',      group: 'Стол и меню', title: 'Галерея «Добавить на экран»', status: 'stub', via: 'Правка → «+ Виджет»', code: 'DeskGallery' },
-    { id: 'ph-move',         group: 'Стол и меню', title: 'Перенос плитки', status: 'stub', via: 'Правка → тап по плитке → «Переместить»' },
+    { id: 'ph-gallery',      group: 'Стол и меню', title: 'Добавить плитку', status: 'proto', via: 'Правка → «+» в пустой клетке или «+ Виджет»', code: 'DeskGallery' },
+    { id: 'ph-move',         group: 'Стол и меню', title: 'Перенос плитки', status: 'proto', via: 'Правка → потянуть плитку, или «Плитка» → «Переместить»' },
     { id: 'ph-more',         group: 'Стол и меню', title: 'Меню «⋮» панели правки', status: 'stub', via: 'Правка → «⋮»' },
 
     { id: 'settings-voice',    group: 'Настройки', title: 'Голос', status: 'done', via: 'Настройки → Голос' },
@@ -900,6 +899,147 @@ window.SEVEN_SCREENS = {
 };
 
 </script>
+<style id="tileflow">
+/* ─────────────────────────────────────────────────────────────
+   Флоу плитки (ALL-67): экран «Плитка», галерея, перенос, перетаскивание, цвет по значению.
+   Всё на токенах выше; hex только для цветов зон, которые берутся из ядра палитры.
+   ───────────────────────────────────────────────────────────── */
+:root { --tone-okc: var(--core-green-600); --tone-badc: var(--core-red-700); }
+[data-theme="dark"] { --tone-okc: var(--core-green-300); --tone-badc: var(--core-red-300); }
+
+/* зоны цвета: Норма (зелёный), Средне (оранжевый), Внимание (красный). Норма без заливки плитки и с обычным числом: цветное только слово */
+.tile[data-tone="ok"] { --tone-c: var(--tone-okc); }
+.tile[data-tone="mid"] { --tone-c: var(--temp-hi); }
+.tile[data-tone="bad"] { --tone-c: var(--tone-badc); }
+:root .tile[data-tone="ok"], [data-theme="dark"] .tile[data-tone="ok"] { background: color-mix(in srgb, var(--c-tile) calc(var(--tile-glass) * 100%), transparent); }
+.tile[data-tone="ok"] .value, .tile[data-tone="ok"] .bigv { color: var(--c-text-primary); }
+.tile .bigv { font-size: 32px; line-height: 40px; font-weight: 500; }
+.tile[data-tone] .bigv { color: var(--tone-c); }
+
+/* размеры значений: 1×1 в столбик, 2×1 с одной строкой дописки, 2×2 списком */
+.tile.value-tile[data-w="1"] { flex-direction: column; align-items: flex-start; justify-content: center; gap: var(--dim-gap); }
+.tile.value-tile[data-w="1"] .text { width: 100%; }
+.tile .sec.ext { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tile.value-tile.tall { flex-direction: column; align-items: stretch; justify-content: flex-start; gap: var(--dim-space-sm); }
+.tile .vhead { display: flex; align-items: center; gap: var(--dim-space-sm); }
+.tile .vhead .name { flex: 1; min-width: 0; }
+.tile .vhead .tone-word { margin-left: 0; display: inline; }
+.tile .vr { display: flex; justify-content: space-between; gap: var(--dim-space-sm); font-size: var(--font-name); line-height: 20px; }
+.tile .vr .n { color: var(--c-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tile .vr .v { font-weight: 500; white-space: nowrap; }
+.tile .vr.ind .v { color: var(--tone-c); }
+.tile[data-tone="ok"] .vr.ind .v { color: var(--c-text-primary); }
+.tile.empty { border: 1.5px dashed var(--ui-outline); background: transparent; align-items: center; justify-content: center; }
+.tile.empty .empty-pv { font-size: var(--font-name); color: var(--c-text-secondary); margin: auto; }
+
+/* правка: тянуть, выбирать, зажимать */
+.desk.edit .tile { touch-action: none; cursor: grab; }
+.tile.drag { z-index: 30; box-shadow: 0 8px 20px #0004; transition: none; cursor: grabbing; opacity: .96; }
+.tile.sel { box-shadow: 0 0 0 2px var(--core-blue-700); }
+.tile.pressing { transform: scale(.97); transition: transform .38s ease-out; }
+.dropbox { position: absolute; z-index: 2; pointer-events: none; border-radius: var(--dim-radius-tile); border: 2px dashed var(--ui-primary-container); background: color-mix(in srgb, var(--ui-primary-container) 14%, transparent); }
+.dropbox.no { border-color: var(--ui-error); background: color-mix(in srgb, var(--ui-error) 10%, transparent); }
+
+/* перенос по кнопке «Переместить» */
+.desk.moving .tile { opacity: .6; pointer-events: none; }
+.desk.moving .tile.lifted { opacity: 1; box-shadow: 0 6px 16px #0003; }
+.target { position: absolute; border-radius: var(--dim-radius-tile); border: 2px dashed var(--ui-primary-container); background: color-mix(in srgb, var(--ui-primary-container) 12%, transparent); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: var(--ui-on-surface); }
+.mvbar { display: none; flex: 1; align-items: center; gap: var(--dim-space-sm); font-size: var(--font-name); line-height: var(--lh-name); font-weight: 500; }
+.mvbar span { flex: 1; min-width: 0; }
+.desk.moving .bar > :not(.mvbar) { display: none; }
+.desk.moving .bar .mvbar { display: flex; }
+.desk.moving .bar .mvbar .btn { flex: none; }
+
+/* строка внизу: текст и до двух кнопок */
+.snackbar .sa { display: flex; }
+.snackbar span#snackTx { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── Экран «Плитка» ── */
+.form.tscr { background: var(--sheet-bg); display: none; flex-direction: column; }
+.desk[data-screen="tile"] > .form.tscr, .desk[data-screen="custom"] > .form.tscr { display: flex; }
+.tscr .appbar { height: 56px; flex: none; display: flex; align-items: center; gap: var(--dim-space-sm); padding: 0 var(--dim-space-sm); border: 0; background: none; }
+.tscr .appbar .ttl { flex: 1; min-width: 0; margin: 0; font-size: 22px; line-height: 28px; font-weight: 500; }
+.tscr .appbar .btn.text { font-weight: 600; }
+.tscr .pvstage { flex: none; position: relative; height: 128px; display: flex; align-items: center; justify-content: center; padding-right: 76px; background: var(--desk-bg); }
+.tscr .pvbox { flex: none; pointer-events: none; }
+.tscr .szcol2 { position: absolute; right: 12px; top: 0; bottom: 0; display: flex; flex-direction: column; justify-content: center; gap: var(--dim-gap); }
+.tscr .szb2 { width: 56px; height: 40px; border-radius: var(--dim-radius-chip); border: 2px solid transparent; background: color-mix(in srgb, var(--c-tile) 70%, transparent); color: var(--ui-on-surface); font-size: 12px; font-weight: 500; }
+.tscr .szb2[aria-pressed="true"] { border-color: var(--ui-primary-container); background: var(--c-tile); font-weight: 600; }
+.tscr .szb2.no { opacity: .4; }
+.tscr .scroll { flex: 1; min-height: 0; overflow-y: auto; padding-bottom: calc(var(--dim-bar) + var(--dim-space-sm)); }
+.tscr .scroll.states, .tscr #pkList { padding-bottom: var(--dim-space-md); }
+.tscr .sec-h { padding: var(--dim-space-md) calc(var(--dim-gutter) + 8px) var(--dim-gap); }
+.tscr .padx { padding: 0 var(--dim-gutter); }
+.tscr .btn.wide { width: 100%; }
+.tscr .vrow, .tscr .zrow, .tscr .zcard, .tscr .pkrow { margin: 0 var(--dim-gutter) var(--dim-gap); border-radius: var(--dim-radius-card); background: color-mix(in srgb, var(--ui-on-surface) 6%, transparent); box-shadow: none; }
+.tscr .vrow { padding: var(--dim-space-sm) var(--dim-space-sm) var(--dim-space-sm) var(--dim-space-md); }
+.desk > .form.tscr .dd { box-shadow: none; background: color-mix(in srgb, var(--ui-on-surface) 6%, transparent); border: 0; }
+.tscr .zrow { width: calc(100% - 2 * var(--dim-gutter)); min-height: 48px; display: flex; align-items: center; gap: var(--dim-space-md); padding: 0 var(--dim-space-md) 0 var(--dim-space-md); text-align: left; color: var(--ui-on-surface); }
+.tscr .zrow .zk { font-size: 12px; color: var(--ui-on-surface-variant); width: 84px; flex: none; }
+.tscr .zrow .zv { flex: 1; font-size: var(--font-name); font-weight: 500; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tscr .zrow .zt { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.tscr .zrow .zt b { font-size: var(--font-name); line-height: 18px; font-weight: 500; }
+.tscr .zrow .zt em { font-style: normal; font-size: 12px; line-height: 14px; color: var(--ui-on-surface-variant); }
+.tscr .zrow .zh { font-size: var(--font-name); color: var(--ui-on-surface); max-width: 130px; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tscr .zrow.now { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--ui-primary-container) 55%, transparent); }
+.tscr .zrow.static { min-height: 52px; }
+.tscr .zd { flex: none; width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+.tscr .zd.ok { background: var(--tone-okc); } .tscr .zd.mid { background: var(--temp-hi); } .tscr .zd.bad { background: var(--tone-badc); }
+.tscr .zd.on { background: var(--tone-on); } .tscr .zd.off { border: 1.5px solid var(--c-text-secondary); }
+.tscr .gd2 { margin: var(--dim-space-md) calc(var(--dim-gutter) + 8px); font-size: 12px; line-height: 17px; color: var(--ui-on-surface-variant); }
+.tscr .tbar { position: absolute; left: 0; right: 0; bottom: 0; height: var(--dim-bar); padding: var(--dim-space-sm) var(--dim-gutter); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--dim-space-sm); background: var(--sheet-bg); box-shadow: inset 0 1px 0 var(--glass-line); }
+.tscr .tbar .btn { min-width: 0; padding: 0 4px; background: color-mix(in srgb, var(--ui-on-surface) 6%, transparent); }
+.tscr .tbar .btn.danger { color: var(--ui-error); }
+.tscr .tbar .btn .ic { margin-left: 0; }
+
+/* цвет по значению */
+.tscr .zcard { padding: var(--dim-space-md) var(--dim-gutter); display: flex; flex-direction: column; gap: var(--dim-space-sm); }
+.tscr .zcard.now { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--ui-primary-container) 55%, transparent); }
+.tscr .zh2 { display: flex; align-items: center; gap: var(--dim-space-sm); font-size: var(--font-name); }
+.tscr .zh2 .here { font-size: 12px; font-weight: 500; color: var(--ui-on-surface-variant); }
+.tscr .zin { display: grid; grid-template-columns: 96px 96px minmax(0, 1fr); gap: var(--dim-space-sm); align-items: end; }
+.tscr .zin label { display: flex; flex-direction: column; gap: 2px; font-size: 12px; color: var(--ui-on-surface-variant); }
+.tscr .zin input { height: 40px; width: 100%; border: 0; border-radius: var(--dim-radius-chip); background: var(--c-tile); box-shadow: inset 0 0 0 1px var(--glass-line); color: var(--ui-on-surface); font: inherit; font-size: var(--font-name); padding: 0 10px; }
+.tscr .zin input:focus { outline: 0; box-shadow: inset 0 0 0 2px var(--ui-primary-container); }
+.tscr .gh2 { padding: var(--dim-space-md) calc(var(--dim-gutter) + 8px) var(--dim-gap); display: flex; flex-direction: column; }
+.tscr .gh2 b { font-size: var(--font-name); line-height: 20px; font-weight: 500; }
+.tscr .gh2 span { font-size: 12px; line-height: 16px; color: var(--ui-on-surface-variant); }
+.tscr .chiprow2 { display: flex; flex-wrap: wrap; gap: var(--dim-space-sm); padding: 0 var(--dim-gutter) var(--dim-space-sm); }
+.tscr .chiprow2 .chip { height: 40px; border-radius: var(--dim-radius-chip); border: 0; background: color-mix(in srgb, var(--ui-on-surface) 6%, transparent); }
+.tscr .chiprow2 .chip[aria-pressed="true"] { background: var(--ui-primary-container); color: var(--ui-on-primary-container); }
+
+/* что показывать */
+.tscr .search3 { display: flex; align-items: center; gap: var(--dim-space-sm); margin: 0 var(--dim-gutter) var(--dim-space-sm); height: 48px; padding: 0 var(--dim-space-md); border-radius: var(--dim-radius-card); background: color-mix(in srgb, var(--ui-on-surface) 6%, transparent); flex: none; }
+.tscr .search3 input { flex: 1; min-width: 0; height: 100%; border: 0; background: none; color: var(--ui-on-surface); font: inherit; font-size: var(--font-name); outline: 0; }
+.tscr .pkrow { width: calc(100% - 2 * var(--dim-gutter)); min-height: 52px; display: flex; align-items: center; gap: var(--dim-space-md); padding: 0 var(--dim-space-md); text-align: left; color: var(--ui-on-surface); }
+.tscr .pkrow:disabled { opacity: .45; cursor: default; }
+.tscr .pkrow .tx { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.tscr .pkrow .tx b { font-size: var(--font-name); line-height: 18px; font-weight: 500; }
+.tscr .pkrow .tx span { font-size: 12px; line-height: 14px; color: var(--ui-on-surface-variant); }
+.tscr .pkrow .pv2 { font-size: var(--font-name); color: var(--ui-on-surface-variant); }
+
+/* галерея «Добавить плитку» */
+.gal { display: flex; flex-direction: column; gap: var(--dim-space-sm); padding: 0 var(--dim-gutter) var(--dim-space-md); }
+.galrow { display: flex; align-items: center; gap: var(--dim-space-md); min-height: 56px; padding: 0 var(--dim-gutter); border-radius: var(--dim-radius-card); background: color-mix(in srgb, var(--page-text) 6%, transparent); text-align: left; color: var(--page-text); }
+.galrow .tx { flex: 1; display: flex; flex-direction: column; }
+.galrow .tx b { font-size: var(--font-name); line-height: 18px; font-weight: 500; }
+.galrow .tx span { font-size: 12px; line-height: 16px; color: var(--page-t2); }
+.gal .gh2 { display: flex; flex-direction: column; padding: var(--dim-gap) var(--dim-gap) 0; }
+.gal .gh2 b { font-size: var(--font-name); line-height: 20px; font-weight: 500; }
+.gal .gh2 span { font-size: 12px; line-height: 16px; color: var(--page-t2); }
+.gal2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--dim-space-sm); }
+.gstage { height: 98px; border-radius: var(--dim-radius-card); background: var(--desk-bg); display: flex; align-items: center; justify-content: center; padding: 0; overflow: hidden; }
+.gstage .gpv { display: block; flex: none; pointer-events: none; }
+.gstage:active { filter: brightness(.96); }
+
+/* шевроны в строках ведут вправо (иконка chev по умолчанию смотрит вниз) */
+.tscr .zrow > svg:last-child, .galrow > svg:last-child, .tscr .dd > svg:last-child { transform: rotate(-90deg); }
+
+.tile.value-tile[data-w="1"] .name { font-size: 12px; line-height: 16px; }
+
+/* узкая панель 320 dp: подписи кнопок без значков, чтобы не налезали */
+.desk.narrow .tscr .tbar .btn svg { display: none; }
+</style>
 </head>
 <body>
 
@@ -1008,32 +1148,8 @@ window.SEVEN_SCREENS = {
         </div>
       </section>
 
-      <!-- Лист плитки -->
-      <section class="sheet" id="sheet" aria-label="Плитка">
-        <div class="h"><button class="icon-btn" id="shBack" aria-label="Назад"><svg class="ic"><use href="#i-back"/></svg></button><div class="t" id="shTitle"></div><button class="icon-btn x" id="shClose" aria-label="Закрыть"><svg class="ic"><use href="#i-close"/></svg></button></div>
-        <div class="big" id="shValue"></div>
-        <div class="acts4">
-          <button class="act" data-sh="settings"><svg class="ic"><use href="#i-sliders"/></svg>Настроить</button>
-          <button class="act" data-sh="size" id="chSize" aria-pressed="false"><svg class="ic"><use href="#i-size"/></svg>Размер</button>
-          <button class="act" data-sh="move"><svg class="ic"><use href="#i-move"/></svg>Переместить</button>
-          <button class="act danger" data-sh="remove"><svg class="ic"><use href="#i-trash"/></svg>Убрать</button>
-        </div>
-        <div class="sizes" id="shSizes"></div>
-      </section>
-
-      <!-- Форма плитки -->
-      <section class="form" id="form" aria-label="Плитка">
-        <div class="appbar"><div class="ttl" id="fmTitle"></div><button class="btn text" id="fmDone">Готово</button><button class="icon-btn" id="fmBack" aria-label="Закрыть"><svg class="ic"><use href="#i-close"/></svg></button></div>
-        <div class="scroll">
-          <div class="top"><div class="pv" id="fmPv"></div><div class="szcol"><div class="lbl">Размер</div><div id="fmSizes" style="display:flex;flex-direction:column;gap:8px"></div></div></div>
-          <div class="sec-h" style="padding-bottom:4px">Показывать</div>
-          <div class="padx" style="font-size:12px;line-height:17px;color:var(--c-text-secondary);margin-bottom:8px">Добавьте значения датчиков и состояния устройств</div>
-          <div id="fmRows"></div>
-          <div class="padx"><button class="btn secondary" id="fmAdd"><svg class="ic" style="width:20px;height:20px"><use href="#i-plus"/></svg>Добавить значение</button></div>
-          <div class="sec-h">По нажатию</div>
-          <div class="padx"><button class="dd"><span>Авто: переключить или подробности</span><svg class="ic"><use href="#i-chev"/></svg></button></div>
-        </div>
-      </section>
+      <!-- Экран «Плитка» (лист плитки и форма объединены): содержимое рисует drawForm() -->
+      <section class="form tscr" id="form" aria-label="Плитка"></section>
 
       <section class="page" id="page" aria-label="Настройки"></section>
       <div class="kbd gk" id="gkbd" aria-hidden="true">
@@ -1052,17 +1168,18 @@ window.SEVEN_SCREENS = {
         <span class="spacer"></span>
         <button class="btn primary" id="btnDone">Готово</button>
         <button class="icon-btn" id="btnMore" aria-label="Ещё"><svg class="ic dots"><use href="#i-more"/></svg></button>
+        <div class="mvbar"><span id="mvTx">Нажмите на свободное место для плитки</span><button class="btn tonal" id="mvCancel">Отмена</button></div>
       </div>
 
       <!-- Snackbar -->
-      <div class="snackbar" id="snackbar"><span>Плитка убрана</span><button id="snackUndo">Вернуть</button></div>
+      <div class="snackbar" id="snackbar"><span id="snackTx">Плитка убрана</span><span class="sa"><button id="snackSet" hidden>Настроить</button><button id="snackUndo">Вернуть</button></span></div>
     </div>
     <div class="note" id="note"></div>
   </div>
 
   <div class="controls" id="controls">
     <h1>Прототип · Стол</h1>
-    <div class="hint">Долгое нажатие на плитку или пустое место открывает правку. × убирает плитку, «Вернуть» возвращает. «Готово» выходит из правки. Слайдер тянется в обычном режиме.</div>
+    <div class="hint">Долгое нажатие на плитку открывает экран «Плитка», на пустом месте включает правку. В правке нажмите плитку, чтобы настроить, или потяните, чтобы переместить. «+» в пустой клетке открывает галерею. «Вернуть» отменяет последние 20 действий. «Готово» выходит из правки. Слайдер тянется в обычном режиме.</div>
   </div>
 </div>
 
@@ -1076,29 +1193,52 @@ window.SEVEN_SCREENS = {
 
 <script>
 /* ───────── Состояние прототипа ───────── */
-const state = { edit: false, theme: 'light', dimmer: 'h', mic: 'off', showHit: false, screen: 'desk' };
+const state = { edit: false, theme: 'light', dimmer: 'h', mic: 'off', showHit: false, screen: 'desk', move: null };
+/* ───────── Каталог значений и готовых плиток ─────────
+   Каждое значение плитки (vals) имеет свои зоны цвета: Норма, Средне, Внимание, у каждой диапазон «от — до» и текстовая подсказка.
+   Пороги и подсказки черновые, их согласуем с Серёгой. Граница «от» входит в зону, «до» не входит. Вне всех зон плитка остаётся без цвета. */
+const z3 = (a, b, c) => [{ k: 'ok', from: a[0], to: a[1], hint: a[2] }, { k: 'mid', from: b[0], to: b[1], hint: b[2] }, { k: 'bad', from: c[0], to: c[1], hint: c[2] }];
+const CAT = {
+  temp:  { name: 'Температура',  icon: 'thermometer', value: '26,1 °C', unit: '°C',  zones: z3([18, 25, 'Комфортно'], [25, 30, 'Жарко'], [30, null, 'Очень жарко']) },
+  hum:   { name: 'Влажность',    icon: 'drop',        value: '35,4 %',  unit: '%',   zones: z3([30, 60, 'Норма'], [60, 75, 'Влажно'], [75, null, 'Очень влажно']) },
+  co2:   { name: 'Уровень CO₂',  icon: 'signal',      value: '464 ppm', unit: 'ppm', zones: z3([0, 800, 'Свежо'], [800, 1200, 'Душно'], [1200, null, 'Проветрите']) },
+  press: { name: 'Давление',     icon: 'sliders',     value: '742 мм',  unit: 'мм',  zones: z3([730, 770, 'Норма'], [770, 790, 'Высокое'], [790, null, 'Очень высокое']) },
+  lux:   { name: 'Освещённость', icon: 'sun',         value: '320 лк',  unit: 'лк',  zones: z3([100, 500, 'Светло'], [500, 1000, 'Ярко'], [1000, null, 'Слепит']) },
+};
+const ROOMS_V = [['Гостиная', [['temp', '26,1 °C'], ['hum', '35,4 %'], ['co2', '464 ppm'], ['lux', '320 лк']]], ['Спальня', [['temp', '22,8 °C'], ['hum', '41 %'], ['press', '742 мм']]]];
+const mkVal = (cid, o = {}) => { const room = o.room || 'Гостиная'; return { vid: cid + '@' + room, cid, name: o.name || CAT[cid].name, icon: CAT[cid].icon, value: o.value || CAT[cid].value, room }; };
+const vt = (id, col, row, w, h, vals) => ({ id, type: 'value', col, row, w, h, vals, ind: vals[0].vid, zones: Object.fromEntries(vals.map(v => [v.vid, structuredClone(CAT[v.cid].zones)])) });
+const numOf = s => parseFloat(String(s).replace(',', '.'));
+function zoneOf(t) {
+  if (t.type !== 'value' || !t.vals || !t.vals.length) return null;
+  const v = t.vals.find(x => x.vid === t.ind) || t.vals[0], list = t.zones && t.zones[v.vid], n = numOf(v.value);
+  if (!list || isNaN(n)) return null;
+  return list.find(z => (z.from == null || n >= z.from) && (z.to == null || n < z.to)) || null;
+}
 const INITIAL = [
   { id: 'clock',       type: 'placeholder', col: 0, row: 0, w: 2, h: 1, icon: 'clock', title: 'Часы', subtitle: 'скоро' },
   { id: 'light-dimmer',type: 'switch',      col: 2, row: 0, w: 2, h: 2, icon: 'bulb',  name: 'Свет', on: false, level: 0.87 },
   { id: 'light',       type: 'switch',      col: 4, row: 0, w: 1, h: 1, icon: 'bulb',  name: 'Свет', on: false },
-  { id: 'temperature', type: 'value',       col: 0, row: 1, w: 2, h: 1, icon: 'thermometer', name: 'Температура', value: '26,2 °C' },
-  { id: 'co2',         type: 'value',       col: 0, row: 2, w: 2, h: 1, icon: 'signal',      name: 'Уровень CO₂', value: '464 ppm' },
-  { id: 'humidity',    type: 'value',       col: 2, row: 2, w: 2, h: 1, icon: 'drop',        name: 'Влажность',   value: '35,4 % RH' },
+  vt('temperature', 0, 1, 2, 1, [mkVal('temp', { value: '26,2 °C' }), mkVal('hum', { value: '35,4 %' })]),
+  vt('co2',         0, 2, 2, 1, [mkVal('co2', { value: '464 ppm' })]),
+  vt('humidity',    2, 2, 2, 1, [mkVal('hum', { value: '35,4 % RH' })]),
 ];
 const EXTRA = [
   [ { id: 'p2-chandelier', type: 'switch', col: 0, row: 0, w: 1, h: 1, icon: 'bulb', name: 'Люстра', on: true },
     { id: 'p2-sconce', type: 'switch', col: 1, row: 0, w: 1, h: 1, icon: 'bulb', name: 'Бра', on: false },
     { id: 'p2-floor', type: 'switch', col: 2, row: 0, w: 2, h: 2, icon: 'bulb', name: 'Торшер', on: true, level: 0.4 },
     { id: 'p2-kitchen', type: 'switch', col: 0, row: 1, w: 2, h: 1, icon: 'bulb', name: 'Кухня', on: false } ],
-  [ { id: 'p3-t', type: 'value', col: 0, row: 0, w: 2, h: 1, icon: 'thermometer', name: 'Спальня', value: '22,8 °C' },
-    { id: 'p3-h', type: 'value', col: 2, row: 0, w: 2, h: 1, icon: 'drop', name: 'Влажность', value: '41 % RH' },
-    { id: 'p3-b', type: 'value', col: 0, row: 1, w: 2, h: 1, icon: 'thermometer', name: 'Балкон', value: '14,5 °C' } ],
+  [ vt('p3-t', 0, 0, 2, 1, [mkVal('temp', { name: 'Спальня', value: '22,8 °C', room: 'Спальня' })]),
+    vt('p3-h', 2, 0, 2, 1, [mkVal('hum', { value: '41 % RH', room: 'Спальня' })]),
+    vt('p3-b', 0, 1, 2, 1, [mkVal('temp', { name: 'Балкон', value: '14,5 °C', room: 'Балкон' })]) ],
   [] ];
 const PAGE_COUNT = 4; let cur = 0;
 const makePages = () => [structuredClone(INITIAL), ...structuredClone(EXTRA)];
 let pagesData = makePages();
 let tiles = pagesData[0];
-let undoStack = [];           // {tile, index}
+let undoStack = [];           // до 20 действий: убрать, добавить, перенести, изменить
+let shown = [];               // плитки так, как они сейчас нарисованы (на узкой панели раскладка пересобирается)
+function pushUndo(op) { undoStack.push(op); if (undoStack.length > 20) undoStack.shift(); }
 
 const $ = s => document.querySelector(s);
 const desk = $('#desk'), grid = $('#grid');
@@ -1121,20 +1261,21 @@ function place(el, m, col, row, w, h) {
 }
 
 /* ───────── Плитки (ValueTile / PlaceholderTile / SwitchTile) ───────── */
-/* уровень температуры по числу в значении: ниже lo — «холодно», выше hi — «жарко», между — норма (без акцента) */
-const TEMP_LEVELS = { lo: 18, hi: 25 };
-const TONE_WORDS = { lo: 'холодно', hi: 'жарко' };
-function tempTone(t) {
-  if (t.type !== 'value' || t.icon !== 'thermometer') return null;
-  const n = parseFloat(String(t.value).replace(',', '.'));
-  if (isNaN(n)) return null;
-  return n < TEMP_LEVELS.lo ? 'lo' : n > TEMP_LEVELS.hi ? 'hi' : null;
-}
-function tileInner(t) {
-  if (t.type === 'value') {
-    const tone = tempTone(t);
-    return `${ICON(t.icon)}<div class="text"><div class="name">${t.name}</div><div class="value">${t.value}${tone ? `<span class="tone-word">${TONE_WORDS[tone]}</span>` : ''}</div></div>`;
+const esc1 = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+/* значение плитки: цвет и слово берутся из зоны показателя. 1×1 — только главное значение; 2×1 — главное и ещё одно; 2×2 — все до четырёх */
+function valueInner(t) {
+  const z = zoneOf(t), v0 = t.vals[0], word = z && z.hint ? `<span class="tone-word">${esc1(z.hint)}</span>` : '';
+  if (t.w >= 2 && t.h >= 2) {
+    const head = `<div class="vhead">${ICON(v0.icon)}<span class="name">${esc1(v0.name)}</span>${word}</div>`;
+    if (t.vals.length === 1) return head + `<div class="bigv">${esc1(v0.value)}</div>`;
+    return head + t.vals.slice(0, 4).map(v => `<div class="vr${v.vid === t.ind ? ' ind' : ''}"><span class="n">${esc1(v.name)}</span><span class="v">${esc1(v.value)}</span></div>`).join('');
   }
+  const v1 = t.w >= 2 && t.vals[1] ? `<div class="sec ext">${esc1(t.vals[1].name)} ${esc1(t.vals[1].value)}</div>` : '';
+  return `${ICON(v0.icon)}<div class="text"><div class="name">${esc1(v0.name)}</div><div class="value">${esc1(v0.value)}${word}</div>${v1}</div>`;
+}
+const tileCls = t => `tile ${t.type}-tile${t.type === 'value' && t.w >= 2 && t.h >= 2 ? ' tall' : ''}`;
+function tileInner(t) {
+  if (t.type === 'value') return valueInner(t);
   if (t.type === 'placeholder')
     return `${ICON(t.icon)}<div class="sec">${t.title}</div><div class="sec">${t.subtitle}</div>`;
   return switchInner(t);
@@ -1152,11 +1293,11 @@ function switchInner(t) {
 }
 function tileEl(t, m) {
   const el = document.createElement('div');
-  el.className = `tile ${t.type}-tile`;
+  el.className = tileCls(t) + (t.id === selId ? ' sel' : '') + (state.move && state.move.id === t.id ? ' lifted' : '');
   el.dataset.on = String(!!t.on);
   el.dataset.id = t.id;
   el.dataset.w = String(t.w);
-  const tone = tempTone(t); if (tone) el.dataset.tone = tone;
+  const zn = zoneOf(t); if (zn) el.dataset.tone = zn.k;
   el.innerHTML = tileInner(t) + (state.edit
     ? `<div class="film"></div><button class="badge-hit" data-act="remove" aria-label="Убрать плитку"><span class="badge">${ICON('minus')}</span></button>`
     : '');
@@ -1181,6 +1322,9 @@ function render() {
       }
     });
   }
+  shown = list;
+  desk.classList.toggle('moving', !!state.move);
+  if (state.move) { const mt = tiles.find(x => x.id === state.move.id); $('#mvTx').textContent = 'Куда поставить «' + (mt ? tileName(mt) : '') + '»'; }
   list.forEach(t => {
     for (let r = t.row; r < t.row + t.h; r++) for (let c = t.col; c < t.col + t.w; c++) busy.add(r + ':' + c);
     const el = tileEl(t, m);
@@ -1190,11 +1334,21 @@ function render() {
     const dm = el.querySelector('.dim');
     if (dm) bindDim(dm, t, el);
   });
-  if (state.edit) {
+  if (state.move) {
+    const mt = tiles.find(x => x.id === state.move.id);
+    if (mt) for (let r = 0; r < m.rows; r++) for (let c = 0; c < m.columns; c++) {
+      if (!fitsAt(mt.id, c, r, mt.w, mt.h) || (c === mt.col && r === mt.row)) continue;
+      const s = document.createElement('button');
+      s.className = 'target'; s.dataset.act = 'target'; s.dataset.col = c; s.dataset.row = r; s.setAttribute('aria-label', 'Поставить сюда');
+      s.textContent = 'Сюда';
+      place(s, m, c, r, 1, 1);
+      grid.appendChild(s);
+    }
+  } else if (state.edit) {
     for (let r = 0; r < m.rows; r++) for (let c = 0; c < m.columns; c++) {
       if (busy.has(r + ':' + c)) continue;
       const s = document.createElement('button');
-      s.className = 'slot'; s.dataset.act = 'slot'; s.setAttribute('aria-label', 'Добавить плитку');
+      s.className = 'slot'; s.dataset.act = 'slot'; s.dataset.col = c; s.dataset.row = r; s.setAttribute('aria-label', 'Добавить плитку');
       s.innerHTML = ICON('plus');
       place(s, m, c, r, 1, 1);
       grid.appendChild(s);
@@ -1252,31 +1406,39 @@ function bindSlider(slider, t) {
 function setEdit(on) {
   if (state.edit === on) return;
   state.edit = on;
-  if (!on) { undoStack = []; hideSnack(); }
+  if (!on) { undoStack = []; hideSnack(); state.move = null; }
   render();
-  note(on ? 'Правка: плитки не нажимаются, на каждой красный ×, пустые клетки показывают «+».' : '');
+  note(on ? 'Правка: нажмите плитку, чтобы настроить, или потяните, чтобы переместить. «+» в пустой клетке добавляет плитку.' : '');
 }
 
-/* долгое нажатие по плитке или пустому месту открывает правку */
-let lpTimer = null, lpStart = null, lpFired = false;
+/* долгое нажатие: на плитке — экран «Плитка», на пустом месте — режим правки */
+let lpTimer = null, lpStart = null, lpFired = false, lpPress = null, lpEl = null;
+function lpCancel() { clearTimeout(lpTimer); clearTimeout(lpPress); lpTimer = lpPress = null; if (lpEl) { lpEl.classList.remove('pressing'); lpEl = null; } }
 grid.addEventListener('pointerdown', e => {
   lpFired = false;                       // флаг живёт только до следующего касания
-  if (state.edit) return;
+  if (state.edit || state.move) return;
   lpStart = { x: e.clientX, y: e.clientY };
-  lpTimer = setTimeout(() => { lpFired = true; setEdit(true); }, 500);
+  const te = e.target.closest('.tile');
+  lpPress = te ? setTimeout(() => { lpEl = te; te.classList.add('pressing'); }, 120) : null;
+  lpTimer = setTimeout(() => {
+    lpFired = true; const id = te && te.dataset.id; lpCancel();
+    if (id) openTile(id, false); else setEdit(true);
+  }, 500);
 });
 grid.addEventListener('pointermove', e => {
-  if (lpTimer && Math.hypot(e.clientX - lpStart.x, e.clientY - lpStart.y) > 8) { clearTimeout(lpTimer); lpTimer = null; }
+  if (lpTimer && Math.hypot(e.clientX - lpStart.x, e.clientY - lpStart.y) > 8) lpCancel();
 });
-['pointerup', 'pointercancel', 'pointerleave'].forEach(ev => grid.addEventListener(ev, () => { clearTimeout(lpTimer); lpTimer = null; }));
+['pointerup', 'pointercancel', 'pointerleave'].forEach(ev => grid.addEventListener(ev, lpCancel));
 
 grid.addEventListener('click', e => {
   if (lpFired) { lpFired = false; return; }
+  if (dragMoved) { dragMoved = false; return; }
   const act = e.target.closest('[data-act]');
+  if (state.move) { if (act && act.dataset.act === 'target') placeMove(+act.dataset.col, +act.dataset.row); return; }
   if (state.edit) {
-    if (!act) { const te = e.target.closest('.tile'); if (te) openSheet(te.dataset.id); return; }
+    if (!act) { const te = e.target.closest('.tile'); if (te) openTile(te.dataset.id, true); return; }
     if (act.dataset.act === 'remove') removeTile(act.closest('.tile').dataset.id);
-    if (act.dataset.act === 'slot') goPage('ph-gallery', false);
+    if (act.dataset.act === 'slot') { addTarget = { col: +act.dataset.col, row: +act.dataset.row }; goPage('ph-gallery', false); }
     return;
   }
   const el = e.target.closest('.tile');
@@ -1285,27 +1447,36 @@ grid.addEventListener('click', e => {
   if (t && t.type === 'switch') { t.on = !t.on; el.dataset.on = String(t.on); el.querySelector('[data-role="state"]').textContent = t.on ? 'Включен' : 'Выключен'; if (el._paint) el._paint(); }
 });
 
-/* удаление и возврат */
-let snackTimer = null;
+/* удаление, возврат, строка внизу */
+let snackTimer = null, snackSetId = null;
 function removeTile(id) {
   const index = tiles.findIndex(t => t.id === id);
   if (index < 0) return;
-  undoStack.push({ tile: tiles[index], index });
+  const name = tileName(tiles[index]);
+  pushUndo({ kind: 'remove', tile: tiles[index], index });
   tiles.splice(index, 1);
-  render(); showSnack();
+  render(); showSnack('Убрано: ' + name);
 }
 function undo() {
-  const last = undoStack.pop();
-  if (!last) return;
-  tiles.splice(last.index, 0, last.tile);
+  const op = undoStack.pop();
+  if (!op) return;
+  if (op.kind === 'remove') tiles.splice(op.index, 0, op.tile);
+  else if (op.kind === 'add') { const i = tiles.findIndex(t => t.id === op.id); if (i >= 0) tiles.splice(i, 1); }
+  else if (op.kind === 'move') op.items.forEach(([id, col, row, w, h]) => { const t = tiles.find(x => x.id === id); if (t) { t.col = col; t.row = row; t.w = w; t.h = h; } });
+  else if (op.kind === 'edit') { const i = tiles.findIndex(t => t.id === op.id); if (i >= 0) tiles[i] = op.before; }
   hideSnack(); render();
 }
-function showSnack() { const s = $('#snackbar'); s.classList.add('show'); clearTimeout(snackTimer); snackTimer = setTimeout(hideSnack, 4000); }
+function showSnack(text, o = {}) {
+  const sb = $('#snackbar'); $('#snackTx').textContent = text || 'Плитка убрана';
+  snackSetId = o.set || null; $('#snackSet').hidden = !snackSetId;
+  sb.classList.add('show'); clearTimeout(snackTimer); snackTimer = setTimeout(hideSnack, 4000);
+}
 function hideSnack() { $('#snackbar').classList.remove('show'); clearTimeout(snackTimer); }
 $('#snackUndo').onclick = undo;
+$('#snackSet').onclick = () => { const id = snackSetId; hideSnack(); if (id) openTile(id, true); };
 $('#btnUndo').onclick = undo;
 $('#btnDone').onclick = () => setEdit(false);
-$('#btnAdd').onclick = () => goPage('ph-gallery', false);
+$('#btnAdd').onclick = () => { addTarget = null; goPage('ph-gallery', false); };
 $('#btnMore').onclick = () => goPage('ph-more', false);
 
 function note(text) { $('#note').textContent = text; }
@@ -1363,12 +1534,12 @@ function drawApps(f = '') {
 drawApps();
 $('#appSearch').addEventListener('input', e => drawApps(e.target.value));
 function setScreen(v) {
-  if (v === 'sheet' && !sheetId) { setEdit(true); openSheet('temperature'); return; }
-  if ((v === 'tile' || v === 'custom') && !form) { setEdit(true); openForm(v === 'tile' ? 'temperature' : null); return; }
+  if (v === 'sheet') v = 'tile';
+  if ((v === 'tile' || v === 'custom') && !form) { if (v === 'tile') openTile((tiles.find(x => x.id === 'temperature') || tiles[0] || {}).id, true); else openNewTile(null); return; }
   if (v === 'page' && !curPage) { goPage('voice', false); return; }
   if (v !== 'page') { curPage = null; pageStack = []; }
-  if (v !== 'sheet') sheetId = null;
   if (v !== 'tile' && v !== 'custom') form = null;
+  if (v === 'page' || v === 'drawer' || v === 'apps' || v === 'kbd' || v === 'shade') state.move = null;
   state.screen = v; desk.dataset.screen = v; if (v !== 'page') desk.classList.remove('kb');
   if (v === 'kbd') $('#appSearch').focus(); else $('#appSearch').blur();
   if (v !== 'apps' && v !== 'kbd') { $('#appSearch').value = ''; drawApps(); }
@@ -1396,79 +1567,308 @@ let edgeX = null;
 desk.addEventListener('pointerdown', e => { const r = desk.getBoundingClientRect(); edgeX = (state.screen === 'desk' && !state.edit && e.clientX - r.left < 16) ? e.clientX : null; });
 desk.addEventListener('pointermove', e => { if (edgeX !== null && e.clientX - edgeX > 40) { edgeX = null; clearTimeout(lpTimer); lpTimer = null; setScreen('drawer'); } });
 
-/* ───────── Лист плитки и форма плитки ───────── */
+/* ───────── Экран «Плитка», галерея «Добавить плитку», перенос ─────────
+   Один экран «Плитка» вместо листа плитки и формы (ALL-67). Вход: нажатие на плитку в правке или долгое нажатие на столе.
+   Галерея, «Своя плитка», копирование, перенос и убирание — из этого же экрана и из режима правки. */
 const SIZES = [['1×1', 1, 1], ['2×1', 2, 1], ['2×2', 2, 2]];
-let sheetId = null, form = null;
-function fits(t, w, h) {
+const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+let form = null, addTarget = null, selId = null, selTimer = null, uid = 0;
+const fmtNum = n => n == null ? '' : String(n).replace('.', ',');
+const parseNum = s => { const n = parseFloat(String(s).replace(',', '.').trim()); return isNaN(n) ? null : n; };
+const ZN = { ok: 'Норма', mid: 'Средне', bad: 'Внимание' };
+
+function overlaps(o, col, row, w, h) { return o.col < col + w && col < o.col + o.w && o.row < row + h && row < o.row + o.h; }
+function fitsAt(selfId, col, row, w, h) {
   const m = metrics();
-  if (t.col + w > m.columns || t.row + h > m.rows) return false;
-  return !tiles.some(o => o !== t && o.col < t.col + w && t.col < o.col + o.w && o.row < t.row + h && t.row < o.row + o.h);
+  if (col < 0 || row < 0 || col + w > m.columns || row + h > m.rows) return false;
+  return !tiles.some(o => o.id !== selfId && overlaps(o, col, row, w, h));
 }
-function openSheet(id) {
+const fits = (t, w, h) => fitsAt(t.id, t.col, t.row, w, h);
+function freeSpot(w, h, selfId = null) {
+  const m = metrics();
+  for (let r = 0; r < m.rows; r++) for (let c = 0; c < m.columns; c++) if (fitsAt(selfId, c, r, w, h)) return { col: c, row: r };
+  return null;
+}
+const tileName = t => t.type === 'value' ? (t.vals[0] ? t.vals[0].name : 'Плитка') : (t.name || t.title || 'Плитка');
+function flash(id) { selId = id; clearTimeout(selTimer); selTimer = setTimeout(() => { selId = null; const el = grid.querySelector('.tile.sel'); if (el) el.classList.remove('sel'); }, 3500); }
+
+/* ── Галерея ── */
+const GAL = {
+  temp:    { g: 's', make: () => vt('', 0, 0, 2, 1, [mkVal('temp')]) },
+  hum:     { g: 's', make: () => vt('', 0, 0, 2, 1, [mkVal('hum')]) },
+  co2:     { g: 's', make: () => vt('', 0, 0, 2, 1, [mkVal('co2')]) },
+  press:   { g: 's', make: () => vt('', 0, 0, 2, 1, [mkVal('press')]) },
+  light:   { g: 'c', make: () => ({ id: '', type: 'switch', col: 0, row: 0, w: 1, h: 1, icon: 'bulb', name: 'Свет', on: false }) },
+  dimmer:  { g: 'c', make: () => ({ id: '', type: 'switch', col: 0, row: 0, w: 2, h: 2, icon: 'bulb', name: 'Свет', on: true, level: 0.6 }) },
+};
+function galStage(key) {
+  const t = GAL[key].make(), m = metrics();
+  const W = m.cell * t.w + m.gap * (t.w - 1), H = m.cell * t.h + m.gap * (t.h - 1), s = Math.min(1, 86 / H), z = zoneOf(t);
+  const el = `<div class="${tileCls(t)}" data-w="${t.w}" data-on="${!!t.on}"${z ? ` data-tone="${z.k}"` : ''} style="position:relative;width:${W}px;height:${H}px;transform:scale(${s});transform-origin:0 0;flex:none">${tileInner(t)}</div>`;
+  return `<button class="gstage" data-go="gal:${key}" aria-label="Добавить: ${esc(tileName(t))}"><span class="gpv" style="width:${W * s}px;height:${H * s}px">${el}</span></button>`;
+}
+const galleryPage = () => ({ back: true, title: 'Добавить плитку', body:
+  `<div class="gal"><button class="galrow" data-go="custom">${ICON('plus')}<span class="tx"><b>Своя плитка</b><span>Собрать с нуля</span></span>${ICON('chev')}</button>` +
+  `<div class="gh2"><b>Датчики</b><span>Нажмите, и плитка встанет на стол. Потом её можно изменить</span></div>` +
+  `<div class="gal2">${['temp', 'hum', 'co2', 'press'].map(galStage).join('')}</div>` +
+  `<div class="gh2"><b>Управление</b></div>` +
+  `<div class="gal2">${['light', 'dimmer'].map(galStage).join('')}</div></div>` });
+function addFromGallery(key) {
+  const t = GAL[key].make();
+  const spot = (addTarget && fitsAt(null, addTarget.col, addTarget.row, t.w, t.h)) ? addTarget : freeSpot(t.w, t.h);
+  if (!spot) { note('На этом экране нет места для такой плитки. Освободите клетки или выберите плитку поменьше.'); return; }
+  t.id = 'u' + (++uid); t.col = spot.col; t.row = spot.row;
+  tiles.push(t); pushUndo({ kind: 'add', id: t.id }); addTarget = null;
+  setEdit(true); setScreen('desk'); flash(t.id); render();
+  showSnack('Добавлено: ' + tileName(t), { set: t.id });
+}
+
+/* ── Открыть экран «Плитка» ── */
+function openTile(id, fromEdit) {
   const t = tiles.find(x => x.id === id); if (!t) return;
-  sheetId = id;
-  const name = t.name || t.title || 'Плитка', val = t.value || (t.type === 'switch' ? (t.on ? 'Включен' : 'Выключен') : t.subtitle || '');
-  $('#shTitle').textContent = name; $('#shValue').textContent = val; 
-  
-  $('#shSizes').innerHTML = SIZES.map(([l, w, h]) => `<button class="sz ${fits(t, w, h) ? '' : 'no'}" data-w="${w}" data-h="${h}" aria-pressed="${t.w === w && t.h === h}"><i style="width:${w * 24}px;height:${h * 24}px"></i>${l}</button>`).join('');
-  setMode('main', name);
-  setScreen('sheet');
+  hideSnack();
+  form = { id, isNew: false, fromEdit: !!fromEdit, view: 'main', t, d: { w: t.w, h: t.h, vals: structuredClone(t.vals || []), ind: t.ind, zones: structuredClone(t.zones || {}) } };
+  setScreen('tile'); drawForm();
 }
-function setMode(m, name) { $('#sheet').dataset.mode = m; $('#shTitle').textContent = m === 'size' ? 'Размер' : (name || $('#shTitle').dataset.n); if (name) $('#shTitle').dataset.n = name; }
-$('#shBack').onclick = () => setMode('main');
-$('#shClose').onclick = () => setScreen('desk');
-$('#sheet').addEventListener('click', e => {
-  const b = e.target.closest('[data-sh],[data-w]'); if (!b) return;
-  const t = tiles.find(x => x.id === sheetId);
-  if (b.dataset.w) {
-    const w = +b.dataset.w, h = +b.dataset.h;
-    if (!fits(t, w, h)) { note('Плитка такого размера здесь не помещается: место занято.'); return; }
-    t.w = w; t.h = h; setScreen('desk'); render(); return;
+function openNewTile(target) {
+  hideSnack();
+  let w = 2, h = 1, spot = target && fitsAt(null, target.col, target.row, 2, 1) ? target : null;
+  if (!spot) { w = 1; spot = target && fitsAt(null, target.col, target.row, 1, 1) ? target : freeSpot(1, 1); }
+  if (!spot) { note('На этом экране нет свободных клеток.'); return; }
+  form = { id: null, isNew: true, fromEdit: true, view: 'main', t: null, target: spot, d: { w, h, vals: [], ind: null, zones: {} } };
+  setScreen('custom'); drawForm();
+}
+function previewTile() {
+  const f = form, d = f.d, b = f.t || {};
+  return { id: f.id || 'new', type: f.isNew ? 'value' : b.type, col: 0, row: 0, w: d.w, h: d.h, vals: d.vals, ind: d.ind, zones: d.zones, name: b.name, icon: b.icon, on: b.on, level: b.level, title: b.title, subtitle: b.subtitle };
+}
+function pvBoxHTML(pt) {
+  const m = metrics(), W = m.cell * pt.w + m.gap * (pt.w - 1), H = m.cell * pt.h + m.gap * (pt.h - 1), s = Math.min(1, 108 / H);
+  let inner;
+  if (pt.type === 'value' && !pt.vals.length) inner = `<div class="tile value-tile empty" style="position:relative;width:${W}px;height:${H}px"><span class="empty-pv">Пока пусто</span></div>`;
+  else { const z = zoneOf(pt); inner = `<div class="${tileCls(pt)}" data-w="${pt.w}" data-on="${!!pt.on}"${z ? ` data-tone="${z.k}"` : ''} style="position:relative;width:${W}px;height:${H}px">${tileInner(pt)}</div>`; }
+  return `<div class="pvbox" style="width:${W * s}px;height:${H * s}px"><div style="width:${W}px;height:${H}px;transform:scale(${s});transform-origin:0 0">${inner}</div></div>`;
+}
+const unitOf = v => (CAT[v.cid] || {}).unit || '';
+function rangeText(z, v) {
+  const u = unitOf(v), a = fmtNum(z.from), b = fmtNum(z.to);
+  if (z.from != null && z.to != null) return `${a}–${b} ${u}`;
+  if (z.from != null) return `выше ${a} ${u}`;
+  if (z.to != null) return `до ${b} ${u}`;
+  return 'любое значение';
+}
+const chevI = ICON('chev');
+const barBack = (title, right = '') => `<div class="appbar"><button class="icon-btn" data-f="back" aria-label="Назад">${ICON('back')}</button><div class="ttl">${title}</div>${right}</div>`;
+function mainHTML() {
+  const f = form, d = f.d, pt = previewTile(), type = pt.type;
+  const canDone = type !== 'value' || d.vals.length > 0;
+  let secs = '';
+  if (type === 'value') {
+    secs += `<div class="sec-h">Показывать</div>`;
+    secs += d.vals.map((v, i) => `<div class="vrow" data-i="${i}"><div class="tx"><b>${esc(v.name)}</b><span>${i === 0 ? 'Главное · ' : ''}${esc(v.value)}${v.room ? ' · ' + esc(v.room) : ''}</span></div>` +
+      `<button class="ib up" data-f="up" ${i === 0 ? 'disabled' : ''} aria-label="Выше">${chevI}</button>` +
+      `<button class="ib" data-f="down" ${i === d.vals.length - 1 ? 'disabled' : ''} aria-label="Ниже">${chevI}</button>` +
+      `<button class="ib" data-f="del" aria-label="Убрать значение">${ICON('close')}</button></div>`).join('');
+    secs += `<div class="padx"><button class="btn tonal wide" data-f="add" ${d.vals.length >= 4 ? 'disabled' : ''}>${ICON('plus')}Добавить значение</button></div>`;
   }
-  const a = b.dataset.sh;
-  if (a === 'size') setMode('size');
-  if (a === 'settings') openForm(sheetId);
-  if (a === 'move') goPage('ph-move', false);
-  if (a === 'remove') { const id = sheetId; setScreen('desk'); removeTile(id); }
-});
-function openForm(id) {
-  const t = id ? tiles.find(x => x.id === id) : null;
-  form = { id, w: t ? t.w : 1, h: t ? t.h : 1, rows: t && t.type === 'value' ? [{ name: t.name, st: 'Крупно' }] : [], t };
-  setScreen(t ? 'tile' : 'custom');
-  drawForm();
+  secs += `<div class="sec-h">По нажатию</div><div class="padx"><button class="dd"><span>${type === 'value' ? 'Ничего не делать' : 'Авто: переключить или подробности'}</span>${chevI}</button></div>`;
+  if (type === 'value' && d.vals.length) {
+    const iv = d.vals.find(v => v.vid === d.ind) || d.vals[0], zl = d.zones[iv.vid] || [], cur = zoneOf(pt);
+    secs += `<div class="sec-h">Цвет и подсказка</div>`;
+    secs += `<button class="zrow" data-f="states"><span class="zk">Показатель</span><span class="zv">${esc(iv.name)}</span>${chevI}</button>`;
+    secs += zl.map(z => `<button class="zrow${cur && cur.k === z.k ? ' now' : ''}" data-f="states"><i class="zd ${z.k}"></i><span class="zt"><b>${ZN[z.k]}</b><em>${rangeText(z, iv)}</em></span><span class="zh">${esc(z.hint)}</span>${chevI}</button>`).join('');
+  } else if (type === 'switch') {
+    secs += `<div class="sec-h">Цвет и подсказка</div>` +
+      `<div class="zrow static"><i class="zd on"></i><span class="zt"><b>Вкл</b><em>Заполненная точка перед словом</em></span></div>` +
+      `<div class="zrow static"><i class="zd off"></i><span class="zt"><b>Выкл</b><em>Пустое кольцо перед словом</em></span></div>`;
+  } else if (type === 'placeholder') {
+    secs += `<p class="gd2">Для этой плитки других настроек пока нет</p>`;
+  }
+  const bar = f.isNew ? '' : `<div class="tbar"><button class="btn tonal" data-f="move">${ICON('move')}Переместить</button><button class="btn tonal" data-f="copy"><svg class="ic" aria-hidden="true" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>Копировать</button><button class="btn tonal danger" data-f="remove">${ICON('minus')}Убрать</button></div>`;
+  const sizes = SIZES.map(([l, w, h]) => {
+    const ok = f.isNew ? fitsAt(null, f.target.col, f.target.row, w, h) : fitsAt(f.id, f.t.col, f.t.row, w, h);
+    return `<button class="szb2${ok ? '' : ' no'}" data-f="size" data-w="${w}" data-h="${h}" aria-pressed="${d.w === w && d.h === h}">${l}</button>`;
+  }).join('');
+  return `<div class="appbar"><button class="icon-btn" data-f="back" aria-label="Назад">${ICON('back')}</button><div class="ttl">${f.isNew ? 'Своя плитка' : 'Плитка'}</div><button class="btn text" data-f="done" ${canDone ? '' : 'disabled'}>Готово</button></div>` +
+    `<div class="pvstage">${pvBoxHTML(pt)}<div class="szcol2">${sizes}</div></div><div class="scroll">${secs}</div>${bar}`;
+}
+function statesHTML() {
+  const f = form, d = f.d, iv = d.vals.find(v => v.vid === d.ind) || d.vals[0], zl = d.zones[iv.vid] || [], pt = previewTile(), cur = zoneOf(pt);
+  const ind = d.vals.length > 1
+    ? `<div class="gh2"><b>Показатель</b><span>Какое значение красит плитку</span></div><div class="chiprow2">${d.vals.map(v => `<button class="chip" data-f="ind" data-vid="${esc(v.vid)}" aria-pressed="${v.vid === iv.vid}">${esc(v.name)}</button>`).join('')}</div>`
+    : `<div class="zrow static"><span class="zt"><em>Показатель</em><b>${esc(iv.name)}, сейчас ${esc(iv.value)}</b></span></div>`;
+  const cards = zl.map((z, i) => `<div class="zcard${cur && cur.k === z.k ? ' now' : ''}"><div class="zh2"><i class="zd ${z.k}"></i><b>${ZN[z.k]}</b>${cur && cur.k === z.k ? '<span class="here">сейчас здесь</span>' : ''}</div>` +
+    `<div class="zin"><label>от<input data-zi="${i}" data-zf="from" inputmode="decimal" autocomplete="off" value="${fmtNum(z.from)}" placeholder="без предела" aria-label="${ZN[z.k]}, от"></label>` +
+    `<label>до<input data-zi="${i}" data-zf="to" inputmode="decimal" autocomplete="off" value="${fmtNum(z.to)}" placeholder="без предела" aria-label="${ZN[z.k]}, до"></label>` +
+    `<label class="hn">Подсказка<input data-zi="${i}" data-zf="hint" autocomplete="off" value="${esc(z.hint)}" aria-label="${ZN[z.k]}, подсказка"></label></div></div>`).join('');
+  return barBack('Цвет по значению') + `<div class="scroll states">${ind}${cards}<div class="padx"><button class="btn text" data-f="reset">Вернуть значения из шаблона</button></div></div>`;
+}
+function pickHTML() {
+  return barBack('Что показывать') + `<label class="search3">${ICON('search')}<input id="pkq" type="text" placeholder="Поиск" autocomplete="off" aria-label="Поиск"></label><div class="scroll" id="pkList">${pickList('')}</div>`;
+}
+function pickList(q) {
+  const have = new Set(form.d.vals.map(v => v.vid)), s = q.trim().toLowerCase();
+  const out = ROOMS_V.map(([room, items]) => {
+    const rows = items.filter(([cid]) => !s || CAT[cid].name.toLowerCase().includes(s) || room.toLowerCase().includes(s)).map(([cid, val]) => {
+      const vid = cid + '@' + room, used = have.has(vid);
+      return `<button class="pkrow" data-f="pick" data-cid="${cid}" data-room="${room}" ${used ? 'disabled' : ''}>${ICON(CAT[cid].icon)}<span class="tx"><b>${CAT[cid].name}</b><span>${used ? 'Уже на плитке' : room}</span></span><span class="pv2">${val}</span></button>`;
+    }).join('');
+    return rows ? `<div class="sec-h">${room}</div>${rows}` : '';
+  }).join('');
+  return out || '<p class="gd2">Ничего не найдено</p>';
 }
 function drawForm() {
-  $('#fmTitle').textContent = form.t ? 'Плитка' : 'Новая плитка';
-  $('#fmSizes').innerHTML = SIZES.map(([l, w, h]) => `<button class="szb" data-w="${w}" data-h="${h}" aria-pressed="${form.w === w && form.h === h}">${l}</button>`).join('');
-  const m = metrics(), pw = m.cell * form.w + m.gap * (form.w - 1), ph = m.cell * form.h + m.gap * (form.h - 1);
-  const r0 = form.rows[0];
-  const pvTone = form.t ? tempTone(form.t) : null;
-  $('#fmPv').innerHTML = `<div class="tile ${form.t && form.t.type === 'value' ? 'value-tile' : ''}" data-w="${form.w}"${pvTone ? ` data-tone="${pvTone}"` : ''} style="width:${pw}px;height:${ph}px">` +
-    (r0 ? `${ICON(form.t && form.t.icon || 'thermometer')}<div class="text"><div class="name">${r0.name}</div><div class="value">${form.t && form.t.value || '—'}${pvTone ? `<span class="tone-word">${TONE_WORDS[pvTone]}</span>` : ''}</div></div>` : '<span class="empty-pv">Пока пусто</span>') + '</div>';
-  $('#fmRows').innerHTML = form.rows.map((r, i) => `<div class="vrow" data-i="${i}"><div class="tx"><b>${r.name}</b><span>${r.st}</span></div>` +
-    `<button class="ib up" data-act="up" ${i === 0 ? 'disabled' : ''} aria-label="Выше">${ICON('chev')}</button>` +
-    `<button class="ib" data-act="down" ${i === form.rows.length - 1 ? 'disabled' : ''} aria-label="Ниже">${ICON('chev')}</button>` +
-    `<button class="ib" data-act="del" aria-label="Убрать значение">${ICON('close')}</button></div>`).join('');
+  if (!form) return;
+  const el = $('#form'), sc = el.querySelector('.scroll'), top = sc && form.view === form.drawn ? sc.scrollTop : 0;
+  el.dataset.view = form.view; form.drawn = form.view;
+  el.innerHTML = form.view === 'states' ? statesHTML() : form.view === 'pick' ? pickHTML() : mainHTML();
+  const ns = el.querySelector('.scroll'); if (ns) ns.scrollTop = top;
+  const dm = el.querySelector('.pvbox .dim'), pe = el.querySelector('.pvbox .tile');
+  if (dm && pe) bindDim(dm, previewTile(), pe);
+  syncControls();
 }
-$('#fmSizes').addEventListener('click', e => { const b = e.target.closest('[data-w]'); if (!b) return; form.w = +b.dataset.w; form.h = +b.dataset.h; drawForm(); });
-$('#fmRows').addEventListener('click', e => {
-  const b = e.target.closest('[data-act]'); if (!b) return;
-  const i = +b.closest('.vrow').dataset.i, a = b.dataset.act, r = form.rows;
-  if (a === 'del') r.splice(i, 1);
-  if (a === 'up' && i > 0) [r[i - 1], r[i]] = [r[i], r[i - 1]];
-  if (a === 'down' && i < r.length - 1) [r[i + 1], r[i]] = [r[i], r[i + 1]];
-  drawForm();
-});
-$('#fmAdd').onclick = () => { form.rows.push({ name: 'Значение ' + (form.rows.length + 1), st: 'Обычно' }); drawForm(); };
-const closeForm = () => setScreen('desk');
-$('#fmBack').onclick = closeForm;
-$('#fmDone').onclick = () => {
-  if (form.t && (form.w !== form.t.w || form.h !== form.t.h)) {
-    if (!fits(form.t, form.w, form.h)) { note('Плитка такого размера здесь не помещается: место занято.'); return; }
-    form.t.w = form.w; form.t.h = form.h;
+function draftChanged() {
+  const f = form, t = f.t, d = f.d;
+  return d.w !== t.w || d.h !== t.h || JSON.stringify([d.vals, d.ind, d.zones]) !== JSON.stringify([t.vals || [], t.ind, t.zones || {}]);
+}
+function applyDraft(t) {
+  const d = form.d; t.w = d.w; t.h = d.h;
+  if (t.type === 'value') { t.vals = structuredClone(d.vals); t.ind = d.ind; t.zones = structuredClone(d.zones); }
+}
+function leaveForm() { setScreen('desk'); render(); }
+function commitForm() {
+  const f = form; if (!f) return;
+  if (f.isNew) {
+    if (!f.d.vals.length) return;
+    if (!fitsAt(null, f.target.col, f.target.row, f.d.w, f.d.h)) { note('Плитка такого размера здесь не помещается: место занято.'); return; }
+    const t = { id: 'u' + (++uid), type: 'value', col: f.target.col, row: f.target.row, w: f.d.w, h: f.d.h, vals: structuredClone(f.d.vals), ind: f.d.ind, zones: structuredClone(f.d.zones) };
+    tiles.push(t); pushUndo({ kind: 'add', id: t.id }); addTarget = null;
+    setEdit(true); flash(t.id); leaveForm(); showSnack('Добавлено: ' + tileName(t), { set: t.id });
+    return;
   }
-  closeForm(); render();
-};
+  if (draftChanged()) {
+    if (!fitsAt(f.id, f.t.col, f.t.row, f.d.w, f.d.h)) { note('Плитка такого размера здесь не помещается: место занято.'); return; }
+    pushUndo({ kind: 'edit', id: f.id, before: structuredClone(f.t) });
+    applyDraft(f.t);
+  }
+  leaveForm();
+}
+function copyTile() {
+  const f = form, t = f.t;
+  const spot = freeSpot(f.d.w, f.d.h);
+  if (!spot) { note('Нет свободного места для копии. Освободите клетки на этом экране.'); return; }
+  if (draftChanged()) { pushUndo({ kind: 'edit', id: f.id, before: structuredClone(t) }); applyDraft(t); }
+  const c = structuredClone(t); c.id = 'u' + (++uid); c.col = spot.col; c.row = spot.row;
+  tiles.push(c); pushUndo({ kind: 'add', id: c.id });
+  if (f.fromEdit) setEdit(true); flash(c.id); leaveForm(); showSnack('Добавлено: ' + tileName(c), { set: c.id });
+}
+$('#form').addEventListener('click', e => {
+  const b = e.target.closest('[data-f]'); if (!b || !form) return;
+  const f = form, d = f.d, a = b.dataset.f;
+  if (a === 'back') { if (f.view !== 'main') { f.view = 'main'; return drawForm(); } return f.isNew ? leaveForm() : commitForm(); }
+  if (a === 'done') return commitForm();
+  if (a === 'size') {
+    const w = +b.dataset.w, h = +b.dataset.h, ok = f.isNew ? fitsAt(null, f.target.col, f.target.row, w, h) : fitsAt(f.id, f.t.col, f.t.row, w, h);
+    if (!ok) { note('Плитка такого размера здесь не помещается: место занято.'); return; }
+    d.w = w; d.h = h; note(''); return drawForm();
+  }
+  if (a === 'up' || a === 'down' || a === 'del') {
+    const i = +b.closest('.vrow').dataset.i, r = d.vals;
+    if (a === 'del') { const [x] = r.splice(i, 1); delete d.zones[x.vid]; if (d.ind === x.vid) d.ind = r[0] ? r[0].vid : null; }
+    if (a === 'up' && i > 0) [r[i - 1], r[i]] = [r[i], r[i - 1]];
+    if (a === 'down' && i < r.length - 1) [r[i + 1], r[i]] = [r[i], r[i + 1]];
+    return drawForm();
+  }
+  if (a === 'add') { f.view = 'pick'; return drawForm(); }
+  if (a === 'pick') {
+    const cid = b.dataset.cid, room = b.dataset.room, it = ROOMS_V.find(r => r[0] === room)[1].find(x => x[0] === cid);
+    const v = mkVal(cid, { room, value: it[1] }); d.vals.push(v); d.zones[v.vid] = structuredClone(CAT[cid].zones); if (!d.ind) d.ind = v.vid;
+    f.view = 'main'; return drawForm();
+  }
+  if (a === 'states') { f.view = 'states'; return drawForm(); }
+  if (a === 'ind') { d.ind = b.dataset.vid; return drawForm(); }
+  if (a === 'reset') { const iv = d.vals.find(v => v.vid === d.ind) || d.vals[0]; d.zones[iv.vid] = structuredClone(CAT[iv.cid].zones); return drawForm(); }
+  if (a === 'copy') return copyTile();
+  if (a === 'remove') { const id = f.id; setScreen('desk'); return removeTile(id); }
+  if (a === 'move') { const id = f.id; if (draftChanged()) { pushUndo({ kind: 'edit', id, before: structuredClone(f.t) }); applyDraft(f.t); } setScreen('desk'); setEdit(true); return startMove(id); }
+});
+$('#form').addEventListener('input', e => {
+  const i = e.target; if (!form) return;
+  if (i.id === 'pkq') { $('#pkList').innerHTML = pickList(i.value); return; }
+  if (i.dataset.zi === undefined) return;
+  const d = form.d, iv = d.vals.find(v => v.vid === d.ind) || d.vals[0], z = d.zones[iv.vid][+i.dataset.zi];
+  z[i.dataset.zf] = i.dataset.zf === 'hint' ? i.value : parseNum(i.value);
+});
+$('#form').addEventListener('change', e => { if (e.target.dataset && e.target.dataset.zi !== undefined && form) drawForm(); });
+
+/* ── Перенос плитки: «Переместить» подсвечивает свободные места, нажатие ставит плитку ── */
+function startMove(id) {
+  const t = tiles.find(x => x.id === id); if (!t) return;
+  state.move = { id }; hideSnack(); render();
+  note('Нажмите на свободное место, куда поставить плитку.');
+}
+function endMove() { state.move = null; render(); note(''); }
+function materialize() {
+  shown.forEach(s => { const t = tiles.find(x => x.id === s.id); if (t) { t.col = s.col; t.row = s.row; t.w = s.w; t.h = s.h; } });
+}
+const snapshotPos = () => tiles.map(t => [t.id, t.col, t.row, t.w, t.h]);
+function placeMove(col, row) {
+  const t = tiles.find(x => x.id === state.move.id); if (!t) return endMove();
+  if (!fitsAt(t.id, col, row, t.w, t.h)) return;
+  materialize(); pushUndo({ kind: 'move', items: snapshotPos() });
+  t.col = col; t.row = row; state.move = null; flash(t.id); render();
+  showSnack('Перемещено: ' + tileName(t));
+}
+$('#mvCancel').onclick = endMove;
+
+/* ── Перетаскивание плитки в правке ── */
+let drag = null, dragMoved = false;
+function dropTarget() {
+  const m = metrics(), t = drag.t, dx = drag.dx, dy = drag.dy;
+  let col = Math.round((drag.left + dx - m.gap) / (m.cell + m.gap)), row = Math.round((drag.top + dy - m.gap) / (m.cell + m.gap));
+  col = Math.max(0, Math.min(m.columns - t.w, col)); row = Math.max(0, Math.min(m.rows - t.h, row));
+  const hit = shown.filter(o => o.id !== t.id && overlaps(o, col, row, t.w, t.h));
+  if (!hit.length) return { col, row, ok: true };
+  if (hit.length === 1 && hit[0].w === t.w && hit[0].h === t.h) return { col, row, ok: true, swap: hit[0].id };
+  return { col, row, ok: false };
+}
+grid.addEventListener('pointerdown', e => {
+  if (!state.edit || state.move || e.button > 0) return;
+  if (e.target.closest('[data-act]')) return;
+  const te = e.target.closest('.tile'); if (!te) return;
+  const t = shown.find(x => x.id === te.dataset.id); if (!t) return;
+  drag = { id: t.id, t, el: te, x0: e.clientX, y0: e.clientY, dx: 0, dy: 0, on: false, pid: e.pointerId, left: parseFloat(te.style.left), top: parseFloat(te.style.top) };
+});
+grid.addEventListener('pointermove', e => {
+  if (!drag || e.pointerId !== drag.pid) return;
+  drag.dx = e.clientX - drag.x0; drag.dy = e.clientY - drag.y0;
+  if (!drag.on) {
+    if (Math.hypot(drag.dx, drag.dy) < 8) return;
+    drag.on = true; try { drag.el.setPointerCapture(drag.pid); } catch (err) {}
+    hideSnack();
+    drag.el.classList.add('drag'); drag.box = document.createElement('div'); drag.box.className = 'dropbox'; grid.appendChild(drag.box);
+    note('Отпустите плитку на свободном месте. Если место занято плиткой того же размера, они поменяются местами.');
+  }
+  drag.el.style.transform = `translate(${drag.dx}px,${drag.dy}px)`;
+  const tg = drag.tgt = dropTarget(), m = metrics();
+  place(drag.box, m, tg.col, tg.row, drag.t.w, drag.t.h); drag.box.classList.toggle('no', !tg.ok);
+});
+function endDrag(commit) {
+  const d = drag; drag = null; if (!d || !d.on) return;
+  dragMoved = true; setTimeout(() => dragMoved = false, 60);
+  d.box.remove(); const tg = d.tgt, t = tiles.find(x => x.id === d.id);
+  if (commit && tg && tg.ok && t && (tg.col !== d.t.col || tg.row !== d.t.row)) {
+    materialize(); pushUndo({ kind: 'move', items: snapshotPos() });
+    if (tg.swap) { const o = tiles.find(x => x.id === tg.swap); o.col = t.col; o.row = t.row; }
+    t.col = tg.col; t.row = tg.row; flash(t.id); note(''); render();
+    showSnack('Перемещено: ' + tileName(t));
+    return;
+  }
+  if (commit && tg && !tg.ok) note('Здесь занято. Плитка вернулась на своё место.'); else note('');
+  d.el.animate([{ transform: d.el.style.transform }, { transform: 'translate(0,0)' }], { duration: 160, easing: 'ease-out' }).finished.then(() => render(), () => render());
+}
+grid.addEventListener('pointerup', e => { if (drag && e.pointerId === drag.pid) endDrag(true); });
+grid.addEventListener('pointercancel', e => { if (drag && e.pointerId === drag.pid) endDrag(false); });
 
 /* ───────── Настройки: страницы ───────── */
 const S = { tab: 'voice', voice: true, speak: true, listen: 'always', lang: 'ru', room: 'living', mqtt: false, broker: false,
@@ -1687,9 +2087,6 @@ Object.assign(PAGES, {
 });
 /* ───────── Заглушки: экраны есть в map.md, но не нарисованы. Скриншоты запрошены у Сергея, задача ALL-71 ───────── */
 const PH = {
-  'ph-gallery': { title: 'Добавить на экран', code: 'DeskGallery', via: 'Правка → «+ Виджет» или тап по пустому слоту', has: 'Вкладки «Эта комната / Все комнаты», «Своя плитка», «Выключатели».', shot: 'есть desk__gallery.png', n: 1,
-    foot: `<button class="btn secondary" data-go="custom">Своя плитка</button>` },
-  'ph-move': { title: 'Переместить', code: 'режим переноса плитки', via: 'Правка → тап по плитке → «Переместить»', has: 'Перенос плитки на другое место экрана.', shot: 'нужен', n: 2 },
   'ph-more': { title: 'Ещё', code: 'меню «⋮» панели правки', via: 'Правка → «⋮» в нижней панели', has: 'Дополнительные действия режима правки.', shot: 'нужен', n: 2 },
   w3: { title: 'Мастер настройки', step: 3, name: 'Комнаты', code: 'FRRooms', via: 'Мастер первого запуска, шаг 3 · Настройки → Данные → «Запустить мастер настройки»', has: 'Шаг «Комнаты» мастера первого запуска.', shot: 'нужен', n: 3, close: true,
     foot: `<button class="btn text" data-go="w4">Пропустить</button><button class="btn primary" data-go="w4">Далее</button>` },
@@ -1720,6 +2117,7 @@ Object.keys(PH).forEach(k => {
       `<dl><dt>Экран в коде</dt><dd><code>${c.code}</code></dd><dt>Как открыть</dt><dd>${c.via}</dd><dt>Скриншот</dt><dd>${c.shot}</dd></dl>` +
       `<p class="sd" style="margin:0">Пункт ${c.n} в задаче ALL-71.</p></div>` });
 });
+PAGES['ph-gallery'] = galleryPage;
 function goPage(name, push = true) {
   if (name.startsWith('cc-') && ['loc','conn','dev','wid'].includes(name.slice(3))) { S.cct = name.slice(3); name = 'cc'; }
   const m = { voice: 'settings', device: 'settings', conn: 'settings', security: 'settings', data: 'settings' };
@@ -1768,7 +2166,8 @@ $('#page').addEventListener('click', e => {
   if (t.dataset.jst) { S.jstat[t.dataset.jst] = !S.jstat[t.dataset.jst]; return drawPage(); }
   const g = t.dataset.go;
   if (g === 'back') { const p = pageStack.pop(); if (p) { curPage = p; drawPage(false); syncControls(); } else { setScreen('desk'); } return; }
-  if (g === 'custom') return openForm(null);
+  if (g === 'custom') return openNewTile(addTarget);
+  if (g.startsWith('gal:')) return addFromGallery(g.slice(4));
   if (g === 'close') { if (curPage === 'cc-pick') { const p = pageStack.pop(); curPage = p || 'cc-scen'; return drawPage(false); } return setScreen('desk'); }
   if (g.startsWith('cct:')) { S.cct = g.slice(4); S.fab = false; return drawPage(false); }
   if (g.startsWith('dtab:')) { S.devTab = g.slice(5); return drawPage(false); }
@@ -1906,8 +2305,14 @@ $('.scrim').addEventListener('click', () => { if (state.screen === 'shade') setS
 let panelDev = 'p10';
 const GROUPS = [
   { label: 'Устройство', get: () => panelDev, set: v => setPanelDev(v), opts: [['p10', 'Панель 480×480 × 1,0 (480 dp)'], ['p15', 'Панель 480×480 × 1,5 (320 dp)']] },
-  { label: 'Экран', cls: 'grid3', get: () => state.screen, set: v => setScreen(v),
-    opts: [['desk', 'Стол'], ['drawer', 'Меню'], ['apps', 'Приложения'], ['kbd', 'Поиск + клавиатура'], ['shade', 'Панель'], ['sheet', 'Лист плитки'], ['tile', 'Плитка'], ['custom', 'Новая плитка']] },
+  { label: 'Экран', cls: 'grid3', get: () => state.move ? 'move' : state.screen === 'page' && curPage === 'ph-gallery' ? 'gallery' : state.screen === 'tile' && form && form.view !== 'main' ? form.view : state.screen,
+    set: v => {
+      if (v === 'gallery') { setEdit(true); addTarget = null; return goPage('ph-gallery', false); }
+      if (v === 'move') { setEdit(true); const t = tiles[0]; return t && startMove(t.id); }
+      if (v === 'states' || v === 'pick') { setEdit(true); const t = tiles.find(x => x.type === 'value'); if (!t) return; openTile(t.id, true); form.view = v; return drawForm(); }
+      state.move = null; setScreen(v);
+    },
+    opts: [['desk', 'Стол'], ['drawer', 'Меню'], ['apps', 'Приложения'], ['kbd', 'Поиск + клавиатура'], ['shade', 'Панель'], ['gallery', 'Добавить плитку'], ['tile', 'Плитка'], ['custom', 'Своя плитка'], ['states', 'Цвет по значению'], ['pick', 'Что показывать'], ['move', 'Перенос']] },
   { label: 'Настройки', cls: 'grid3', get: () => state.screen === 'page' ? (curPage === 'settings' ? S.tab : curPage) : '', set: v => goPage(v, false),
     opts: [['voice', 'Голос'], ['device', 'Устройство'], ['conn', 'Подключение'], ['security', 'Безопасность'], ['data', 'Данные'], ['dev-lang', 'Язык'], ['dev-room', 'Комната панели'], ['wallpaper', 'Обои'], ['display', 'Экран'], ['dev-launcher', 'Лаунчер'], ['export', 'Экспорт'], ['journal', 'Журнал']] },
   { label: 'Режим',    get: () => state.edit ? 'edit' : 'normal', set: v => setEdit(v === 'edit'),
@@ -1925,7 +2330,7 @@ const GROUPS = [
     set: v => { if (v === 'dlg') { S.cct = 'loc'; S.dlg = true; S.rName = 'Гостиная'; goPage('cc', false); return; } S.dlg = false; if (v === 'cc-scen' ) S.steps = []; if (v === 'conn-fab') { S.cct = 'conn'; S.fab = true; goPage('cc', false); } else { S.fab = false; goPage(['loc','conn','dev','wid'].includes(v) ? 'cc-' + v : v, false); } },
     opts: [['loc', 'Локации'], ['conn', 'Подключения'], ['conn-fab', 'Подключения + меню'], ['dev', 'Список устройств'], ['wid', 'Виджеты'], ['cc-integ', 'Интеграция'], ['cc-broker', 'Брокер'], ['add-systems', 'Найденные системы'], ['cc-ha', 'Сервер HA'], ['dlg', 'Диалог «Комната»'], ['cc-vdevs', 'Виртуальные устройства'], ['cc-vdev', 'Виртуальное устройство'], ['cc-devedit', 'Правка устройства'], ['cc-scen', 'Сценарий: шаги'], ['cc-pick', 'Сценарий: что включить']] },
   { label: 'Не проработаны (заглушки)', cls: 'grid3', get: () => state.screen === 'page' && (curPage in PH) ? curPage : '', set: v => { if (v === 'ph-se-action') S.steps = []; goPage(v, false); },
-    opts: [['ph-gallery', 'Галерея'], ['ph-move', 'Переместить'], ['ph-more', 'Меню ⋮'], ['w3', 'Мастер 3'], ['w4', 'Мастер 4'], ['w5', 'Мастер 5'], ['w6', 'Мастер 6'], ['ph-se-action', 'Сценарий: действие'], ['ph-se-order', 'Сценарий: порядок'], ['ph-se-name', 'Сценарий: название'], ['ph-se-preview', 'Сценарий: просмотр'], ['ph-groups', 'Группы комнат'], ['ph-vd-suggest', 'Собрать из найденного'], ['ph-mqtt-tail', 'MQTT: хвост']] },
+    opts: [['ph-more', 'Меню ⋮'], ['w3', 'Мастер 3'], ['w4', 'Мастер 4'], ['w5', 'Мастер 5'], ['w6', 'Мастер 6'], ['ph-se-action', 'Сценарий: действие'], ['ph-se-order', 'Сценарий: порядок'], ['ph-se-name', 'Сценарий: название'], ['ph-se-preview', 'Сценарий: просмотр'], ['ph-groups', 'Группы комнат'], ['ph-vd-suggest', 'Собрать из найденного'], ['ph-mqtt-tail', 'MQTT: хвост']] },
   { label: 'Пустые состояния',   get: () => S.empty ? 'empty' : 'full', set: v => { S.empty = v === 'empty'; if (state.screen === 'page') drawPage(false); },
     opts: [['full', 'Есть данные'], ['empty', 'Пусто']] },
   { label: 'Экран стола', get: () => String(cur), set: v => { const n = +v; if (n !== cur) { cur = n; tiles = pagesData[cur]; undoStack = []; hideSnack(); render(); updateDots(); } }, opts: [['0', '1'], ['1', '2'], ['2', '3'], ['3', '4']] },
@@ -1981,7 +2386,7 @@ render();
     });
     root.querySelectorAll('input[placeholder]:not([aria-label])').forEach(i => { const p = i.placeholder.trim(); if (p) i.setAttribute('aria-label', p); });
     root.querySelectorAll('.desk .tile').forEach(t => {
-      if (t.closest('.pv')) return; if (!t.hasAttribute('role')) { t.setAttribute('role', 'button'); t.tabIndex = 0; t.setAttribute('aria-label', txt(t)); }
+      if (t.closest('.pv, .pvbox, .gstage')) return; if (!t.hasAttribute('role')) { t.setAttribute('role', 'button'); t.tabIndex = 0; t.setAttribute('aria-label', txt(t)); }
     });
     root.querySelectorAll('.strip .hit:not([role])').forEach(h => { h.setAttribute('role', 'button'); h.tabIndex = 0; });
     root.querySelectorAll('.page .appbar .ttl, .form .appbar .ttl, .launcher .appbar .ttl').forEach(h => { h.setAttribute('role', 'heading'); h.setAttribute('aria-level', '1'); });
@@ -2011,9 +2416,10 @@ const ST_LABEL = { done: 'Проработан', proto: 'В прототипе',
 let stShow = true; try { stShow = localStorage.getItem('seven-status') !== 'off'; } catch (e) {}
 function currentScreenId() {
   const v = state.screen;
-  if (v === 'desk') return state.edit ? 'desk-edit' : 'desk';
+  if (v === 'desk') return state.move ? 'ph-move' : state.edit ? 'desk-edit' : 'desk';
   if (v === 'kbd') return 'apps';
   if (v === 'tile' || v === 'custom') return 'tile-form';
+  if (v === 'page' && curPage === 'ph-gallery') return 'ph-gallery';
   if (v === 'page') return curPage === 'settings' ? 'settings-' + S.tab : curPage === 'cc' ? 'cc-' + S.cct : curPage;
   return v;
 }
@@ -2032,13 +2438,13 @@ $('#stbar').addEventListener('click', e => {
 /* размер панели: 480 dp (×1,0) или 320 dp (×1,5), как в «Матрице плиток» */
 function setPanelDev(v) {
   panelDev = v;
-  document.documentElement.style.setProperty('--dim-panel', v === 'p15' ? '320px' : '480px');
+  document.documentElement.style.setProperty('--dim-panel', v === 'p15' ? '320px' : '480px'); desk.classList.toggle('narrow', v === 'p15');
   render(); if (state.screen === 'page') drawPage(true);
   updateDots && updateDots();
   syncControls();
 }
 /* точки статуса на кнопках списка экранов справа */
-const BTN_ID = { 'Экран': { kbd: 'apps', tile: 'tile-form', custom: 'tile-form' }, 'Мастера': { 'add-controller-m': 'add-controller' },
+const BTN_ID = { 'Экран': { kbd: 'apps', tile: 'tile-form', custom: 'tile-form', states: 'tile-form', pick: 'tile-form', gallery: 'ph-gallery', move: 'ph-move' }, 'Мастера': { 'add-controller-m': 'add-controller' },
   'Мой дом': { loc: 'cc-loc', conn: 'cc-conn', 'conn-fab': 'cc-conn', dev: 'cc-dev', wid: 'cc-wid', dlg: 'cc-loc' } };
 GROUPS.forEach(g => {
   if (!['Экран', 'Настройки', 'Мастера', 'Мой дом', 'Не проработаны (заглушки)'].includes(g.label)) return;
@@ -2086,6 +2492,7 @@ GROUPS.forEach(g => {
 })();
 /* бейдж обновляется при любой навигации */
 drawPage = (orig => function (...a) { const r = orig.apply(this, a); updateStatus(); return r; })(drawPage);
+drawPage = (orig => function (...a) { const r = orig.apply(this, a); if (curPage === 'ph-gallery') $('#page').querySelectorAll('.gstage .tile').forEach(el => { const dm = el.querySelector('.dim'); if (dm) bindDim(dm, { level: 0.6, on: true }, el); }); return r; })(drawPage);
 setEdit = (orig => function (...a) { const r = orig.apply(this, a); updateStatus(); return r; })(setEdit);
 setScreen = (orig => function (...a) { const r = orig.apply(this, a); updateStatus(); return r; })(setScreen);
 updateStatus();

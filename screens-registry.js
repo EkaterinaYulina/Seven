@@ -10,13 +10,12 @@ window.SEVEN_SCREENS = {
   items: [
     { id: 'desk',            group: 'Стол и меню', title: 'Стол', status: 'done', via: 'Стартовый экран' },
     { id: 'desk-edit',       group: 'Стол и меню', title: 'Режим правки стола', status: 'done', via: 'Меню → «Править экраны»' },
-    { id: 'sheet',           group: 'Стол и меню', title: 'Меню виджета', status: 'done', via: 'Правка → тап по плитке' },
-    { id: 'tile-form',       group: 'Стол и меню', title: 'Форма плитки', status: 'proto', via: 'Меню виджета → «Настроить»' },
+    { id: 'tile-form',       group: 'Стол и меню', title: 'Плитка', status: 'proto', via: 'Правка → тап по плитке или долгое нажатие на плитке' },
     { id: 'drawer',          group: 'Стол и меню', title: 'Боковое меню', status: 'done', via: 'Свайп от левого края или ☰' },
     { id: 'apps',            group: 'Стол и меню', title: 'Все приложения', status: 'done', via: 'Меню → «Все приложения»' },
     { id: 'shade',           group: 'Стол и меню', title: 'Шторка «Панель»', status: 'proto', via: 'Меню → «Панель»' },
-    { id: 'ph-gallery',      group: 'Стол и меню', title: 'Галерея «Добавить на экран»', status: 'stub', via: 'Правка → «+ Виджет»', code: 'DeskGallery' },
-    { id: 'ph-move',         group: 'Стол и меню', title: 'Перенос плитки', status: 'stub', via: 'Правка → тап по плитке → «Переместить»' },
+    { id: 'ph-gallery',      group: 'Стол и меню', title: 'Добавить плитку', status: 'proto', via: 'Правка → «+» в пустой клетке или «+ Виджет»', code: 'DeskGallery' },
+    { id: 'ph-move',         group: 'Стол и меню', title: 'Перенос плитки', status: 'proto', via: 'Правка → потянуть плитку, или «Плитка» → «Переместить»' },
     { id: 'ph-more',         group: 'Стол и меню', title: 'Меню «⋮» панели правки', status: 'stub', via: 'Правка → «⋮»' },
 
     { id: 'settings-voice',    group: 'Настройки', title: 'Голос', status: 'done', via: 'Настройки → Голос' },
