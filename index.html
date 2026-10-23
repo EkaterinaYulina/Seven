@@ -916,19 +916,48 @@ window.SEVEN_SCREENS = {
 .tile .bigv { font-size: 32px; line-height: 40px; font-weight: 500; }
 .tile[data-tone] .bigv { color: var(--tone-c); }
 
-/* размеры значений: 1×1 в столбик, 2×1 с одной строкой дописки, 2×2 списком */
-.tile.value-tile[data-w="1"] { flex-direction: column; align-items: flex-start; justify-content: center; gap: var(--dim-gap); }
-.tile.value-tile[data-w="1"] .text { width: 100%; }
+/* раскладки плиток по матрице: 1×1 — значок, название, значение; 2×1 — значок слева и колонка; 2×2 и 1×2 — значок сверху; 4×1 — колонка и остальное справа */
+.tile .top { display: flex; align-items: center; justify-content: space-between; gap: var(--dim-space-sm); min-height: 24px; height: auto; padding: 0; border: 0; flex: none; }
+.tile .top .tone-word { margin-left: auto; }
+.tile .sec.ext .tone-word { margin-left: 0; display: inline; }
+.tile .col { display: flex; flex-direction: column; justify-content: center; gap: 2px; flex: 1; min-width: 0; }
+.tile .vmin { font-size: 17px; line-height: 20px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tile .sec.ext { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tile.value-tile.tall { flex-direction: column; align-items: stretch; justify-content: flex-start; gap: var(--dim-space-sm); }
-.tile .vhead { display: flex; align-items: center; gap: var(--dim-space-sm); }
-.tile .vhead .name { flex: 1; min-width: 0; }
-.tile .vhead .tone-word { margin-left: 0; display: inline; }
+.tile .nrow { display: flex; align-items: center; gap: var(--dim-space-sm); min-width: 0; flex: none; }
+.tile .nrow .name { flex: 1; min-width: 0; }
+.tile .bigv { font-size: 32px; line-height: 40px; font-weight: 500; white-space: nowrap; }
+.tile .rows { display: flex; flex-direction: column; gap: 2px; }
 .tile .vr { display: flex; justify-content: space-between; gap: var(--dim-space-sm); font-size: var(--font-name); line-height: 20px; }
 .tile .vr .n { color: var(--c-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tile .vr .v { font-weight: 500; white-space: nowrap; }
 .tile .vr.ind .v { color: var(--tone-c); }
 .tile[data-tone="ok"] .vr.ind .v { color: var(--c-text-primary); }
+.tile .xcols { display: flex; align-items: center; gap: var(--dim-space-xl, 24px); margin-left: auto; padding-left: var(--dim-space-md); min-width: 0; }
+.tile .xc { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.tile .xc .v { font-size: var(--font-value); line-height: var(--lh-value); font-weight: 500; white-space: nowrap; }
+.tile .grow { flex: 1; min-width: 0; align-self: center; }
+.tile .grow .dim.h { margin-top: 0; }
+.tile .stepb { margin-top: auto; display: flex; gap: var(--dim-gap); }
+.tile .stepb span { flex: 1; height: 28px; border-radius: var(--dim-radius-chip); display: flex; align-items: center; justify-content: center; background: color-mix(in srgb, var(--c-text-primary) 8%, transparent); }
+.tile .stepb .ic { width: 18px; height: 18px; }
+.tile.r1x1, .tile.r1x2, .tile.r2x2, .tile.r4x2 { flex-direction: column; align-items: stretch; justify-content: flex-start; gap: var(--dim-gap); }
+.tile.r1x1 { gap: 2px; }
+.tile.r1x1 .name, .tile.r1x2 .name { font-size: 12px; line-height: 16px; }
+.tile.r1x1 > .name { margin-top: auto; }
+.tile.r1x2 > .name { margin-top: 6px; }
+.tile.r2x2 > .name { margin-top: 4px; }
+.tile.r2x1, .tile.r4x1 { flex-direction: row; align-items: center; gap: var(--dim-space-md); }
+.tile.r2x1 > .ic, .tile.r4x1 > .ic { flex: none; }
+.tile.r2x1.switch-tile .nrow, .tile.r2x1.switch-tile .col { gap: var(--dim-space-sm); }
+.tile.r2x1.switch-tile:has(.dim) { flex-direction: column; align-items: stretch; justify-content: space-between; gap: var(--dim-gap); }
+.tile.r2x1.switch-tile .nrow .sec { margin-left: auto; }
+.tile.r2x1 .dim.h { height: 32px; margin-top: 0; }
+.tile.r2x1 .dim.h .content > .ic { top: 4px; left: 12px; }
+.tile.r2x1 .dim .content > .pct { height: 32px; line-height: 32px; }
+.tile.r2x2.switch-tile .sec[data-role="state"] { font-size: var(--font-value); line-height: var(--lh-value); }
+.tile.r2x2.switch-tile .sec[data-role="state"]::before { width: 12px; height: 12px; }
+.tile.r2x2 .dim.h { margin-top: auto; }
+.tile.switch-tile > .ic + .name { margin-top: 0; }
 .tile.empty { border: 1.5px dashed var(--ui-outline); background: transparent; align-items: center; justify-content: center; }
 .tile.empty .empty-pv { font-size: var(--font-name); color: var(--c-text-secondary); margin: auto; }
 
@@ -941,7 +970,10 @@ window.SEVEN_SCREENS = {
 .dropbox.no { border-color: var(--ui-error); background: color-mix(in srgb, var(--ui-error) 10%, transparent); }
 
 /* перенос по кнопке «Переместить» */
-.desk.moving .tile { opacity: .6; pointer-events: none; }
+.desk.moving .tile { opacity: .45; pointer-events: none; }
+.desk.moving .tile.tgt { opacity: .85; pointer-events: auto; cursor: pointer; outline: 2px dashed var(--ui-primary-container); outline-offset: -2px; }
+.desk.moving .tile.lifted { opacity: 1; pointer-events: none; }
+.desk.edit .tile:not(.drag):not(.pressing) { transition: transform .16s ease; }
 .desk.moving .tile.lifted { opacity: 1; box-shadow: 0 6px 16px #0003; }
 .target { position: absolute; border-radius: var(--dim-radius-tile); border: 2px dashed var(--ui-primary-container); background: color-mix(in srgb, var(--ui-primary-container) 12%, transparent); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: var(--ui-on-surface); }
 .mvbar { display: none; flex: 1; align-items: center; gap: var(--dim-space-sm); font-size: var(--font-name); line-height: var(--lh-name); font-weight: 500; }
@@ -960,11 +992,11 @@ window.SEVEN_SCREENS = {
 .tscr .appbar { height: 56px; flex: none; display: flex; align-items: center; gap: var(--dim-space-sm); padding: 0 var(--dim-space-sm); border: 0; background: none; }
 .tscr .appbar .ttl { flex: 1; min-width: 0; margin: 0; font-size: 22px; line-height: 28px; font-weight: 500; }
 .tscr .appbar .btn.text { font-weight: 600; }
-.tscr .pvstage { flex: none; position: relative; height: 128px; display: flex; align-items: center; justify-content: center; padding-right: 76px; background: var(--desk-bg); }
+.tscr .pvstage { flex: none; position: relative; height: 136px; display: flex; align-items: center; justify-content: center; background: var(--desk-bg); }
 .tscr .pvbox { flex: none; pointer-events: none; }
-.tscr .szcol2 { position: absolute; right: 12px; top: 0; bottom: 0; display: flex; flex-direction: column; justify-content: center; gap: var(--dim-gap); }
-.tscr .szb2 { width: 56px; height: 40px; border-radius: var(--dim-radius-chip); border: 2px solid transparent; background: color-mix(in srgb, var(--c-tile) 70%, transparent); color: var(--ui-on-surface); font-size: 12px; font-weight: 500; }
-.tscr .szb2[aria-pressed="true"] { border-color: var(--ui-primary-container); background: var(--c-tile); font-weight: 600; }
+.tscr .szrow { flex: none; display: flex; gap: var(--dim-space-sm); padding: var(--dim-gap) var(--dim-gutter); }
+.tscr .szb2 { flex: 1; min-width: 0; height: 36px; border-radius: var(--dim-radius-chip); border: 2px solid transparent; background: color-mix(in srgb, var(--ui-on-surface) 6%, transparent); color: var(--ui-on-surface); font-size: var(--font-name); font-weight: 500; }
+.tscr .szb2[aria-pressed="true"] { border-color: var(--ui-primary-container); background: color-mix(in srgb, var(--ui-primary-container) 18%, transparent); font-weight: 600; }
 .tscr .szb2.no { opacity: .4; }
 .tscr .scroll { flex: 1; min-height: 0; overflow-y: auto; padding-bottom: calc(var(--dim-bar) + var(--dim-space-sm)); }
 .tscr .scroll.states, .tscr #pkList { padding-bottom: var(--dim-space-md); }
@@ -972,7 +1004,14 @@ window.SEVEN_SCREENS = {
 .tscr .padx { padding: 0 var(--dim-gutter); }
 .tscr .btn.wide { width: 100%; }
 .tscr .vrow, .tscr .zrow, .tscr .zcard, .tscr .pkrow { margin: 0 var(--dim-gutter) var(--dim-gap); border-radius: var(--dim-radius-card); background: color-mix(in srgb, var(--ui-on-surface) 6%, transparent); box-shadow: none; }
-.tscr .vrow { padding: var(--dim-space-sm) var(--dim-space-sm) var(--dim-space-sm) var(--dim-space-md); }
+.tscr .vrow { padding: var(--dim-space-sm) var(--dim-space-sm) var(--dim-space-sm) var(--dim-space-md); position: relative; display: flex; align-items: center; transition: transform .18s ease; }
+.tscr .vrow .tx { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.tscr .vrow .tx b { font-size: var(--font-name); line-height: 18px; font-weight: 500; }
+.tscr .vrow .tx span { font-size: 12px; line-height: 14px; color: var(--ui-on-surface-variant); }
+.tscr .vrow .ib { width: 40px; height: 40px; flex: none; display: flex; align-items: center; justify-content: center; color: var(--ui-on-surface-variant); }
+.tscr .vrow .dg { width: 40px; height: 40px; }
+.tscr .vrow.drag { z-index: 5; transition: none; background: color-mix(in srgb, var(--ui-on-surface) 6%, var(--sheet-bg)); box-shadow: 0 6px 14px #0003; }
+.tscr .vrow.drag .dg { cursor: grabbing; }
 .desk > .form.tscr .dd { box-shadow: none; background: color-mix(in srgb, var(--ui-on-surface) 6%, transparent); border: 0; }
 .tscr .zrow { width: calc(100% - 2 * var(--dim-gutter)); min-height: 48px; display: flex; align-items: center; gap: var(--dim-space-md); padding: 0 var(--dim-space-md) 0 var(--dim-space-md); text-align: left; color: var(--ui-on-surface); }
 .tscr .zrow .zk { font-size: 12px; color: var(--ui-on-surface-variant); width: 84px; flex: none; }
@@ -980,7 +1019,8 @@ window.SEVEN_SCREENS = {
 .tscr .zrow .zt { flex: 1; display: flex; flex-direction: column; min-width: 0; }
 .tscr .zrow .zt b { font-size: var(--font-name); line-height: 18px; font-weight: 500; }
 .tscr .zrow .zt em { font-style: normal; font-size: 12px; line-height: 14px; color: var(--ui-on-surface-variant); }
-.tscr .zrow .zh { font-size: var(--font-name); color: var(--ui-on-surface); max-width: 130px; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tscr .zrow .zh { font-size: var(--font-name); font-weight: 500; color: var(--ui-on-surface); max-width: 150px; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tscr .zrow .zh.ok { color: var(--tone-okc); } .tscr .zrow .zh.mid { color: var(--temp-hi); } .tscr .zrow .zh.bad { color: var(--tone-badc); }
 .tscr .zrow.now { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--ui-primary-container) 55%, transparent); }
 .tscr .zrow.static { min-height: 52px; }
 .tscr .zd { flex: none; width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
@@ -997,9 +1037,10 @@ window.SEVEN_SCREENS = {
 .tscr .zcard.now { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--ui-primary-container) 55%, transparent); }
 .tscr .zh2 { display: flex; align-items: center; gap: var(--dim-space-sm); font-size: var(--font-name); }
 .tscr .zh2 .here { font-size: 12px; font-weight: 500; color: var(--ui-on-surface-variant); }
-.tscr .zin { display: grid; grid-template-columns: 96px 96px minmax(0, 1fr); gap: var(--dim-space-sm); align-items: end; }
+.tscr .zin { display: grid; grid-template-columns: 1fr 1fr; gap: var(--dim-space-sm); align-items: end; }
+.tscr .zcard .hn { display: flex; flex-direction: column; gap: 2px; font-size: 12px; color: var(--ui-on-surface-variant); }
 .tscr .zin label { display: flex; flex-direction: column; gap: 2px; font-size: 12px; color: var(--ui-on-surface-variant); }
-.tscr .zin input { height: 40px; width: 100%; border: 0; border-radius: var(--dim-radius-chip); background: var(--c-tile); box-shadow: inset 0 0 0 1px var(--glass-line); color: var(--ui-on-surface); font: inherit; font-size: var(--font-name); padding: 0 10px; }
+.tscr .zcard input { height: 40px; width: 100%; border: 0; border-radius: var(--dim-radius-chip); background: var(--c-tile); box-shadow: inset 0 0 0 1px var(--glass-line); color: var(--ui-on-surface); font: inherit; font-size: var(--font-name); padding: 0 10px; }
 .tscr .zin input:focus { outline: 0; box-shadow: inset 0 0 0 2px var(--ui-primary-container); }
 .tscr .gh2 { padding: var(--dim-space-md) calc(var(--dim-gutter) + 8px) var(--dim-gap); display: flex; flex-direction: column; }
 .tscr .gh2 b { font-size: var(--font-name); line-height: 20px; font-weight: 500; }
@@ -1021,15 +1062,15 @@ window.SEVEN_SCREENS = {
 /* галерея «Добавить плитку» */
 .gal { display: flex; flex-direction: column; gap: var(--dim-space-sm); padding: 0 var(--dim-gutter) var(--dim-space-md); }
 .galrow { display: flex; align-items: center; gap: var(--dim-space-md); min-height: 56px; padding: 0 var(--dim-gutter); border-radius: var(--dim-radius-card); background: color-mix(in srgb, var(--page-text) 6%, transparent); text-align: left; color: var(--page-text); }
-.galrow .tx { flex: 1; display: flex; flex-direction: column; }
+.galrow .tx { flex: 1; min-width: 0; display: flex; align-items: baseline; gap: var(--dim-space-sm); }
 .galrow .tx b { font-size: var(--font-name); line-height: 18px; font-weight: 500; }
-.galrow .tx span { font-size: 12px; line-height: 16px; color: var(--page-t2); }
+.galrow .tx span { font-size: 12px; line-height: 16px; color: var(--page-t2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .gal .gh2 { display: flex; flex-direction: column; padding: var(--dim-gap) var(--dim-gap) 0; }
 .gal .gh2 b { font-size: var(--font-name); line-height: 20px; font-weight: 500; }
 .gal .gh2 span { font-size: 12px; line-height: 16px; color: var(--page-t2); }
 .gal2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--dim-space-sm); }
-.gstage { height: 98px; border-radius: var(--dim-radius-card); background: var(--desk-bg); display: flex; align-items: center; justify-content: center; padding: 0; overflow: hidden; }
-.gstage .gpv { display: block; flex: none; pointer-events: none; }
+.gstage { height: 98px; border-radius: var(--dim-radius-card); background: color-mix(in srgb, var(--page-text) 6%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--page-text) 10%, transparent); display: flex; align-items: center; justify-content: center; padding: 0; overflow: hidden; }
+.gstage .gpv { display: block; flex: none; pointer-events: none; text-align: left; }
 .gstage:active { filter: brightness(.96); }
 
 /* шевроны в строках ведут вправо (иконка chev по умолчанию смотрит вниз) */
@@ -1264,16 +1305,24 @@ function place(el, m, col, row, w, h) {
 const esc1 = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 /* значение плитки: цвет и слово берутся из зоны показателя. 1×1 — только главное значение; 2×1 — главное и ещё одно; 2×2 — все до четырёх */
 function valueInner(t) {
-  const z = zoneOf(t), v0 = t.vals[0], word = z && z.hint ? `<span class="tone-word">${esc1(z.hint)}</span>` : '';
-  if (t.w >= 2 && t.h >= 2) {
-    const head = `<div class="vhead">${ICON(v0.icon)}<span class="name">${esc1(v0.name)}</span>${word}</div>`;
-    if (t.vals.length === 1) return head + `<div class="bigv">${esc1(v0.value)}</div>`;
-    return head + t.vals.slice(0, 4).map(v => `<div class="vr${v.vid === t.ind ? ' ind' : ''}"><span class="n">${esc1(v.name)}</span><span class="v">${esc1(v.value)}</span></div>`).join('');
+  const z = zoneOf(t), v0 = t.vals[0], w = t.w, h = t.h, ic = ICON(v0.icon), nm = `<div class="name">${esc1(v0.name)}</div>`;
+  const word = z && z.hint ? `<span class="tone-word">${esc1(z.hint)}</span>` : '';
+  const cap = t.vals[1] ? `${esc1(t.vals[1].name)} ${esc1(t.vals[1].value)}` : (z && z.hint ? '' : esc1(v0.room || ''));
+  /* 1×1: значок, название, значение (как в матрице) */
+  if (w === 1) return `<div class="top">${ic}</div>${nm}<div class="vmin">${esc1(v0.value)}</div>`;
+  /* 4×1: значок, главное значение, остальные значения колонками справа */
+  if (w >= 4 && h === 1) return `${ic}<div class="col">${nm}<div class="value">${esc1(v0.value)}${word}</div><div class="sec ext">${esc1(v0.room || '')}</div></div>` +
+    `<div class="xcols">${t.vals.slice(1, 4).map(v => `<div class="xc"><span class="sec">${esc1(v.name)}</span><span class="v">${esc1(v.value)}</span></div>`).join('')}</div>`;
+  /* 2×2: значок и слово зоны сверху, название, одно крупное значение или список до четырёх */
+  if (h >= 2) {
+    const body = t.vals.length === 1 ? `<div class="bigv">${esc1(v0.value)}</div><div class="sec ext">${esc1(v0.room || '')}</div>`
+      : `<div class="rows">${t.vals.slice(0, 4).map(v => `<div class="vr${v.vid === t.ind ? ' ind' : ''}"><span class="n">${esc1(v.name)}</span><span class="v">${esc1(v.value)}</span></div>`).join('')}</div>`;
+    return `<div class="top">${ic}${word}</div>${nm}${body}`;
   }
-  const v1 = t.w >= 2 && t.vals[1] ? `<div class="sec ext">${esc1(t.vals[1].name)} ${esc1(t.vals[1].value)}</div>` : '';
-  return `${ICON(v0.icon)}<div class="text"><div class="name">${esc1(v0.name)}</div><div class="value">${esc1(v0.value)}${word}</div>${v1}</div>`;
+  /* 2×1: значок слева, справа название, значение со словом зоны и одна строка подписи */
+  return `${ic}<div class="col">${nm}<div class="value">${esc1(v0.value)}</div><div class="sec ext">${word}${word && cap ? ' · ' : ''}${cap}</div></div>`;
 }
-const tileCls = t => `tile ${t.type}-tile${t.type === 'value' && t.w >= 2 && t.h >= 2 ? ' tall' : ''}`;
+const tileCls = t => `tile ${t.type}-tile r${t.w}x${t.h}`;
 function tileInner(t) {
   if (t.type === 'value') return valueInner(t);
   if (t.type === 'placeholder')
@@ -1286,14 +1335,18 @@ function dimInner(o, t, ic = 'sun', pct = true) {
   return `<div class="dim ${o}"><div class="content base">${c}</div><div class="dim-fill"><div class="content over">${c}</div><i class="grip"></i></div></div>`;
 }
 function switchInner(t) {
-  const stateRow = `<div class="sec" data-role="state">${t.on ? 'Включен' : 'Выключен'}</div>`;
-  if (t.level == null) return `${ICON(t.icon)}<div class="name">${t.name}</div>${stateRow}`;
-  if (state.dimmer === 'old') return `${ICON(t.icon)}<div class="name">${t.name}</div>${stateRow}<div class="slider"><div class="track"></div><div class="thumb"></div></div>`;
-  return `${ICON(t.icon)}<div class="name">${t.name}</div>${stateRow}${dimInner('h', t)}`;
+  const w = t.w, h = t.h, ic = ICON(t.icon), nm = `<div class="name">${t.name}</div>`;
+  const st = `<div class="sec" data-role="state">${t.on ? 'Включен' : 'Выключен'}</div>`;
+  const dim = t.level == null ? '' : state.dimmer === 'old' ? '<div class="slider"><div class="track"></div><div class="thumb"></div></div>' : dimInner('h', t);
+  if (w === 1 && h === 2) return `<div class="top">${ic}</div>${nm}${st}<div class="stepb"><span>${ICON('plus')}</span><span>${ICON('minus')}</span></div>`;
+  if (w === 1) return `<div class="top">${ic}</div>${nm}${st}`;
+  if (w >= 4) return `${ic}<div class="col">${nm}${st}</div>${dim ? `<div class="grow">${dim}</div>` : ''}`;
+  if (h === 1) return dim ? `<div class="nrow">${ic}${nm}${st}</div>${dim}` : `${ic}<div class="col">${nm}${st}</div>`;
+  return `<div class="top">${ic}</div>${nm}${st}${dim}`;
 }
 function tileEl(t, m) {
   const el = document.createElement('div');
-  el.className = tileCls(t) + (t.id === selId ? ' sel' : '') + (state.move && state.move.id === t.id ? ' lifted' : '');
+  el.className = tileCls(t) + (t.id === selId ? ' sel' : '') + (state.move && state.move.id === t.id ? ' lifted' : '') + (state.move && state.move.id !== t.id && moveOk(t) ? ' tgt' : '');
   el.dataset.on = String(!!t.on);
   el.dataset.id = t.id;
   el.dataset.w = String(t.w);
@@ -1337,7 +1390,7 @@ function render() {
   if (state.move) {
     const mt = tiles.find(x => x.id === state.move.id);
     if (mt) for (let r = 0; r < m.rows; r++) for (let c = 0; c < m.columns; c++) {
-      if (!fitsAt(mt.id, c, r, mt.w, mt.h) || (c === mt.col && r === mt.row)) continue;
+      if (busy.has(r + ':' + c) || !planPlace(mt.id, c, r, mt.w, mt.h)) continue;
       const s = document.createElement('button');
       s.className = 'target'; s.dataset.act = 'target'; s.dataset.col = c; s.dataset.row = r; s.setAttribute('aria-label', 'Поставить сюда');
       s.textContent = 'Сюда';
@@ -1434,7 +1487,11 @@ grid.addEventListener('click', e => {
   if (lpFired) { lpFired = false; return; }
   if (dragMoved) { dragMoved = false; return; }
   const act = e.target.closest('[data-act]');
-  if (state.move) { if (act && act.dataset.act === 'target') placeMove(+act.dataset.col, +act.dataset.row); return; }
+  if (state.move) {
+    if (act && act.dataset.act === 'target') placeMove(+act.dataset.col, +act.dataset.row);
+    else { const te = e.target.closest('.tile'), o = te && te.dataset.id !== state.move.id && shown.find(x => x.id === te.dataset.id); if (o) placeMove(o.col, o.row); }
+    return;
+  }
   if (state.edit) {
     if (!act) { const te = e.target.closest('.tile'); if (te) openTile(te.dataset.id, true); return; }
     if (act.dataset.act === 'remove') removeTile(act.closest('.tile').dataset.id);
@@ -1463,7 +1520,7 @@ function undo() {
   if (op.kind === 'remove') tiles.splice(op.index, 0, op.tile);
   else if (op.kind === 'add') { const i = tiles.findIndex(t => t.id === op.id); if (i >= 0) tiles.splice(i, 1); }
   else if (op.kind === 'move') op.items.forEach(([id, col, row, w, h]) => { const t = tiles.find(x => x.id === id); if (t) { t.col = col; t.row = row; t.w = w; t.h = h; } });
-  else if (op.kind === 'edit') { const i = tiles.findIndex(t => t.id === op.id); if (i >= 0) tiles[i] = op.before; }
+  else if (op.kind === 'edit') { const i = tiles.findIndex(t => t.id === op.id); if (i >= 0) tiles[i] = op.before; if (op.items) op.items.forEach(([id, col, row, w, h]) => { const t = tiles.find(x => x.id === id); if (t) { t.col = col; t.row = row; t.w = w; t.h = h; } }); }
   hideSnack(); render();
 }
 function showSnack(text, o = {}) {
@@ -1570,7 +1627,13 @@ desk.addEventListener('pointermove', e => { if (edgeX !== null && e.clientX - ed
 /* ───────── Экран «Плитка», галерея «Добавить плитку», перенос ─────────
    Один экран «Плитка» вместо листа плитки и формы (ALL-67). Вход: нажатие на плитку в правке или долгое нажатие на столе.
    Галерея, «Своя плитка», копирование, перенос и убирание — из этого же экрана и из режима правки. */
-const SIZES = [['1×1', 1, 1], ['2×1', 2, 1], ['2×2', 2, 2]];
+/* размеры по типу плитки — как в матрице плиток (tile-matrix.html): значения, выключатель, уровень, часы */
+const SZ = { v: [[1, 1], [2, 1], [2, 2], [4, 1]], sw: [[1, 1], [2, 1], [2, 2]], lv: [[1, 1], [2, 1], [1, 2], [2, 2], [4, 1]], ph: [[2, 1], [2, 2], [4, 2]] };
+function sizesOf(t) {
+  const l = (t.type === 'value' ? SZ.v : t.type === 'placeholder' ? SZ.ph : t.level != null ? SZ.lv : SZ.sw).map(x => x.slice());
+  if (!l.some(([w, h]) => w === t.w && h === t.h)) l.unshift([t.w, t.h]);
+  return l;
+}
 const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 let form = null, addTarget = null, selId = null, selTimer = null, uid = 0;
 const fmtNum = n => n == null ? '' : String(n).replace('.', ',');
@@ -1584,6 +1647,44 @@ function fitsAt(selfId, col, row, w, h) {
   return !tiles.some(o => o.id !== selfId && overlaps(o, col, row, w, h));
 }
 const fits = (t, w, h) => fitsAt(t.id, t.col, t.row, w, h);
+/* Поставить плитку id (w×h) в клетку col,row. Мешающие плитки уезжают на ближайшее свободное место (по возможности — на прежнее
+   место этой плитки, то есть меняются местами). Если свободного места нет, они могут потеснить следующих, до трёх шагов. Нет места — null */
+function planPlace(id, col, row, w, h) {
+  const m = metrics();
+  if (col < 0 || row < 0 || col + w > m.columns || row + h > m.rows) return null;
+  const cur = id ? shown.find(x => x.id === id) : null;
+  const R = { id, col, row, w, h };
+  const start = {}; shown.forEach(x => { if (x.id !== id) start[x.id] = { id: x.id, col: x.col, row: x.row, w: x.w, h: x.h }; });
+  const ids = Object.keys(start), hit = ids.filter(k => overlaps(start[k], col, row, w, h));
+  if (!hit.length) return { moves: [] };
+  hit.sort((a, b) => start[b].w * start[b].h - start[a].w * start[a].h || start[a].row - start[b].row || start[a].col - start[b].col);
+  const solve = (queue, cfg, settled, depth) => {
+    if (!queue.length) return cfg;
+    const k = queue[0], o = cfg[k], rest = queue.slice(1), cands = [];
+    for (let r = 0; r + o.h <= m.rows; r++) for (let c = 0; c + o.w <= m.columns; c++) {
+      if (overlaps(R, c, r, o.w, o.h) || [...settled].some(s => overlaps(cfg[s], c, r, o.w, o.h))) continue;
+      const victims = ids.filter(v => v !== k && !settled.has(v) && !rest.includes(v) && overlaps(cfg[v], c, r, o.w, o.h));
+      if (victims.length && depth >= 3) continue;
+      let cost = Math.abs(c - o.col) + Math.abs(r - o.row) + victims.length * 4;
+      if (cur && c === cur.col && r === cur.row) cost -= 2;
+      cands.push({ c, r, victims, cost });
+    }
+    cands.sort((a, b) => a.cost - b.cost);
+    for (const cd of cands.slice(0, 8)) {
+      const next = { ...cfg, [k]: { ...o, col: cd.c, row: cd.r } };
+      const res = solve([...rest, ...cd.victims], next, new Set([...settled, k]), depth + (cd.victims.length ? 1 : 0));
+      if (res) return res;
+    }
+    return null;
+  };
+  const res = solve(hit, start, new Set(), 0);
+  if (!res) return null;
+  return { moves: ids.filter(k => res[k].col !== start[k].col || res[k].row !== start[k].row).map(k => ({ id: k, col: res[k].col, row: res[k].row })) };
+}
+/* в режиме «Переместить» плитка может быть местом назначения, если её можно подвинуть */
+function moveOk(o) { const mt = shown.find(x => x.id === state.move.id); return !!mt && !!planPlace(mt.id, o.col, o.row, mt.w, mt.h); }
+function applyPlan(plan) { plan.moves.forEach(mv => { const o = tiles.find(x => x.id === mv.id); if (o) { o.col = mv.col; o.row = mv.row; } }); }
+const posOf = t => shown.find(x => x.id === t.id) || t;
 function freeSpot(w, h, selfId = null) {
   const m = metrics();
   for (let r = 0; r < m.rows; r++) for (let c = 0; c < m.columns; c++) if (fitsAt(selfId, c, r, w, h)) return { col: c, row: r };
@@ -1643,7 +1744,7 @@ function previewTile() {
   return { id: f.id || 'new', type: f.isNew ? 'value' : b.type, col: 0, row: 0, w: d.w, h: d.h, vals: d.vals, ind: d.ind, zones: d.zones, name: b.name, icon: b.icon, on: b.on, level: b.level, title: b.title, subtitle: b.subtitle };
 }
 function pvBoxHTML(pt) {
-  const m = metrics(), W = m.cell * pt.w + m.gap * (pt.w - 1), H = m.cell * pt.h + m.gap * (pt.h - 1), s = Math.min(1, 108 / H);
+  const m = metrics(), W = m.cell * pt.w + m.gap * (pt.w - 1), H = m.cell * pt.h + m.gap * (pt.h - 1), s = Math.min(1, 118 / H, 440 / W);
   let inner;
   if (pt.type === 'value' && !pt.vals.length) inner = `<div class="tile value-tile empty" style="position:relative;width:${W}px;height:${H}px"><span class="empty-pv">Пока пусто</span></div>`;
   else { const z = zoneOf(pt); inner = `<div class="${tileCls(pt)}" data-w="${pt.w}" data-on="${!!pt.on}"${z ? ` data-tone="${z.k}"` : ''} style="position:relative;width:${W}px;height:${H}px">${tileInner(pt)}</div>`; }
@@ -1658,7 +1759,14 @@ function rangeText(z, v) {
   return 'любое значение';
 }
 const chevI = ICON('chev');
+const byFrom = zl => zl.map((z, i) => [z, i]).sort((a, b) => (a[0].from == null ? -1e9 : a[0].from) - (b[0].from == null ? -1e9 : b[0].from));
 const barBack = (title, right = '') => `<div class="appbar"><button class="icon-btn" data-f="back" aria-label="Назад">${ICON('back')}</button><div class="ttl">${title}</div>${right}</div>`;
+function sizePlan(w, h) {
+  const f = form;
+  if (f.isNew) return planPlace(null, f.target.col, f.target.row, w, h);
+  const p = posOf(f.t); return planPlace(f.id, p.col, p.row, w, h);
+}
+const sizeOk = (w, h) => !!sizePlan(w, h);
 function mainHTML() {
   const f = form, d = f.d, pt = previewTile(), type = pt.type;
   const canDone = type !== 'value' || d.vals.length > 0;
@@ -1666,41 +1774,42 @@ function mainHTML() {
   if (type === 'value') {
     secs += `<div class="sec-h">Показывать</div>`;
     secs += d.vals.map((v, i) => `<div class="vrow" data-i="${i}"><div class="tx"><b>${esc(v.name)}</b><span>${i === 0 ? 'Главное · ' : ''}${esc(v.value)}${v.room ? ' · ' + esc(v.room) : ''}</span></div>` +
-      `<button class="ib up" data-f="up" ${i === 0 ? 'disabled' : ''} aria-label="Выше">${chevI}</button>` +
-      `<button class="ib" data-f="down" ${i === d.vals.length - 1 ? 'disabled' : ''} aria-label="Ниже">${chevI}</button>` +
-      `<button class="ib" data-f="del" aria-label="Убрать значение">${ICON('close')}</button></div>`).join('');
+      `<button class="ib" data-f="del" aria-label="Убрать значение">${ICON('close')}</button>` +
+      `<span class="dg" data-vdrag="${i}" role="button" aria-label="Перетащить, чтобы изменить порядок">${ICON('grip')}</span></div>`).join('');
+    if (d.vals.length > 1) secs += `<p class="gd2">Первое значение главное. Потяните за ручку, чтобы поменять порядок</p>`;
     secs += `<div class="padx"><button class="btn tonal wide" data-f="add" ${d.vals.length >= 4 ? 'disabled' : ''}>${ICON('plus')}Добавить значение</button></div>`;
   }
   secs += `<div class="sec-h">По нажатию</div><div class="padx"><button class="dd"><span>${type === 'value' ? 'Ничего не делать' : 'Авто: переключить или подробности'}</span>${chevI}</button></div>`;
   if (type === 'value' && d.vals.length) {
     const iv = d.vals.find(v => v.vid === d.ind) || d.vals[0], zl = d.zones[iv.vid] || [], cur = zoneOf(pt);
-    secs += `<div class="sec-h">Цвет и подсказка</div>`;
+    secs += `<div class="sec-h">Цвет и слово по значению</div>`;
     secs += `<button class="zrow" data-f="states"><span class="zk">Показатель</span><span class="zv">${esc(iv.name)}</span>${chevI}</button>`;
-    secs += zl.map(z => `<button class="zrow${cur && cur.k === z.k ? ' now' : ''}" data-f="states"><i class="zd ${z.k}"></i><span class="zt"><b>${ZN[z.k]}</b><em>${rangeText(z, iv)}</em></span><span class="zh">${esc(z.hint)}</span>${chevI}</button>`).join('');
+    secs += byFrom(zl).map(([z]) => `<button class="zrow${cur && cur.k === z.k ? ' now' : ''}" data-f="states"><i class="zd ${z.k}"></i><span class="zt"><b>${rangeText(z, iv)}</b><em>${ZN[z.k]}</em></span><span class="zh ${z.k}">${esc(z.hint)}</span>${chevI}</button>`).join('');
+    secs += `<p class="gd2">Когда значение попадает в диапазон, плитка меняет цвет и пишет слово справа</p>`;
   } else if (type === 'switch') {
-    secs += `<div class="sec-h">Цвет и подсказка</div>` +
+    secs += `<div class="sec-h">Цвет и слово по состоянию</div>` +
       `<div class="zrow static"><i class="zd on"></i><span class="zt"><b>Вкл</b><em>Заполненная точка перед словом</em></span></div>` +
       `<div class="zrow static"><i class="zd off"></i><span class="zt"><b>Выкл</b><em>Пустое кольцо перед словом</em></span></div>`;
   } else if (type === 'placeholder') {
     secs += `<p class="gd2">Для этой плитки других настроек пока нет</p>`;
   }
   const bar = f.isNew ? '' : `<div class="tbar"><button class="btn tonal" data-f="move">${ICON('move')}Переместить</button><button class="btn tonal" data-f="copy"><svg class="ic" aria-hidden="true" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>Копировать</button><button class="btn tonal danger" data-f="remove">${ICON('minus')}Убрать</button></div>`;
-  const sizes = SIZES.map(([l, w, h]) => {
-    const ok = f.isNew ? fitsAt(null, f.target.col, f.target.row, w, h) : fitsAt(f.id, f.t.col, f.t.row, w, h);
-    return `<button class="szb2${ok ? '' : ' no'}" data-f="size" data-w="${w}" data-h="${h}" aria-pressed="${d.w === w && d.h === h}">${l}</button>`;
+  const sizes = sizesOf(pt).map(([w, h]) => {
+    const ok = sizeOk(w, h);
+    return `<button class="szb2${ok ? '' : ' no'}" data-f="size" data-w="${w}" data-h="${h}" aria-pressed="${d.w === w && d.h === h}">${w}×${h}</button>`;
   }).join('');
   return `<div class="appbar"><button class="icon-btn" data-f="back" aria-label="Назад">${ICON('back')}</button><div class="ttl">${f.isNew ? 'Своя плитка' : 'Плитка'}</div><button class="btn text" data-f="done" ${canDone ? '' : 'disabled'}>Готово</button></div>` +
-    `<div class="pvstage">${pvBoxHTML(pt)}<div class="szcol2">${sizes}</div></div><div class="scroll">${secs}</div>${bar}`;
+    `<div class="pvstage">${pvBoxHTML(pt)}</div><div class="szrow" role="group" aria-label="Размер плитки">${sizes}</div><div class="scroll">${secs}</div>${bar}`;
 }
 function statesHTML() {
   const f = form, d = f.d, iv = d.vals.find(v => v.vid === d.ind) || d.vals[0], zl = d.zones[iv.vid] || [], pt = previewTile(), cur = zoneOf(pt);
   const ind = d.vals.length > 1
     ? `<div class="gh2"><b>Показатель</b><span>Какое значение красит плитку</span></div><div class="chiprow2">${d.vals.map(v => `<button class="chip" data-f="ind" data-vid="${esc(v.vid)}" aria-pressed="${v.vid === iv.vid}">${esc(v.name)}</button>`).join('')}</div>`
     : `<div class="zrow static"><span class="zt"><em>Показатель</em><b>${esc(iv.name)}, сейчас ${esc(iv.value)}</b></span></div>`;
-  const cards = zl.map((z, i) => `<div class="zcard${cur && cur.k === z.k ? ' now' : ''}"><div class="zh2"><i class="zd ${z.k}"></i><b>${ZN[z.k]}</b>${cur && cur.k === z.k ? '<span class="here">сейчас здесь</span>' : ''}</div>` +
-    `<div class="zin"><label>от<input data-zi="${i}" data-zf="from" inputmode="decimal" autocomplete="off" value="${fmtNum(z.from)}" placeholder="без предела" aria-label="${ZN[z.k]}, от"></label>` +
-    `<label>до<input data-zi="${i}" data-zf="to" inputmode="decimal" autocomplete="off" value="${fmtNum(z.to)}" placeholder="без предела" aria-label="${ZN[z.k]}, до"></label>` +
-    `<label class="hn">Подсказка<input data-zi="${i}" data-zf="hint" autocomplete="off" value="${esc(z.hint)}" aria-label="${ZN[z.k]}, подсказка"></label></div></div>`).join('');
+  const cards = byFrom(zl).map(([z, i]) => `<div class="zcard${cur && cur.k === z.k ? ' now' : ''}"><div class="zh2"><i class="zd ${z.k}"></i><b>${ZN[z.k]}</b>${cur && cur.k === z.k ? '<span class="here">сейчас здесь</span>' : ''}</div>` +
+    `<div class="zin"><label>Значение от<input data-zi="${i}" data-zf="from" inputmode="decimal" autocomplete="off" value="${fmtNum(z.from)}" placeholder="без предела" aria-label="${ZN[z.k]}, значение от"></label>` +
+    `<label>до<input data-zi="${i}" data-zf="to" inputmode="decimal" autocomplete="off" value="${fmtNum(z.to)}" placeholder="без предела" aria-label="${ZN[z.k]}, значение до"></label></div>` +
+    `<label class="hn">Слово на плитке<input data-zi="${i}" data-zf="hint" autocomplete="off" value="${esc(z.hint)}" aria-label="${ZN[z.k]}, слово на плитке"></label></div>`).join('');
   return barBack('Цвет по значению') + `<div class="scroll states">${ind}${cards}<div class="padx"><button class="btn text" data-f="reset">Вернуть значения из шаблона</button></div></div>`;
 }
 function pickHTML() {
@@ -1740,16 +1849,20 @@ function commitForm() {
   const f = form; if (!f) return;
   if (f.isNew) {
     if (!f.d.vals.length) return;
-    if (!fitsAt(null, f.target.col, f.target.row, f.d.w, f.d.h)) { note('Плитка такого размера здесь не помещается: место занято.'); return; }
+    const plan = sizePlan(f.d.w, f.d.h);
+    if (!plan) { note('Плитка такого размера здесь не помещается: на экране нет места, чтобы подвинуть соседей.'); return; }
+    materialize(); applyPlan(plan);
     const t = { id: 'u' + (++uid), type: 'value', col: f.target.col, row: f.target.row, w: f.d.w, h: f.d.h, vals: structuredClone(f.d.vals), ind: f.d.ind, zones: structuredClone(f.d.zones) };
     tiles.push(t); pushUndo({ kind: 'add', id: t.id }); addTarget = null;
     setEdit(true); flash(t.id); leaveForm(); showSnack('Добавлено: ' + tileName(t), { set: t.id });
     return;
   }
   if (draftChanged()) {
-    if (!fitsAt(f.id, f.t.col, f.t.row, f.d.w, f.d.h)) { note('Плитка такого размера здесь не помещается: место занято.'); return; }
-    pushUndo({ kind: 'edit', id: f.id, before: structuredClone(f.t) });
-    applyDraft(f.t);
+    const resized = f.d.w !== f.t.w || f.d.h !== f.t.h, plan = resized ? sizePlan(f.d.w, f.d.h) : { moves: [] };
+    if (!plan) { note('Плитка такого размера здесь не помещается: на экране нет места, чтобы подвинуть соседей.'); return; }
+    materialize();
+    pushUndo({ kind: 'edit', id: f.id, before: structuredClone(f.t), items: snapshotPos() });
+    applyDraft(f.t); applyPlan(plan);
   }
   leaveForm();
 }
@@ -1768,15 +1881,13 @@ $('#form').addEventListener('click', e => {
   if (a === 'back') { if (f.view !== 'main') { f.view = 'main'; return drawForm(); } return f.isNew ? leaveForm() : commitForm(); }
   if (a === 'done') return commitForm();
   if (a === 'size') {
-    const w = +b.dataset.w, h = +b.dataset.h, ok = f.isNew ? fitsAt(null, f.target.col, f.target.row, w, h) : fitsAt(f.id, f.t.col, f.t.row, w, h);
-    if (!ok) { note('Плитка такого размера здесь не помещается: место занято.'); return; }
+    const w = +b.dataset.w, h = +b.dataset.h;
+    if (!sizeOk(w, h)) { note('Плитка такого размера здесь не помещается: на экране нет места, чтобы подвинуть соседей.'); return; }
     d.w = w; d.h = h; note(''); return drawForm();
   }
-  if (a === 'up' || a === 'down' || a === 'del') {
+  if (a === 'del') {
     const i = +b.closest('.vrow').dataset.i, r = d.vals;
     if (a === 'del') { const [x] = r.splice(i, 1); delete d.zones[x.vid]; if (d.ind === x.vid) d.ind = r[0] ? r[0].vid : null; }
-    if (a === 'up' && i > 0) [r[i - 1], r[i]] = [r[i], r[i - 1]];
-    if (a === 'down' && i < r.length - 1) [r[i + 1], r[i]] = [r[i], r[i + 1]];
     return drawForm();
   }
   if (a === 'add') { f.view = 'pick'; return drawForm(); }
@@ -1792,6 +1903,26 @@ $('#form').addEventListener('click', e => {
   if (a === 'remove') { const id = f.id; setScreen('desk'); return removeTile(id); }
   if (a === 'move') { const id = f.id; if (draftChanged()) { pushUndo({ kind: 'edit', id, before: structuredClone(f.t) }); applyDraft(f.t); } setScreen('desk'); setEdit(true); return startMove(id); }
 });
+/* перетаскивание значений за ручку: строка следует за пальцем, соседние сдвигаются, порядок меняется на отпускании */
+$('#form').addEventListener('pointerdown', e => {
+  const h = e.target.closest('[data-vdrag]'); if (!h || !form) return;
+  e.preventDefault(); e.stopPropagation();
+  const rows = [...$('#form').querySelectorAll('.vrow')], from = +h.dataset.vdrag, me = rows[from], rc = rows.map(r => r.getBoundingClientRect());
+  const gap = rows.length > 1 ? rc[1].top - rc[0].bottom : 4, shift = rc[from].height + gap, y0 = e.clientY;
+  let to = from; h.setPointerCapture(e.pointerId); me.classList.add('drag');
+  const mv = ev => {
+    const dy = ev.clientY - y0; me.style.transform = `translateY(${dy}px)`;
+    const c = rc[from].top + rc[from].height / 2 + dy; to = from;
+    rows.forEach((x, i) => { if (i < from && c < rc[i].top + rc[i].height / 2) to = Math.min(to, i); if (i > from && c > rc[i].top + rc[i].height / 2) to = Math.max(to, i); });
+    rows.forEach((x, i) => { if (i === from) return; x.style.transform = (i >= to && i < from) ? `translateY(${shift}px)` : (i <= to && i > from) ? `translateY(${-shift}px)` : ''; });
+  };
+  const up = () => {
+    h.removeEventListener('pointermove', mv); h.removeEventListener('pointerup', up); h.removeEventListener('pointercancel', up);
+    if (to !== from) { const [v] = form.d.vals.splice(from, 1); form.d.vals.splice(to, 0, v); }
+    drawForm();
+  };
+  h.addEventListener('pointermove', mv); h.addEventListener('pointerup', up); h.addEventListener('pointercancel', up);
+});
 $('#form').addEventListener('input', e => {
   const i = e.target; if (!form) return;
   if (i.id === 'pkq') { $('#pkList').innerHTML = pickList(i.value); return; }
@@ -1805,7 +1936,7 @@ $('#form').addEventListener('change', e => { if (e.target.dataset && e.target.da
 function startMove(id) {
   const t = tiles.find(x => x.id === id); if (!t) return;
   state.move = { id }; hideSnack(); render();
-  note('Нажмите на свободное место, куда поставить плитку.');
+  note('Нажмите на свободное место или на плитку с пунктирной рамкой: ваша плитка встанет сюда, а соседние подвинутся.');
 }
 function endMove() { state.move = null; render(); note(''); }
 function materialize() {
@@ -1814,10 +1945,11 @@ function materialize() {
 const snapshotPos = () => tiles.map(t => [t.id, t.col, t.row, t.w, t.h]);
 function placeMove(col, row) {
   const t = tiles.find(x => x.id === state.move.id); if (!t) return endMove();
-  if (!fitsAt(t.id, col, row, t.w, t.h)) return;
+  const p = posOf(t), plan = planPlace(t.id, col, row, p.w, p.h);
+  if (!plan) { note('Некуда сдвинуть соседние плитки. Выберите другое место.'); return; }
   materialize(); pushUndo({ kind: 'move', items: snapshotPos() });
-  t.col = col; t.row = row; state.move = null; flash(t.id); render();
-  showSnack('Перемещено: ' + tileName(t));
+  applyPlan(plan); t.col = col; t.row = row; state.move = null; flash(t.id); render();
+  showSnack('Перемещено: ' + tileName(t) + (plan.moves.length ? ' · подвинуто: ' + plan.moves.length : ''));
 }
 $('#mvCancel').onclick = endMove;
 
@@ -1827,15 +1959,21 @@ function dropTarget() {
   const m = metrics(), t = drag.t, dx = drag.dx, dy = drag.dy;
   let col = Math.round((drag.left + dx - m.gap) / (m.cell + m.gap)), row = Math.round((drag.top + dy - m.gap) / (m.cell + m.gap));
   col = Math.max(0, Math.min(m.columns - t.w, col)); row = Math.max(0, Math.min(m.rows - t.h, row));
-  const hit = shown.filter(o => o.id !== t.id && overlaps(o, col, row, t.w, t.h));
-  if (!hit.length) return { col, row, ok: true };
-  if (hit.length === 1 && hit[0].w === t.w && hit[0].h === t.h) return { col, row, ok: true, swap: hit[0].id };
-  return { col, row, ok: false };
+  const plan = planPlace(t.id, col, row, t.w, t.h);
+  return { col, row, ok: !!plan, plan };
+}
+/* пока тянем, соседние плитки сразу показывают, куда уедут */
+function showShift(plan) {
+  const m = metrics(), st = m.cell + m.gap;
+  grid.querySelectorAll('.tile').forEach(el => {
+    if (el === drag.el) return;
+    const mv = plan && plan.moves.find(x => x.id === el.dataset.id), o = shown.find(x => x.id === el.dataset.id);
+    el.style.transform = mv && o ? `translate(${(mv.col - o.col) * st}px,${(mv.row - o.row) * st}px)` : '';
+  });
 }
 grid.addEventListener('pointerdown', e => {
   if (!state.edit || state.move || e.button > 0) return;
-  if (e.target.closest('[data-act]')) return;
-  const te = e.target.closest('.tile'); if (!te) return;
+  const te = e.target.closest('.tile'); if (!te) return;   // тянуть можно и за область красного ×: без сдвига сработает обычное нажатие
   const t = shown.find(x => x.id === te.dataset.id); if (!t) return;
   drag = { id: t.id, t, el: te, x0: e.clientX, y0: e.clientY, dx: 0, dy: 0, on: false, pid: e.pointerId, left: parseFloat(te.style.left), top: parseFloat(te.style.top) };
 });
@@ -1847,11 +1985,11 @@ grid.addEventListener('pointermove', e => {
     drag.on = true; try { drag.el.setPointerCapture(drag.pid); } catch (err) {}
     hideSnack();
     drag.el.classList.add('drag'); drag.box = document.createElement('div'); drag.box.className = 'dropbox'; grid.appendChild(drag.box);
-    note('Отпустите плитку на свободном месте. Если место занято плиткой того же размера, они поменяются местами.');
+    note('Отпустите плитку на нужном месте. Если оно занято, соседние плитки подвинутся.');
   }
   drag.el.style.transform = `translate(${drag.dx}px,${drag.dy}px)`;
   const tg = drag.tgt = dropTarget(), m = metrics();
-  place(drag.box, m, tg.col, tg.row, drag.t.w, drag.t.h); drag.box.classList.toggle('no', !tg.ok);
+  place(drag.box, m, tg.col, tg.row, drag.t.w, drag.t.h); drag.box.classList.toggle('no', !tg.ok); showShift(tg.plan);
 });
 function endDrag(commit) {
   const d = drag; drag = null; if (!d || !d.on) return;
@@ -1859,13 +1997,13 @@ function endDrag(commit) {
   d.box.remove(); const tg = d.tgt, t = tiles.find(x => x.id === d.id);
   if (commit && tg && tg.ok && t && (tg.col !== d.t.col || tg.row !== d.t.row)) {
     materialize(); pushUndo({ kind: 'move', items: snapshotPos() });
-    if (tg.swap) { const o = tiles.find(x => x.id === tg.swap); o.col = t.col; o.row = t.row; }
-    t.col = tg.col; t.row = tg.row; flash(t.id); note(''); render();
-    showSnack('Перемещено: ' + tileName(t));
+    applyPlan(tg.plan); t.col = tg.col; t.row = tg.row; flash(t.id); note(''); render();
+    showSnack('Перемещено: ' + tileName(t) + (tg.plan.moves.length ? ' · подвинуто: ' + tg.plan.moves.length : ''));
     return;
   }
-  if (commit && tg && !tg.ok) note('Здесь занято. Плитка вернулась на своё место.'); else note('');
+  if (commit && tg && !tg.ok) note('Некуда сдвинуть соседние плитки. Плитка вернулась на своё место.'); else note('');
   d.el.animate([{ transform: d.el.style.transform }, { transform: 'translate(0,0)' }], { duration: 160, easing: 'ease-out' }).finished.then(() => render(), () => render());
+  grid.querySelectorAll('.tile').forEach(el => { if (el !== d.el) el.style.transform = ''; });
 }
 grid.addEventListener('pointerup', e => { if (drag && e.pointerId === drag.pid) endDrag(true); });
 grid.addEventListener('pointercancel', e => { if (drag && e.pointerId === drag.pid) endDrag(false); });
