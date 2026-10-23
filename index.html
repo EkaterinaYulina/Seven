@@ -1070,10 +1070,10 @@ window.SEVEN_SCREENS = {
 .gal .gh2 { display: flex; flex-direction: column; padding: var(--dim-gap) var(--dim-gap) 0; }
 .gal .gh2 b { font-size: var(--font-name); line-height: 20px; font-weight: 500; }
 .gal .gh2 span { font-size: 12px; line-height: 16px; color: var(--page-t2); }
-.gal2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--dim-space-sm); }
-.gstage { height: 98px; border-radius: var(--dim-radius-card); background: color-mix(in srgb, var(--page-text) 6%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--page-text) 10%, transparent); display: flex; align-items: center; justify-content: center; padding: 0; overflow: hidden; }
+.galrow .tx.col2 { flex-direction: column; align-items: stretch; gap: 0; }
+.galrow .gstage { flex: none; width: 92px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: var(--dim-radius-chip); background: color-mix(in srgb, var(--page-text) 8%, transparent); }
+.gstage .tile { text-align: left; box-shadow: 0 0 0 1px color-mix(in srgb, var(--page-text) 14%, transparent); }
 .gstage .gpv { display: block; flex: none; pointer-events: none; text-align: left; }
-.gstage:active { filter: brightness(.96); }
 
 /* шевроны в строках ведут вправо (иконка chev по умолчанию смотрит вниз) */
 .tscr .zrow > svg:last-child, .galrow > svg:last-child, .tscr .dd > svg:last-child { transform: rotate(-90deg); }
@@ -1697,25 +1697,32 @@ function flash(id) { selId = id; clearTimeout(selTimer); selTimer = setTimeout((
 
 /* ── Галерея ── */
 const GAL = {
-  temp:    { g: 's', make: () => vt('', 0, 0, 2, 1, [mkVal('temp')]) },
+  temp:    { g: 's', make: () => vt('', 0, 0, 2, 1, [mkVal('temp', { value: '22,5 °C' })]) },
   hum:     { g: 's', make: () => vt('', 0, 0, 2, 1, [mkVal('hum')]) },
   co2:     { g: 's', make: () => vt('', 0, 0, 2, 1, [mkVal('co2')]) },
   press:   { g: 's', make: () => vt('', 0, 0, 2, 1, [mkVal('press')]) },
   light:   { g: 'c', make: () => ({ id: '', type: 'switch', col: 0, row: 0, w: 1, h: 1, icon: 'bulb', name: 'Свет', on: false }) },
   dimmer:  { g: 'c', make: () => ({ id: '', type: 'switch', col: 0, row: 0, w: 2, h: 2, icon: 'bulb', name: 'Свет', on: true, level: 0.6 }) },
 };
+const GALM = {
+  temp: ['Температура', '2×1 · одно значение', 'thermometer'], hum: ['Влажность', '2×1 · одно значение', 'drop'],
+  co2: ['Уровень CO₂', '2×1 · одно значение', 'signal'], press: ['Давление', '2×1 · одно значение', 'signal'],
+  light: ['Выключатель', '1×1 · вкл и выкл', 'bulb'], dimmer: ['Диммер', '2×2 · с ползунком яркости', 'bulb'],
+};
+/* превью в строке: настоящая плитка, вписанная в одинаковую рамку */
 function galStage(key) {
   const t = GAL[key].make(), m = metrics();
-  const W = m.cell * t.w + m.gap * (t.w - 1), H = m.cell * t.h + m.gap * (t.h - 1), s = Math.min(1, 86 / H), z = zoneOf(t);
+  const W = m.cell * t.w + m.gap * (t.w - 1), H = m.cell * t.h + m.gap * (t.h - 1), s = Math.min(1, 52 / H, 88 / W), z = zoneOf(t);
   const el = `<div class="${tileCls(t)}" data-w="${t.w}" data-on="${!!t.on}"${z ? ` data-tone="${z.k}"` : ''} style="position:relative;width:${W}px;height:${H}px;transform:scale(${s});transform-origin:0 0;flex:none">${tileInner(t)}</div>`;
-  return `<button class="gstage" data-go="gal:${key}" aria-label="Добавить: ${esc(tileName(t))}"><span class="gpv" style="width:${W * s}px;height:${H * s}px">${el}</span></button>`;
+  return `<span class="gstage"><span class="gpv" style="width:${W * s}px;height:${H * s}px">${el}</span></span>`;
 }
+const galRow = key => { const [n, d, ic] = GALM[key]; return `<button class="galrow" data-go="gal:${key}" aria-label="Добавить: ${n}">${ICON(ic)}<span class="tx col2"><b>${n}</b><span>${d}</span></span>${galStage(key)}</button>`; };
 const galleryPage = () => ({ back: true, title: 'Добавить плитку', body:
   `<div class="gal"><button class="galrow" data-go="custom">${ICON('plus')}<span class="tx"><b>Своя плитка</b><span>Собрать с нуля</span></span>${ICON('chev')}</button>` +
   `<div class="gh2"><b>Датчики</b><span>Нажмите, и плитка встанет на стол. Потом её можно изменить</span></div>` +
-  `<div class="gal2">${['temp', 'hum', 'co2', 'press'].map(galStage).join('')}</div>` +
+  ['temp', 'hum', 'co2', 'press'].map(galRow).join('') +
   `<div class="gh2"><b>Управление</b></div>` +
-  `<div class="gal2">${['light', 'dimmer'].map(galStage).join('')}</div></div>` });
+  ['light', 'dimmer'].map(galRow).join('') + `</div>` });
 function addFromGallery(key) {
   const t = GAL[key].make();
   const spot = (addTarget && fitsAt(null, addTarget.col, addTarget.row, t.w, t.h)) ? addTarget : freeSpot(t.w, t.h);
