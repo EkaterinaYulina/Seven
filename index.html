@@ -1010,6 +1010,8 @@ window.SEVEN_SCREENS = {
 .tscr .vrow .tx span { font-size: 12px; line-height: 14px; color: var(--ui-on-surface-variant); }
 .tscr .vrow .ib { width: 40px; height: 40px; flex: none; display: flex; align-items: center; justify-content: center; color: var(--ui-on-surface-variant); }
 .tscr .vrow .dg { width: 40px; height: 40px; }
+.tscr .vrow .ib.del { margin-right: var(--dim-space-sm); }
+.tscr .vrow { padding-left: var(--dim-space-sm); }
 .tscr .vrow.drag { z-index: 5; transition: none; background: color-mix(in srgb, var(--ui-on-surface) 6%, var(--sheet-bg)); box-shadow: 0 6px 14px #0003; }
 .tscr .vrow.drag .dg { cursor: grabbing; }
 .desk > .form.tscr .dd { box-shadow: none; background: color-mix(in srgb, var(--ui-on-surface) 6%, transparent); border: 0; }
@@ -1773,9 +1775,8 @@ function mainHTML() {
   let secs = '';
   if (type === 'value') {
     secs += `<div class="sec-h">Показывать</div>`;
-    secs += d.vals.map((v, i) => `<div class="vrow" data-i="${i}"><div class="tx"><b>${esc(v.name)}</b><span>${i === 0 ? 'Главное · ' : ''}${esc(v.value)}${v.room ? ' · ' + esc(v.room) : ''}</span></div>` +
-      `<button class="ib" data-f="del" aria-label="Убрать значение">${ICON('close')}</button>` +
-      `<span class="dg" data-vdrag="${i}" role="button" aria-label="Перетащить, чтобы изменить порядок">${ICON('grip')}</span></div>`).join('');
+    secs += d.vals.map((v, i) => `<div class="vrow" data-i="${i}"><button class="ib del" data-f="del" aria-label="Убрать значение">${ICON('close')}</button><div class="tx"><b>${esc(v.name)}</b><span>${i === 0 ? 'Главное · ' : ''}${esc(v.value)}${v.room ? ' · ' + esc(v.room) : ''}</span></div>` +
+            `<span class="dg" data-vdrag="${i}" role="button" aria-label="Перетащить, чтобы изменить порядок">${ICON('grip')}</span></div>`).join('');
     if (d.vals.length > 1) secs += `<p class="gd2">Первое значение главное. Потяните за ручку, чтобы поменять порядок</p>`;
     secs += `<div class="padx"><button class="btn tonal wide" data-f="add" ${d.vals.length >= 4 ? 'disabled' : ''}>${ICON('plus')}Добавить значение</button></div>`;
   }
