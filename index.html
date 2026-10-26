@@ -868,6 +868,11 @@ input::placeholder { color: var(--a11y-ph); opacity: 1; }
 .scrl .r .b.done { background: #CFE6D6; color: #1F5A40; }
 .scrl .r .b.proto { background: #E4E3DA; color: #505348; }
 .scrl .r .b.stub { background: #F6D9B8; color: #7A3D08; }
+.scrl .r.ro { display: flex; align-items: flex-start; gap: 10px; padding: 7px 10px; border-bottom: 1px solid #E4E3DA; font-size: 13px; line-height: 18px; color: var(--core-ink); cursor: default; }
+.scrl .r.ro:last-child { border-bottom: 0; }
+.scrl .r.ro .n small { display: block; margin-top: 1px; font-size: 12px; line-height: 16px; color: var(--core-ink-2); }
+.scrl .r.ro .n em { font-style: normal; color: var(--core-ink-3); white-space: nowrap; }
+.scrl .r .b.panel { background: #D9E4F3; color: #1F3F6B; }
 .viewopts > summary { cursor: pointer; font-size: 13px; font-weight: 600; margin: 14px 0 8px; }
 </style>
 <script>
@@ -2724,6 +2729,32 @@ GROUPS.forEach(g => {
     sec.append(h, rows); host.appendChild(sec);
     g.seg.parentElement.style.display = 'none';
   });
+  /* Только список: экраны и блоки, снятые на реальной панели (видео 26.10.2026), которых нет в кликабельном макете. Не кнопки, в макет не ведут. */
+  const PANEL_ONLY = [
+    ['Правка → меню «⋮»', 'Добавить экран, Убрать экран, Сдвинуть экран вправо, Копировать экраны…, Обои экранов', '0:21'],
+    ['Мой дом → Автоматизация', 'Вкладка вместо «Виджеты»: переключатель «Сценарии / Виртуальные устройства»', '2:45'],
+    ['Автоматизация → Виртуальные устройства', 'Общий список с чипами комнат, «Привязок: 3 · каналов: 3», корзина, «Собрать из найденного», «Добавить устройство»', '2:48'],
+    ['Мой дом → Модели', '«Скачивать модели по сети» и пусто «Моделей пока нет»', '2:53'],
+    ['Настройки → Голос: слышимое и тихие часы', '«Показывать, что услышала», «Показывать всё (диагностика)», «Время на команду после слова», «Тихие часы» с «Добавить интервал»', '1:09'],
+    ['Голосовая обратная связь поверх экрана', 'Пилюля «Слушаю…» вверху и нижний бабл «Услышала (не обращение): «…»»', '0:04'],
+    ['Настройки → Подключение: управление панелью', '«Привязанное устройство не найдено» и «Отвязать», «Комната», «Чем что управляется», инфоплашка «Один источник на панель»', '1:18'],
+    ['Шторка «Панель»: прокрутка', 'Пояснение про яркость, Bluetooth, Клавиатура и языки ввода, Перезапустить приложение, Перезагрузить панель', '0:49'],
+    ['Брокер: все поля', 'Логин, пароль, версия MQTT (5 / 3.1.1), QoS 0/1/2, «Брокер включён», «Проверить соединение», «Удалить брокер»', '2:11'],
+    ['Подключения: статус брокера', 'Строка «Подключение…» со значком ⓘ под адресом брокера', '1:56'],
+    ['Журнал команд: запись', 'Тип «Запрос состояния» и диалог «Запись»: Услышано, Понято, «Закрыть»', '1:44'],
+    ['Добавить плитку: поиск и разделы', 'Поиск, «Эта комната / Все комнаты», разделы Выключатели, Уровни, Датчики, Прочее, «Ещё 14: уточните поиск»', '0:27'],
+    ['Мастер: контроллеры не найдены', '«Контроллеры в сети не найдены. Укажите адрес брокера вручную»', '2:31']
+  ];
+  { const sec = document.createElement('div'), rows = document.createElement('div'); rows.className = 'rows';
+    PANEL_ONLY.forEach(([t, d, tc]) => {
+      const r = document.createElement('div'); r.className = 'r ro';
+      r.innerHTML = '<span class="n"><span></span><small></small></span><span class="b panel">Только на панели</span>';
+      r.querySelector('.n span').textContent = t;
+      r.querySelector('small').innerHTML = ''; r.querySelector('small').append(d + ' ', Object.assign(document.createElement('em'), { textContent: '· видео ' + tc }));
+      rows.appendChild(r);
+    });
+    const h = document.createElement('h4'); h.innerHTML = `<span>Есть на панели, в макете нет</span><small>только список, ${PANEL_ONLY.length}</small>`;
+    sec.append(h, rows); host.appendChild(sec); }
   const lg = controls.querySelector('.stlegend'); if (lg) lg.remove();
   (controls.querySelector('.hint') || controls.firstChild).after(host);
   /* параметры просмотра: всё остальное */
