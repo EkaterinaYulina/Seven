@@ -32,7 +32,7 @@ window.SEVEN_SCREENS = {
     { id: 'export',            group: 'Настройки', title: 'Экспорт и импорт', status: 'proto', via: 'Данные → «Экспорт и импорт»' },
     { id: 'journal',           group: 'Настройки', title: 'Журнал команд', status: 'proto', via: 'Данные → «Журнал команд»' },
 
-    { id: 'cc-loc',          group: 'Мой дом', title: 'Локации', status: 'done', via: 'Меню → «Мой дом»' },
+    { id: 'cc-loc',          group: 'Мой дом', title: 'Локации', status: 'done', via: 'Меню → «Мой дом»', changed: 4 },
     { id: 'cc-vdevs',        group: 'Мой дом', title: 'Виртуальные устройства комнаты', status: 'done', via: 'Локации → «Виртуальные устройства»' },
     { id: 'cc-vdev',         group: 'Мой дом', title: 'Редактор виртуального устройства', status: 'proto', via: 'Виртуальные устройства → «Настроить»' },
     { id: 'ph-vd-suggest',   group: 'Мой дом', title: 'Собрать из найденного', status: 'stub', via: 'Виртуальные устройства → «Собрать из найденного»', code: 'VirtualDeviceSuggest' },
