@@ -228,27 +228,33 @@ svg.ic.dots { stroke-width: 2.6; }
 
 /* ── Боковое меню (DrawerContent) и «Все приложения» (LauncherApps) ── */
 .desk > .scrim { inset: 0; z-index: 5; background: var(--core-scrim); opacity: 0; pointer-events: none; transition: opacity .2s; }
-.desk > .drawer { left: 0; top: 0; bottom: 0; width: 360px; z-index: 6; background: var(--ui-surface-card); color: var(--ui-on-surface);
-  border-radius: 0 var(--dim-radius-card) var(--dim-radius-card) 0; padding: var(--dim-space-md) var(--dim-space-md) var(--dim-space-md) 0;
+.desk > .drawer { left: 0; top: 0; bottom: 0; width: 360px; z-index: 6; color: var(--ui-on-surface);
+  border-radius: 0 var(--dim-radius-card) var(--dim-radius-card) 0; padding: 0;
   display: flex; flex-direction: column; transform: translateX(-100%); transition: transform .22s ease; }
 .desk[data-screen="drawer"] > .scrim { opacity: 1; pointer-events: auto; }
 .desk[data-screen="drawer"] > .drawer { transform: none; }
-.drawer .head { padding: 0 0 var(--dim-space-md) var(--dim-space-xl); }
-.drawer .head .t { font-size: 20px; line-height: 24px; font-weight: 500; }
-.drawer .head .s { margin-top: 2px; font-size: var(--font-name); line-height: var(--lh-name); color: var(--c-text-secondary); }
-.drawer .item { height: 48px; margin-left: var(--dim-space-sm); border-radius: 999px; padding: 0 var(--dim-space-md) 0 var(--dim-space-md);
-  display: flex; align-items: center; gap: var(--dim-gutter); font-size: var(--font-name); line-height: var(--lh-name); cursor: pointer; text-align: left; width: calc(100% - var(--dim-space-sm)); }
-.drawer .item[aria-current="true"] { background: color-mix(in srgb, var(--ui-primary-container) 16%, transparent); font-weight: 500; }
-.drawer .roomcard { display: flex; align-items: center; gap: var(--dim-space-md); margin: 0 var(--dim-gutter) 0 var(--dim-space-sm); padding: 12px var(--dim-space-md); width: calc(100% - var(--dim-gutter) - var(--dim-space-sm)); border-radius: 18px; text-align: left; cursor: pointer;
-  background: color-mix(in srgb, var(--ui-primary-container) 14%, transparent); color: var(--ui-on-surface); }
-.drawer .roomcard .ic { width: 22px; height: 22px; flex: none; }
-.drawer .roomcard .tx { display: flex; flex-direction: column; min-width: 0; }
-.drawer .roomcard b { font-size: 20px; line-height: 26px; font-weight: 500; }
-.drawer .roomcard .tx span { font-size: 13px; line-height: 18px; color: var(--c-text-secondary); }   /* «Вы здесь»: комната, где висит эта панель */
-.drawer .roomcard:active { background: color-mix(in srgb, var(--ui-primary-container) 22%, transparent); }
-.drawer .item:active { background: color-mix(in srgb, var(--ui-on-surface) 8%, transparent); }
-.drawer .gap { flex: 1; }
-.drawer .sep { height: 1px; margin: var(--dim-space-xs, 4px) var(--dim-space-xl) var(--dim-space-xs) calc(var(--dim-space-sm) + var(--dim-space-md)); background: color-mix(in srgb, var(--ui-on-surface) 12%, transparent); flex: none; }
+/* Меню v4: один общий скролл (заголовок, подпись, комнаты) и закреплённая снизу капсула с системными пунктами */
+.drawer .scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; padding: 0 var(--dim-space-md) 0 var(--dim-space-sm);
+  -webkit-mask-image: linear-gradient(#000 calc(100% - 20px), transparent); mask-image: linear-gradient(#000 calc(100% - 20px), transparent); }
+.drawer .scroll::-webkit-scrollbar { display: none; }
+.drawer .title { height: 56px; padding: 0 var(--dim-space-md); display: flex; align-items: center; font-size: 22px; line-height: 28px; font-weight: 500; }
+.drawer .label { padding: var(--dim-space-sm) var(--dim-space-md) 4px; font-size: 13px; line-height: 18px; font-weight: 500; color: var(--ui-on-surface-variant); }
+.drawer .room-row { width: 100%; height: 56px; padding: 0 var(--dim-space-md); border-radius: 18px; display: flex; align-items: center; gap: var(--dim-space-md);
+  text-align: left; font-size: 18px; line-height: 24px; cursor: pointer; }
+.drawer .room-row .ic { color: var(--ui-on-surface-variant); }
+.drawer .room-row .nm { min-width: 0; display: flex; flex-direction: column; }
+.drawer .room-row small { font-size: 13px; line-height: 16px; color: var(--ui-on-surface-variant); }
+.drawer .room-row:active { background: var(--menu-press); }
+.drawer .room-row[aria-current="true"] { background: var(--menu-tile); font-weight: 600; }   /* «Вы здесь»: комната, где висит эта панель */
+.drawer .room-row[aria-current="true"] .ic { color: var(--menu-acc); stroke-width: 2.2; }
+.drawer .room-row .st { margin-left: auto; flex: none; display: inline-flex; align-items: center; gap: 5px; font-size: 13px; line-height: 16px; font-weight: 500; color: var(--st); }
+.drawer .room-row .st .ic { width: 16px; height: 16px; color: inherit; }
+.drawer .room-row .st[data-k="warn"] { --st: var(--menu-warn); } .drawer .room-row .st[data-k="err"] { --st: var(--menu-err); }
+.drawer .bar { flex: none; height: 68px; margin: 4px var(--dim-space-md) var(--dim-space-md); padding: 0 6px; display: flex; justify-content: space-between; align-items: center; border-radius: 24px; background: var(--menu-tile); }
+.drawer .bar button { position: relative; width: 64px; height: 56px; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; line-height: 13px; color: var(--ui-on-surface-variant); white-space: nowrap; }
+.drawer .bar button .ic { color: var(--ui-on-surface); }
+.drawer .bar button:active { background: var(--menu-press); }
+.drawer .bar button:active::after { content: ""; position: absolute; bottom: 2px; width: 24px; height: 3px; border-radius: 2px; background: var(--menu-acc); }
 .desk > .launcher { inset: 0; z-index: 7; background: var(--ui-surface-card); color: var(--ui-on-surface); display: none; flex-direction: column; }
 .desk[data-screen="apps"] > .launcher, .desk[data-screen="kbd"] > .launcher { display: flex; }
 .launcher .search { margin: 0 var(--dim-space-md); height: 48px; flex: none; border-radius: var(--dim-radius-card); border: 1px solid var(--ui-outline);
@@ -713,6 +719,28 @@ svg.ic.dots { stroke-width: 2.6; }
 
 /* ── Тёмная тема: поверхности того же мятного оттенка (≈140°), что и фон стола, и темнее. Раньше считались от оливковых graphite/ink и выглядели мутно ── */
 [data-theme="dark"] { --sheet-bg: #1C2721; }
+/* карточки выбора палитры в «Оформлении»: превью — свой градиент и кремовые плитки, не зависит от текущей палитры */
+.pal-opts { display: grid; grid-template-columns: 1fr 1fr; gap: var(--dim-space-md); padding: 0 var(--dim-gutter) var(--dim-gutter); }
+.pal { border-radius: 18px; padding: 6px 6px 0; text-align: left; box-shadow: inset 0 0 0 1px var(--ui-outline-subtle); background: var(--menu-tile); }
+.pal[aria-checked="true"] { box-shadow: inset 0 0 0 2px var(--c-select, var(--core-blue-700)); }
+[data-theme="dark"] .pal[aria-checked="true"] { box-shadow: inset 0 0 0 2px var(--core-blue-300); }
+.pal .pv { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; height: 88px; padding: 10px; border-radius: 14px; align-content: end; }
+.pal .pv i { height: 32px; border-radius: 8px; background: #FCFBF7; }
+.pal .pv.mint { background: linear-gradient(135deg, #E9F3E1 0%, #CDE7D3 55%, #A9D6C4 100%); }
+.pal .pv.clay { background: linear-gradient(135deg, #B98079 0%, #C5A486 55%, #C8B58E 100%); }
+.pal .pn { display: flex; align-items: center; justify-content: space-between; height: 48px; padding: 0 8px; }
+.pal .pn .mk { flex: none; width: 20px; height: 20px; border: 2px solid var(--ui-on-surface); border-radius: 50%; box-sizing: border-box; position: relative; }
+.pal[aria-checked="true"] .pn .mk::after { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: var(--ui-on-surface); }
+/* ── Палитра оформления (Настройки → Устройство → Оформление): «Мята» по умолчанию и «Глина». Только светлая тема; тёмная остаётся мятной.
+   Глина меняет градиент стола (--g-mint-*), поэтому перекрашиваются и плитки, и меню. Цвета из палитры: core-clay, grad-clay-sand-mid, core-sand ── */
+:root { --menu-acc: var(--core-green-600); --menu-tile: var(--core-cream); --menu-press: #DCEFE0; --menu-veil: #FCFBF7A8; --menu-warn: #8A5A00; --menu-err: var(--core-red-700); }
+:root[data-pal="clay"]:not([data-theme="dark"]) { --g-mint-0: var(--core-clay); --g-mint-1: var(--grad-clay-sand-mid); --g-mint-2: var(--core-sand);
+  --menu-acc: #9A5A52; --menu-press: #F1E1DA; --menu-veil: #FCFBF7B8; --sheet-bg: color-mix(in srgb, var(--core-cream) 72%, var(--core-clay)); }
+[data-theme="dark"] { --menu-acc: var(--core-green-300); --menu-tile: #CDE7D31A; --menu-press: #CDE7D32E; --menu-veil: #1C2721B3; --menu-warn: #E0B85C; --menu-err: var(--core-red-300); }
+.desk > .drawer { background: linear-gradient(var(--menu-veil), var(--menu-veil)), var(--desk-bg); }
+/* рамка окна (чёрный корпус, скругления, тень) — только для прототипа, в разработку не входит */
+.frame > .desk { border-radius: 14px; box-shadow: 0 0 0 6px #0b0d0a, 0 18px 44px #00000040; }
+
 [data-theme="dark"] .desk > .page, [data-theme="dark"] .desk > .form, [data-theme="dark"] .desk > .launcher { --glass-card: color-mix(in srgb, var(--core-paper) 7%, transparent); }
 [data-theme="dark"] .tile { background: color-mix(in srgb, #CDE7D3 10%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, #CDE7D3 16%, transparent); }
 [data-theme="dark"] .desk > .page .gr, [data-theme="dark"] .desk > .page .foot { border-top-color: color-mix(in srgb, var(--core-paper) 9%, transparent); }
@@ -858,6 +886,7 @@ window.SEVEN_SCREENS = {
     { id: 'settings-data',     group: 'Настройки', title: 'Данные', status: 'proto', via: 'Настройки → Данные' },
     { id: 'dev-lang',          group: 'Настройки', title: 'Язык', status: 'done', via: 'Устройство → Язык' },
     { id: 'dev-room',          group: 'Настройки', title: 'Комната панели', status: 'done', via: 'Устройство → Комната панели' },
+    { id: 'dev-appearance',    group: 'Настройки', title: 'Оформление', status: 'done', via: 'Устройство → Оформление' },
     { id: 'wallpaper',         group: 'Настройки', title: 'Обои', status: 'proto', via: 'Устройство → Обои' },
     { id: 'display',           group: 'Настройки', title: 'Экран', status: 'done', via: 'Устройство → Экран' },
     { id: 'dev-launcher',      group: 'Настройки', title: 'Лаунчер', status: 'proto', via: 'Устройство → Лаунчер' },
@@ -1130,6 +1159,8 @@ window.SEVEN_SCREENS = {
   <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></symbol>
   <symbol id="i-micoff" viewBox="0 0 24 24"><path opacity=".3" d="M11.9998 19.0006V22.0008M4.99902 9.99984V12C4.99902 13.8567 5.73661 15.6373 7.04951 16.9501C8.36241 18.263 10.1431 19.0006 11.9998 19.0006C13.8566 19.0006 15.6372 18.263 16.9501 16.9501C18.263 15.6373 19.0006 13.8567 19.0006 12V9.99984M11.9998 1.9992C13.6569 1.9992 15.0002 3.34245 15.0002 4.99944V12C15.0002 13.657 13.6569 15.0002 11.9998 15.0002C10.3428 15.0002 8.99948 13.657 8.99948 12V4.99944C8.99948 3.34245 10.3428 1.9992 11.9998 1.9992Z"/><path d="M10.4 9a1.6 1.6 0 1 0 3.2 0a1.6 1.6 0 1 0-3.2 0"/></symbol><symbol id="i-quietoff" viewBox="0 0 24 24"><path d="M4 10v4M8 6v12M12 3v18M16 7v10M20 10v4"/></symbol>
   <symbol id="i-voloff" viewBox="0 0 24 24"><path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5zM16 9.5l5 5M21 9.5l-5 5"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M21.7 18l-8-14a2 2 0 0 0-3.5 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3z"/><path d="M12 9v4M12 17h.01"/></symbol>
+  <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 22a10 10 0 1 1 10-10c0 3-2 4-4.5 4H15a2 2 0 0 0-1.5 3.3c.6.8.3 2.7-1.5 2.7z"/><circle cx="7.5" cy="11" r="1"/><circle cx="12" cy="7" r="1"/><circle cx="16.5" cy="11" r="1"/></symbol>
   <symbol id="i-wifioff" viewBox="0 0 24 24"><path opacity=".3" d="M2.5 9a14 14 0 0 1 19 0M5.5 12.5a9.5 9.5 0 0 1 13 0M8.7 16a5 5 0 0 1 6.6 0"/><path d="M10.4 19a1.6 1.6 0 1 0 3.2 0a1.6 1.6 0 1 0-3.2 0"/></symbol>
   <!-- нарисованы здесь: в наборе не нашлось по смыслу; та же сетка 24, линия 1,8, скругления, поля 2 -->
   <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.4 2.5 3.7 5.5 3.7 9s-1.3 6.5-3.7 9c-2.4-2.5-3.7-5.5-3.7-9S9.6 5.5 12 3z"/></symbol>
@@ -1167,15 +1198,18 @@ window.SEVEN_SCREENS = {
       <!-- Боковое меню -->
       <div class="scrim" id="scrim"></div>
       <nav class="drawer" id="drawer" aria-label="Меню">
-        <div class="head"><div class="t">Seven assistant</div></div>
-        <button class="roomcard" aria-current="true" data-go="room"><svg class="ic"><use href="#i-panel"/></svg><span class="tx"><b>Гостиная</b><span>Вы здесь</span></span></button>
-        <div class="gap"></div>
-        <button class="item" data-go="cc"><svg class="ic"><use href="#i-cc"/></svg>Мой дом</button>
-        <button class="item" data-go="apps"><svg class="ic"><use href="#i-apps"/></svg>Все приложения</button>
-        <button class="item" data-go="settings"><svg class="ic"><use href="#i-gear"/></svg>Настройки панели</button>
-        <div class="sep" role="separator"></div>
-        <button class="item" data-go="shade"><svg class="ic"><use href="#i-sliders"/></svg>Панель</button>
-        <button class="item" data-go="edit"><svg class="ic"><use href="#i-pencil"/></svg>Править экраны</button>
+        <div class="scroll" id="drawerScroll">
+          <div class="title">Seven assistant</div>
+          <div class="label">Комнаты</div>
+          <div id="drawerRooms"></div>
+        </div>
+        <div class="bar" role="toolbar" aria-label="Разделы">
+          <button data-go="cc" aria-label="Мой дом" title="Мой дом"><svg class="ic"><use href="#i-cc"/></svg>Мой дом</button>
+          <button data-go="apps" aria-label="Все приложения" title="Все приложения"><svg class="ic"><use href="#i-apps"/></svg>Приложения</button>
+          <button data-go="settings" aria-label="Настройки панели" title="Настройки панели"><svg class="ic"><use href="#i-gear"/></svg>Настройки</button>
+          <button data-go="shade" aria-label="Панель" title="Панель"><svg class="ic"><use href="#i-sliders"/></svg>Панель</button>
+          <button data-go="edit" aria-label="Править экраны" title="Править экраны"><svg class="ic"><use href="#i-pencil"/></svg>Правка</button>
+        </div>
       </nav>
 
       <!-- Все приложения -->
@@ -1593,6 +1627,7 @@ function drawApps(f = '') {
 drawApps();
 $('#appSearch').addEventListener('input', e => drawApps(e.target.value));
 function setScreen(v) {
+  if (v === 'drawer') drawDrawer();
   if (v === 'sheet') v = 'tile';
   if ((v === 'tile' || v === 'custom') && !form) { if (v === 'tile') openTile((tiles.find(x => x.id === 'temperature') || tiles[0] || {}).id, true); else openNewTile(null); return; }
   if (v === 'page' && !curPage) { goPage('voice', false); return; }
@@ -1610,9 +1645,9 @@ $('#btnHideApps').addEventListener('click', () => setScreen('desk'));
 $('#appSearch').addEventListener('focus', () => { if (state.screen === 'apps') setScreen('kbd'); });
 $('#appSearch').addEventListener('keydown', e => { if (e.key === 'Escape') setScreen('apps'); });
 $('#drawer').addEventListener('click', e => {
-  const b = e.target.closest('.item, .roomcard'); if (!b) return;
+  const b = e.target.closest('.bar button, .room-row'); if (!b) return;
   const go = b.dataset.go;
-  if (go === 'room') return setScreen('desk');
+  if (go === 'room') return setScreen('desk');   /* перейти в комнату: в прототипе экран один */
   if (go === 'apps') return setScreen('apps');
   if (go === 'edit') { setScreen('desk'); return setEdit(true); }
   if (go === 'settings') return goPage('voice', false);
@@ -2016,8 +2051,20 @@ function endDrag(commit) {
 grid.addEventListener('pointerup', e => { if (drag && e.pointerId === drag.pid) endDrag(true); });
 grid.addEventListener('pointercancel', e => { if (drag && e.pointerId === drag.pid) endDrag(false); });
 
+/* ───────── Меню: список комнат ─────────
+   «Вы здесь» — комната, где висит панель (S.room), а не просматриваемая. Состояния «Нет связи» и «Ошибка» — демо-данные прототипа:
+   в приложении их даст статус устройств комнаты. Список длиннее двух комнат нужен, чтобы показать общий скролл меню. */
+const MENU_ROOMS = [['living', 'Гостиная'], ['kitchen', 'Кухня'], ['bed', 'Спальня'], ['kids', 'Детская'], ['study', 'Кабинет'], ['bath', 'Ванная'], ['hall', 'Прихожая'], ['balc', 'Балкон']];
+const MENU_STATE = { kitchen: ['warn', 'Нет связи', 'wifioff'], bath: ['err', 'Ошибка', 'alert'] };
+function drawDrawer() {
+  $('#drawerRooms').innerHTML = MENU_ROOMS.map(([v, t]) => {
+    const here = v === S.room, st = MENU_STATE[v];
+    return `<button class="room-row" data-go="room"${here ? ' aria-current="true"' : ''}>${ICON('pin')}<span class="nm"><span>${t}</span>${here ? '<small>Вы здесь</small>' : ''}</span>` +
+      (st ? `<span class="st" data-k="${st[0]}">${ICON(st[2])}${st[1]}</span>` : '') + '</button>';
+  }).join('');
+}
 /* ───────── Настройки: страницы ───────── */
-const S = { tab: 'voice', voice: true, speak: true, listen: 'always', lang: 'ru', room: 'living', mqtt: false, broker: false,
+const S = { pal: 'mint', tab: 'voice', voice: true, speak: true, listen: 'always', lang: 'ru', room: 'living', mqtt: false, broker: false,
   confirm: 8, cancel: 10, manage: true, dimAfter: 30, dimBright: 40, dim: 40, glass: 50,
   exp: { panel: true, phone: false, pc: false }, ctrl: '', addr: '', port: '1883', haAddr: '', haPort: '8123', https: false, dev: { a: false, b: false }, jFilters: false, jq: '', jstat: { err: true, warn: true, ok: true } };
 let pageStack = [], curPage = null;
@@ -2047,6 +2094,8 @@ const miniAlpha = pc => (1 - Math.pow(pc / 100, 1 / 2.2)).toFixed(2);
 const dimLvl = () => (DIM_LVL.find(l => l[2] === S.dimBright) || DIM_LVL[2]);
 const mini = a => `<span class="mini"><i></i><i></i><b style="opacity:${a}"></b></span>`;
 const ROOMS = [['none', 'Не выбрано'], ['living', 'Гостиная']];
+const PAL_LABEL = { mint: 'Мята', clay: 'Глина' };
+const palCard = (v, t) => `<button class="pal" role="radio" aria-checked="${S.pal === v}" data-radio="pal" data-v="${v}"><span class="pv ${v}"><i></i><i></i><i></i></span><span class="pn"><span class="rt">${t}</span><span class="mk r"></span></span></button>`;
 const LANG_LABEL = { ru: 'Русский', en: 'English', dev: 'Как в системе' };
 const roomLabel = () => (ROOMS.find(r => r[0] === S.room) || ROOMS[0])[1];
 /* строка списка «Устройство»: значок, название, текущее значение справа, шеврон */
@@ -2063,7 +2112,7 @@ const PAGES = {
       grp('Как слушать', rrow('listen', 'always', S.listen, 'Всегда (по умолчанию)', 'Ассистент выполняет любую распознанную фразу') +
         rrow('listen', 'word', S.listen, 'По слову «Севен»', 'Ассистент выполняет только фразы со словом «Севен», например «Севен, включи свет»')),
     device: () => grp('', lrow('globe', 'Язык', LANG_LABEL[S.lang], 'dev-lang') + lrow('pin', 'Комната панели', roomLabel(), 'dev-room') +
-      lrow('image', 'Обои', '', 'wallpaper') + lrow('sun', 'Экран', S.manage ? 'Приглушать через ' + (DIM_AFTER.find(d => String(d[0]) === String(S.dimAfter)) || [0, ''])[1] : 'Не приглушать', 'display') +
+      lrow('image', 'Обои', '', 'wallpaper') + lrow('palette', 'Оформление', PAL_LABEL[S.pal], 'dev-appearance') + lrow('sun', 'Экран', S.manage ? 'Приглушать через ' + (DIM_AFTER.find(d => String(d[0]) === String(S.dimAfter)) || [0, ''])[1] : 'Не приглушать', 'display') +
       lrow('apps', 'Лаунчер', '', 'dev-launcher')),
     conn: () => grp('', srow('Панель в MQTT', 'Панель появится в брокере как устройство seven_panel_1756903f. Другие системы смогут менять яркость, громкость, экран и микрофон и читать датчики. Если связь оборвётся, брокер пометит панель как «не отвечает». При включении и выключении панель один раз переподключится к брокеру.', 'mqtt', S.mqtt)) +
       grp('Брокер для панели', rrow('broker', 'b1', S.broker ? 'b1' : '', '192.168.23.141:1883')),
@@ -2079,6 +2128,9 @@ const PAGES = {
   'dev-room': () => ({ title: 'Комната панели', back: true, body:
     grp('', ROOMS.map(([v, t]) => rrow('room', v, S.room, t)).join(''), 'Если в команде нет комнаты, например «включи свет», ассистент управляет этой комнатой') +
     grp('', lrow('pin', 'Управление комнатами', '', 'note:Управление комнатами — это экран «Мой дом → Локации». В этот прототип не входит.')).replace('class="grp nt"', 'class="grp sep"') }),
+  'dev-appearance': () => ({ title: 'Оформление', back: true, body:
+    `<p class="gd">Цвета меню, фона и плиток. Применяется сразу</p><div class="pal-opts" role="radiogroup" aria-label="Оформление">${palCard('mint', 'Мята')}${palCard('clay', 'Глина')}</div>` +
+    (document.documentElement.dataset.theme === 'dark' ? '<p class="gd">В тёмной теме цвета остаются мятными</p>' : '') }),
   'dev-launcher': () => ({ title: 'Лаунчер', back: true, body:
     grp('', grow('Сейчас домашнее приложение', 'NSPanelPro')) +
     `<div class="sec" style="border-bottom:0"><button class="btn primary wide" data-go="note:Откроется системный выбор домашнего приложения.">Выбрать домашнее приложение</button></div>` +
@@ -2302,6 +2354,7 @@ $('#page').addEventListener('click', e => {
   if (t.dataset.tab) { S.tab = t.dataset.tab; return drawPage(false); }
   if (t.dataset.sw) { const k = t.dataset.sw; if (k.startsWith('bk')) { const b = S.brokers[+k.slice(2)]; b.on = !b.on; } else if (k.startsWith('hk')) { const h = S.has[+k.slice(2)]; h.on = !h.on; } else if (k.startsWith('ik')) { const x = S.brokers[S.eb].ints[+k.slice(2)]; x.on = !x.on; } else if (k === 'btls') { const b = S.brokers[S.eb]; b.tls = !b.tls; } else if (k === 'ix') { const x = S.brokers[S.eb].ints[S.ei]; x.on = !x.on; } else if (k === 'bx') { const b = S.brokers[S.eb]; b.on = !b.on; } else S[k] = !S[k]; return drawPage(); }
   if (t.dataset.radio) { const g = t.dataset.radio; S[g] = g === 'broker' ? true : (['dimAfter', 'dimBright'].includes(g) ? +t.dataset.v : t.dataset.v);
+    if (g === 'pal') document.documentElement.dataset.pal = S.pal;
     drawPage(); if (g === 'dimBright') previewDim(S.dimBright); return; }
   if (t.dataset.chk2) { S.dev[t.dataset.chk2] = !S.dev[t.dataset.chk2]; return drawPage(); }
   if (t.dataset.chk) { S.exp[t.dataset.chk] = !S.exp[t.dataset.chk]; return drawPage(); }
@@ -2460,7 +2513,7 @@ const GROUPS = [
     },
     opts: [['desk', 'Стол'], ['drawer', 'Меню'], ['apps', 'Приложения'], ['kbd', 'Поиск + клавиатура'], ['shade', 'Панель'], ['gallery', 'Добавить плитку'], ['tile', 'Плитка'], ['custom', 'Своя плитка'], ['states', 'Цвет по значению'], ['pick', 'Что показывать'], ['move', 'Перенос']] },
   { label: 'Настройки', cls: 'grid3', get: () => state.screen === 'page' ? (curPage === 'settings' ? S.tab : curPage) : '', set: v => goPage(v, false),
-    opts: [['voice', 'Голос'], ['device', 'Устройство'], ['conn', 'Подключение'], ['security', 'Безопасность'], ['data', 'Данные'], ['dev-lang', 'Язык'], ['dev-room', 'Комната панели'], ['wallpaper', 'Обои'], ['display', 'Экран'], ['dev-launcher', 'Лаунчер'], ['export', 'Экспорт'], ['journal', 'Журнал']] },
+    opts: [['voice', 'Голос'], ['device', 'Устройство'], ['conn', 'Подключение'], ['security', 'Безопасность'], ['data', 'Данные'], ['dev-lang', 'Язык'], ['dev-room', 'Комната панели'], ['wallpaper', 'Обои'], ['dev-appearance', 'Оформление'], ['display', 'Экран'], ['dev-launcher', 'Лаунчер'], ['export', 'Экспорт'], ['journal', 'Журнал']] },
   { label: 'Режим',    get: () => state.edit ? 'edit' : 'normal', set: v => setEdit(v === 'edit'),
     opts: [['normal', 'Обычный'], ['edit', 'Правка']] },
   { label: 'Тема',     get: () => state.theme, set: v => { state.theme = v; document.documentElement.dataset.theme = v; },
@@ -2510,6 +2563,8 @@ function syncControls() {
 
 /* ?mode=edit&theme=dark&mic=listening: открыть сразу в нужном состоянии */
 const q = new URLSearchParams(location.search);
+if (q.get('pal')) { S.pal = q.get('pal'); document.documentElement.dataset.pal = S.pal; }
+drawDrawer();
 if (q.get('theme')) G('Тема').set(q.get('theme'));
 desk.dataset.dstyle = 'a';
 if (q.get('dimmer')) state.dimmer = q.get('dimmer');
