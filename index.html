@@ -633,6 +633,7 @@ svg.ic.dots { stroke-width: 2.6; }
   background: var(--ui-primary); color: var(--ui-on-primary); border-radius: var(--dim-radius-card);
   font-size: var(--font-name); line-height: var(--lh-name); font-weight: 500; z-index: 5; }
 .snackbar.show { display: flex; }
+.desk[data-screen="page"] > .snackbar { z-index: 12; bottom: var(--dim-gap); }   /* на страницах настроек и «Мой дом» нижней панели правки нет: строка встаёт к низу и лежит поверх страницы */
 .snackbar button { height: var(--dim-touch-min); padding: 0 var(--dim-gutter); font-weight: 500; font-size: var(--font-name); }
 /* ── Страницы: воздушное стекло, палитра «Мята». Без live-blur (слабый CPU панели): полупрозрачная заливка + контур поверх статичного градиента (тот же --desk-bg, что и на главном экране).
       Скругления по дизайн-системе: карточка 12 (radius-card), чип/активная вкладка 8, FAB 16 (radius-fab). Выбранное — зелёный primary-container, как в main ── */
@@ -1584,13 +1585,14 @@ function undo() {
   if (!op) return;
   if (op.kind === 'remove') tiles.splice(op.index, 0, op.tile);
   else if (op.kind === 'add') { const i = tiles.findIndex(t => t.id === op.id); if (i >= 0) tiles.splice(i, 1); }
+  else if (op.kind === 'room-del') { S.rooms.splice(op.index, 0, op.room); if (op.menu) MENU_ROOMS.splice(op.mIndex, 0, op.menu); drawDrawer(); if (state.screen === 'page') drawPage(); }
   else if (op.kind === 'move') op.items.forEach(([id, col, row, w, h]) => { const t = tiles.find(x => x.id === id); if (t) { t.col = col; t.row = row; t.w = w; t.h = h; } });
   else if (op.kind === 'edit') { const i = tiles.findIndex(t => t.id === op.id); if (i >= 0) tiles[i] = op.before; if (op.items) op.items.forEach(([id, col, row, w, h]) => { const t = tiles.find(x => x.id === id); if (t) { t.col = col; t.row = row; t.w = w; t.h = h; } }); }
   hideSnack(); render();
 }
 function showSnack(text, o = {}) {
   const sb = $('#snackbar'); $('#snackTx').textContent = text || 'Плитка убрана';
-  snackSetId = o.set || null; $('#snackSet').hidden = !snackSetId;
+  snackSetId = o.set || null; $('#snackSet').hidden = !snackSetId; $('#snackUndo').hidden = !!o.noUndo;
   sb.classList.add('show'); clearTimeout(snackTimer); snackTimer = setTimeout(hideSnack, 4000);
 }
 function hideSnack() { $('#snackbar').classList.remove('show'); clearTimeout(snackTimer); }
@@ -2235,7 +2237,7 @@ Object.assign(PAGES, {
 /* ───────── Мой дом ───────── */
 Object.assign(S, { empty: false, cct: 'loc', roomOpen: true, fab: false, wTab: 'scen', devTab: 'all',
   brokers: [{ n: '192.168.23.102:18901', a: '192.168.23.102', p: '18901', on: true, tls: false, ints: [{ n: 'Wirenboard', pr: 'wirenboard', pfx: '', on: true }] }, { n: '192.168.23.133:1883', a: '192.168.23.133', p: '1883', on: true, tls: false, ints: [{ n: 'wirenboard-AEYCHJC', pr: 'wirenboard', pfx: '', on: true }] }], has: [{ n: 'Home Assistant', a: '192.168.23.20:8123', on: true }], eb: 0, ei: 0, prot: 'zigbee2mqtt', pfx: '', iName: '', haName: 'Home Assistant', protOpen: false, bauth: false, iPfx: '', iAddr: '', iToken: '', bName: '', bAddr: '', bPort: '1883', bUser: '', bPass: '' });
-Object.assign(S, { rooms: [{ n: 'Гостиная', alt: 'кухня', v: 1, p: 6 }, { n: 'Спальня', alt: '', v: 2, p: 4 }], dlg: false, rName: '', rIc: 'room', rIcMan: false, dlgPick: false, vdName: 'Свет', vdAlt: '', steps: [], dName: 'Зуммер', dPlace: '', br: 85, vol: 53, quiet: false });
+Object.assign(S, { rooms: [{ n: 'Гостиная', alt: 'кухня', v: 1, p: 6 }, { n: 'Спальня', alt: '', v: 2, p: 4 }], dlg: false, rName: '', rIc: 'room', rIcMan: false, dlgPick: false, rEdit: -1, dlgDel: false, vdName: 'Свет', vdAlt: '', steps: [], dName: 'Зуммер', dPlace: '', br: 85, vol: 53, quiet: false });
 const fld = (k, v, mic = true) => `<label class="fld"><input data-in="${k}" value="${v}" autocomplete="off">${mic ? `<button type="button" class="mi" data-go="note:Голосовой ввод в этот прототип не входит." aria-label="Голосовой ввод">${ICON('mic')}</button>` : ''}</label>`;
 const fabGo = (t, go) => `<button class="fab" data-go="${go}">${ICON('plus')}${t}</button>`;
 const CCT = [['loc', 'Локации', 'pin', 'Комнаты и виртуальные устройства'], ['conn', 'Подключения', 'signal', 'Контроллеры и интеграции'], ['dev', 'Устройства', 'bulb', 'Всё, что найдено у подключений'], ['wid', 'Виджеты', 'apps', 'Сценарии и виджеты']];
@@ -2264,7 +2266,7 @@ const ccPage = () => {
       (S.roomOpen ? `<div class="ex"><div class="ds">Устройств: 2 · Виртуальных: 1</div><div class="row" style="margin-top:8px"><button class="btn secondary" data-go="note:Откроется диалог «Комната».">Изменить</button><button class="btn text" data-go="note:Удаление комнаты запросит подтверждение.">Удалить</button></div></div>` : '') + '</div>' +
       `<div class="chiprow" style="padding-top:var(--dim-space-sm)"><button class="btn secondary" data-go="note:Виртуальные устройства: список в прототип не входит.">Виртуальные устройства</button></div>`,
     loc: () => S.empty || !S.rooms.length ? emptyState('loc') : S.rooms.map((r, i) => `<div class="room" data-room="${i}">` + grp('',
-      grow(r.n, r.alt ? 'Другие названия: ' + r.alt : '', `<span class="dg" data-drag="${i}" role="button" aria-label="Перетащить, чтобы изменить порядок">${ICON('grip')}</span>`) +
+      `<div class="gr ls"><button class="tx" data-go="redit:${i}" aria-label="Изменить комнату: ${r.n}" style="flex:1;display:flex;align-items:center;gap:var(--dim-space-md);text-align:left;background:none;border:0;padding:0;font:inherit;color:inherit;min-width:0"><span class="li">${ICON('r-' + (r.ic || roomIconFor(r.n)))}</span><span class="tx" style="flex:1;min-width:0"><span class="rt">${r.n}</span>${r.alt ? `<span class="rd">Другие названия: ${r.alt}</span>` : ''}</span></button><span class="dg" data-drag="${i}" role="button" aria-label="Перетащить, чтобы изменить порядок">${ICON('grip')}</span></div>` +
       `<button class="gr act" data-go="vdevs:${i}">${ICON('devices')}<span class="tx">Виртуальные устройства</span><span class="cnt">${plr(r.v, 'устройство', 'устройства', 'устройств')}, ${plr(r.p, 'свойство', 'свойства', 'свойств')}</span><span class="go">${ICON('chev')}</span></button>`) + '</div>').join(''),
     conn: () => S.empty || !S.brokers.length && !S.has.length ? emptyState('conn') : S.brokers.map((b, i) => card('signal', b.n, 'Интеграций: ' + b.ints.length, 'bk' + i, b.on, 'brk:' + i)).join('') + S.has.map((h, i) => card('signal', h.n, 'Сервер', 'hk' + i, h.on, 'ha:' + i)).join(''),
     dev: () => { if (S.empty) return emptyState('dev'); const by = {}; CCDEV.filter(d => S.devTab === 'all' || d[3] === S.devTab).forEach(d => (by[d[0].split(' / ')[0]] = by[d[0].split(' / ')[0]] || []).push(d));
@@ -2277,10 +2279,18 @@ const ccPage = () => {
     fab: S.cct === 'loc' ? `<button class="fab" data-go="dlg:open">${ICON('plus')}Создать комнату</button>` : S.cct === 'conn' ? (S.fab ? `<div class="scrim2" data-go="fab"></div><div class="speed"><button data-go="cc-ha">Home Assistant (API)</button><button data-go="add-controller">Брокер MQTT</button></div>` : '') + extFab('Добавить', 'plus', true) : S.cct === 'dev' ? fabGo('Добавить', 'note:Откроется добавление устройства.') : S.cct === 'wid' && S.wTab === 'scen' ? fabGo('Добавить сценарий', 'cc-scen') : '' };
 };
 const dlgIcBtn = () => ICON('r-' + S.rIc) + `<i class="bdg">${ICON('chev')}</i>`;
-const dlgHint = () => S.rIcMan ? 'Значок выбран вручную' : S.rName.trim() ? 'Значок подобран по названию' : 'Значок подберётся по названию';
-const dlgHtml = () => !S.dlg ? '' : `<div class="dlg"><div class="box">` + (S.dlgPick
-  ? `<h2>Значок комнаты</h2><div class="icgrid" role="radiogroup" aria-label="Значок комнаты">${ROOM_ICONS.map(([k, t]) => `<button type="button" class="icc" role="radio" aria-checked="${k === S.rIc}" aria-label="${t}" data-go="dlg:ic:${k}">${ICON('r-' + k)}</button>`).join('')}</div><div class="ac" style="grid-template-columns:1fr"><button class="btn tonal" data-go="dlg:pickno">Назад</button></div>`
-  : `<h2>Комната</h2><div class="rrow2"><button type="button" class="icsel" id="dlgIc" data-go="dlg:pick" aria-label="Выбрать значок комнаты">${dlgIcBtn()}</button><div style="position:relative;flex:1;min-width:0"><label class="tf m"><input data-in="rName" placeholder=" " value="${S.rName}" autocomplete="off"><span>Название</span><button type="button" class="mi" data-go="note:Голосовой ввод в этот прототип не входит." aria-label="Голосовой ввод">${ICON('mic')}</button></label></div></div><p class="rhint" id="dlgHint">${dlgHint()}</p><div class="ac"><button class="btn tonal" data-go="dlg:no">Отмена</button><button class="btn primary" id="dlgOk" data-go="dlg:ok" ${S.rName.trim() ? '' : 'disabled'}>Сохранить</button></div>`) + `</div></div>`;
+const dlgHint = () => S.rEdit >= 0 ? 'Нажмите на значок, чтобы выбрать другой' : S.rIcMan ? 'Значок выбран вручную' : S.rName.trim() ? 'Значок подобран по названию' : 'Значок подберётся по названию';
+/* комната, где висит панель, удалить нельзя: сначала выбирается другая (Настройки → Устройство → Комната панели) */
+const roomIsPanel = r => { const m = MENU_ROOMS.find(x => x[1] === r.n); return !!m && m[0] === S.room; };
+const dlgHtml = () => { if (!S.dlg) return ''; const edit = S.rEdit >= 0, cur = edit ? S.rooms[S.rEdit] : null;
+  let body;
+  if (S.dlgDel) body = `<h2>Удалить комнату?</h2><p class="rhint" style="margin:0;font-size:15px;line-height:22px;color:var(--ui-on-surface)">«${cur.n}» исчезнет из списка и бокового меню${cur.v ? '. Виртуальных устройств в комнате: ' + cur.v + ', они тоже будут удалены' : ''}</p><div class="ac"><button class="btn tonal" data-go="dlg:delno">Отмена</button><button class="btn danger" data-go="dlg:delok">Удалить</button></div>`;
+  else if (S.dlgPick) body = `<h2>Значок комнаты</h2><div class="icgrid" role="radiogroup" aria-label="Значок комнаты">${ROOM_ICONS.map(([k, t]) => `<button type="button" class="icc" role="radio" aria-checked="${k === S.rIc}" aria-label="${t}" data-go="dlg:ic:${k}">${ICON('r-' + k)}</button>`).join('')}</div><div class="ac" style="grid-template-columns:1fr"><button class="btn tonal" data-go="dlg:pickno">Назад</button></div>`;
+  else body = `<h2>Комната</h2><div class="rrow2"><button type="button" class="icsel" id="dlgIc" data-go="dlg:pick" aria-label="Выбрать значок комнаты">${dlgIcBtn()}</button><div style="position:relative;flex:1;min-width:0"><label class="tf m"><input data-in="rName" placeholder=" " value="${S.rName}" autocomplete="off"><span>Название</span><button type="button" class="mi" data-go="note:Голосовой ввод в этот прототип не входит." aria-label="Голосовой ввод">${ICON('mic')}</button></label></div></div><p class="rhint" id="dlgHint">${dlgHint()}</p>` +
+    (edit ? `<div class="ac" style="grid-template-columns:1fr 1fr 1fr"><button class="btn danger" data-go="dlg:del" ${roomIsPanel(cur) ? 'disabled aria-describedby="dlgPanelNote"' : ''}>Удалить</button><button class="btn tonal" data-go="dlg:no">Отмена</button><button class="btn primary" id="dlgOk" data-go="dlg:ok" ${S.rName.trim() ? '' : 'disabled'}>Сохранить</button></div>` +
+      (roomIsPanel(cur) ? `<p class="rhint" id="dlgPanelNote">Здесь висит эта панель. Чтобы удалить комнату, выберите другую в Настройки → Устройство → Комната панели</p>` : '')
+    : `<div class="ac"><button class="btn tonal" data-go="dlg:no">Отмена</button><button class="btn primary" id="dlgOk" data-go="dlg:ok" ${S.rName.trim() ? '' : 'disabled'}>Сохранить</button></div>`);
+  return `<div class="dlg"><div class="box">${body}</div></div>`; };
 Object.assign(PAGES, {
   cc: () => { const r = ccPage(); r.fab = (r.fab || '') + dlgHtml(); return r; },
 
@@ -2412,12 +2422,25 @@ $('#page').addEventListener('click', e => {
   if (g.startsWith('cct:')) { S.cct = g.slice(4); S.fab = false; return drawPage(false); }
   if (g.startsWith('dtab:')) { S.devTab = g.slice(5); return drawPage(false); }
   if (g.startsWith('wtab:')) { S.wTab = g.slice(5); return drawPage(false); }
-  if (g === 'dlg:open') { S.dlg = true; S.rName = ''; S.rIc = 'room'; S.rIcMan = false; S.dlgPick = false; return drawPage(); }
-  if (g === 'dlg:no') { S.dlg = false; S.dlgPick = false; return drawPage(); }
+  if (g === 'dlg:open') { S.dlg = true; S.rEdit = -1; S.dlgDel = false; S.rName = ''; S.rIc = 'room'; S.rIcMan = false; S.dlgPick = false; return drawPage(); }
+  if (g.startsWith('redit:')) { const i = +g.slice(6), r = S.rooms[i]; S.dlg = true; S.rEdit = i; S.dlgDel = false; S.rName = r.n; S.rIc = r.ic || roomIconFor(r.n); S.rIcMan = true; S.dlgPick = false; return drawPage(); }
+  if (g === 'dlg:no') { S.dlg = false; S.dlgPick = false; S.dlgDel = false; S.rEdit = -1; return drawPage(); }
   if (g === 'dlg:pick') { S.dlgPick = true; return drawPage(); }
   if (g === 'dlg:pickno') { S.dlgPick = false; return drawPage(); }
   if (g.startsWith('dlg:ic:')) { S.rIc = g.slice(7); S.rIcMan = true; S.dlgPick = false; return drawPage(); }
-  if (g === 'dlg:ok') { const n = S.rName.trim(); S.rooms.push({ n, alt: '', v: 0, p: 0, ic: S.rIc }); MENU_ROOMS.push(['r' + Date.now(), n, S.rIc]); drawDrawer(); S.dlg = false; S.dlgPick = false; S.rName = ''; return drawPage(); }
+  if (g === 'dlg:del') { S.dlgDel = true; return drawPage(); }
+  if (g === 'dlg:delno') { S.dlgDel = false; return drawPage(); }
+  if (g === 'dlg:delok') {
+    const r = S.rooms[S.rEdit], mi = MENU_ROOMS.findIndex(x => x[1] === r.n);
+    pushUndo({ kind: 'room-del', room: r, index: S.rEdit, menu: MENU_ROOMS[mi], mIndex: mi });
+    S.rooms.splice(S.rEdit, 1); if (mi >= 0) MENU_ROOMS.splice(mi, 1); drawDrawer();
+    S.dlg = false; S.dlgDel = false; S.rEdit = -1; drawPage(); return showSnack('Комната удалена: ' + r.n);
+  }
+  if (g === 'dlg:ok') {
+    const n = S.rName.trim();
+    if (S.rEdit >= 0) { const r = S.rooms[S.rEdit], m = MENU_ROOMS.find(x => x[1] === r.n); if (m) { m[1] = n; m[2] = S.rIc; } r.n = n; r.ic = S.rIc; drawDrawer(); S.rEdit = -1; S.dlg = false; S.dlgPick = false; drawPage(); return showSnack('Комната сохранена: ' + n, { noUndo: true }); }
+    S.rooms.push({ n, alt: '', v: 0, p: 0, ic: S.rIc }); MENU_ROOMS.push(['r' + Date.now(), n, S.rIc]); drawDrawer(); S.dlg = false; S.dlgPick = false; S.rName = ''; return drawPage();
+  }
   if (g.startsWith('vdevs:')) { S.vdRoom = S.rooms[+g.slice(6)].n; return goPage('cc-vdevs'); }
   if (g.startsWith('devedit:')) { S.dName = g.slice(8); S.dPlace = ''; return goPage('cc-devedit'); }
   if (g.startsWith('pickstep:')) { S.steps.push(g.slice(9)); const p = pageStack.pop(); curPage = p || 'cc-scen'; return drawPage(false); }
@@ -2570,8 +2593,8 @@ const GROUPS = [
     set: v => { if (v === 'add-controller-m') { S.ctrl = 'manual'; goPage('add-controller', false); } else { if (v === 'add-controller') S.ctrl = ''; goPage(v, false); } },
     opts: [['add-controller', 'Контроллер'], ['add-controller-m', 'Ручной ввод'], ['add-ha', 'Home Assistant'], ['add-devices', 'Устройства'], ['w1', 'Первый запуск 1'], ['w2', 'Первый запуск 2']] },
   { label: 'Мой дом', cls: 'grid3', get: () => state.screen === 'page' ? (curPage === 'cc' ? S.cct + (S.cct === 'conn' && S.fab ? '-fab' : '') : curPage) : '',
-    set: v => { if (v === 'dlg' || v === 'dlgpick') { S.cct = 'loc'; S.dlg = true; S.rName = 'Гостиная'; S.rIc = roomIconFor(S.rName); S.rIcMan = false; S.dlgPick = v === 'dlgpick'; goPage('cc', false); return; } S.dlg = false; S.dlgPick = false; if (v === 'cc-scen' ) S.steps = []; if (v === 'conn-fab') { S.cct = 'conn'; S.fab = true; goPage('cc', false); } else { S.fab = false; goPage(['loc','conn','dev','wid'].includes(v) ? 'cc-' + v : v, false); } },
-    opts: [['loc', 'Локации'], ['conn', 'Подключения'], ['conn-fab', 'Подключения + меню'], ['dev', 'Список устройств'], ['wid', 'Виджеты'], ['cc-integ', 'Интеграция'], ['cc-broker', 'Брокер'], ['add-systems', 'Найденные системы'], ['cc-ha', 'Сервер HA'], ['dlg', 'Диалог «Комната»'], ['dlgpick', 'Диалог: значок'], ['cc-vdevs', 'Виртуальные устройства'], ['cc-vdev', 'Виртуальное устройство'], ['cc-devedit', 'Правка устройства'], ['cc-scen', 'Сценарий: шаги'], ['cc-pick', 'Сценарий: что включить']] },
+    set: v => { if (['dlg', 'dlgpick', 'dlgedit', 'dlgdel'].includes(v)) { S.cct = 'loc'; S.dlg = true; S.dlgDel = v === 'dlgdel'; S.rEdit = v === 'dlgedit' || v === 'dlgdel' ? 1 : -1; const rr = S.rooms[Math.max(S.rEdit, 0)]; S.rName = S.rEdit >= 0 ? rr.n : 'Гостиная'; S.rIc = S.rEdit >= 0 ? (rr.ic || roomIconFor(rr.n)) : roomIconFor(S.rName); S.rIcMan = S.rEdit >= 0; S.dlgPick = v === 'dlgpick'; goPage('cc', false); return; } S.dlg = false; S.dlgPick = false; S.dlgDel = false; S.rEdit = -1; if (v === 'cc-scen' ) S.steps = []; if (v === 'conn-fab') { S.cct = 'conn'; S.fab = true; goPage('cc', false); } else { S.fab = false; goPage(['loc','conn','dev','wid'].includes(v) ? 'cc-' + v : v, false); } },
+    opts: [['loc', 'Локации'], ['conn', 'Подключения'], ['conn-fab', 'Подключения + меню'], ['dev', 'Список устройств'], ['wid', 'Виджеты'], ['cc-integ', 'Интеграция'], ['cc-broker', 'Брокер'], ['add-systems', 'Найденные системы'], ['cc-ha', 'Сервер HA'], ['dlg', 'Диалог «Комната»'], ['dlgpick', 'Диалог: значок'], ['dlgedit', 'Диалог: изменить'], ['dlgdel', 'Удаление комнаты'], ['cc-vdevs', 'Виртуальные устройства'], ['cc-vdev', 'Виртуальное устройство'], ['cc-devedit', 'Правка устройства'], ['cc-scen', 'Сценарий: шаги'], ['cc-pick', 'Сценарий: что включить']] },
   { label: 'Не проработаны (заглушки)', cls: 'grid3', get: () => state.screen === 'page' && (curPage in PH) ? curPage : '', set: v => { if (v === 'ph-se-action') S.steps = []; goPage(v, false); },
     opts: [['ph-more', 'Меню ⋮'], ['w3', 'Мастер 3'], ['w4', 'Мастер 4'], ['w5', 'Мастер 5'], ['w6', 'Мастер 6'], ['ph-se-action', 'Сценарий: действие'], ['ph-se-order', 'Сценарий: порядок'], ['ph-se-name', 'Сценарий: название'], ['ph-se-preview', 'Сценарий: просмотр'], ['ph-groups', 'Группы комнат'], ['ph-vd-suggest', 'Собрать из найденного'], ['ph-mqtt-tail', 'MQTT: хвост']] },
   { label: 'Пустые состояния',   get: () => S.empty ? 'empty' : 'full', set: v => { S.empty = v === 'empty'; if (state.screen === 'page') drawPage(false); },
@@ -2690,7 +2713,7 @@ function setPanelDev(v) {
 }
 /* точки статуса на кнопках списка экранов справа */
 const BTN_ID = { 'Экран': { kbd: 'apps', tile: 'tile-form', custom: 'tile-form', states: 'tile-form', pick: 'tile-form', gallery: 'ph-gallery', move: 'ph-move' }, 'Мастера': { 'add-controller-m': 'add-controller' },
-  'Мой дом': { loc: 'cc-loc', conn: 'cc-conn', 'conn-fab': 'cc-conn', dev: 'cc-dev', wid: 'cc-wid', dlg: 'cc-loc', dlgpick: 'cc-loc' } };
+  'Мой дом': { loc: 'cc-loc', conn: 'cc-conn', 'conn-fab': 'cc-conn', dev: 'cc-dev', wid: 'cc-wid', dlg: 'cc-loc', dlgpick: 'cc-loc', dlgedit: 'cc-loc', dlgdel: 'cc-loc' } };
 GROUPS.forEach(g => {
   if (!['Экран', 'Настройки', 'Мастера', 'Мой дом', 'Не проработаны (заглушки)'].includes(g.label)) return;
   g.opts.forEach(([val], i) => {
