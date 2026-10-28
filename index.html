@@ -855,6 +855,15 @@ input::placeholder { color: var(--a11y-ph); opacity: 1; }
 .desk > #page.wzmint.wzcream { background: linear-gradient(var(--menu-veil), var(--menu-veil)), var(--desk-bg); }   /* тот же фон, что у бокового меню */
 @media (prefers-reduced-motion: reduce) { .wzart .mk, .wzart .echo { animation: none } .wzart .a1, .wzart .a2 { animation: none; stroke-dashoffset: 0 } }
 .page .empty { padding-left: 56px; padding-right: 56px; }
+
+/* регистрация: нестандартные ситуации */
+.wzsug { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 6px 16px 0; font-size: var(--font-name); line-height: 20px; color: var(--c-text-secondary); } .wzsug b { color: var(--ui-on-surface); font-weight: 600; } .wzsug .btn { height: 40px; padding: 0 12px; color: var(--ui-primary-container); font-weight: 500; }
+.wzcons.bad { box-shadow: inset 0 0 0 2px var(--ui-error, #B3261E); }
+.wzspin { display: inline-block; width: 18px; height: 18px; margin-right: 10px; vertical-align: -4px; border-radius: 50%; border: 2.5px solid color-mix(in srgb, currentColor 30%, transparent); border-top-color: currentColor; animation: wzspin .8s linear infinite; } @keyframes wzspin { to { transform: rotate(360deg) } }
+@media (prefers-reduced-motion: reduce) { .wzspin { animation: none } }
+.wzcd { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--ui-on-surface); }
+.wztips { margin: 0 0 12px; padding: 0 0 0 20px; font-size: var(--font-name); line-height: 22px; color: var(--c-text-secondary); } .wztips li { margin-bottom: 8px; } .wztips b { color: var(--ui-on-surface); font-weight: 600; }
+.wzhf { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 0 12px; }
 </style>
 <style id="map-css">
 /* Карта экранов и бейдж статуса: вспомогательные части прототипа, не часть продукта */
@@ -969,9 +978,10 @@ window.SEVEN_SCREENS = {
     { id: 'wz3',              group: 'Мастера', title: 'Мастер: Устройства по комнатам', status: 'done', via: 'Устройства → «Подключить»' },
     { id: 'wz4',              group: 'Мастера', title: 'Мастер: Группы устройств', status: 'done', via: 'Комнаты → «Всё верно», если есть что объединить' },
     { id: 'wzok',             group: 'Мастера', title: 'Мастер: Дом настроен', status: 'done', via: 'Группы или комнаты → «Продолжить»' },
-    { id: 'wzkey',            group: 'Мастера', title: 'Мастер: Регистрация', status: 'done', via: 'Дом настроен → «Зарегистрироваться». Состояния: ошибка в почте, нет интернета' },
+    { id: 'wzkey',            group: 'Мастера', title: 'Мастер: Регистрация', status: 'done', via: 'Дом настроен → «Зарегистрироваться». Состояния: ошибка в почте (нет @, домена, зоны, раскладка), опечатка в домене, нет согласия, отправка, нет интернета, Wi-Fi без интернета, сервер не отвечает, приложение устарело, лимит кодов' },
     { id: 'wzpolicy',         group: 'Мастера', title: 'Мастер: Политика конфиденциальности', status: 'done', via: 'Регистрация → ссылка рядом с галкой' },
-    { id: 'wzcode',           group: 'Мастера', title: 'Мастер: Код из письма', status: 'done', via: 'Регистрация → «Получить код». Состояния: неверный код, код истёк, слишком много попыток' },
+    { id: 'wzcode',           group: 'Мастера', title: 'Мастер: Код из письма', status: 'done', via: 'Регистрация → «Получить код». Состояния: неверный код (2 попытки, последняя), код истёк, код использован, новый код отправлен, письмо не пришло, нет интернета и сервер при проверке, лимит отправок, блокировка ввода, не удалось сохранить доступ' },
+    { id: 'wzbound',          group: 'Мастера', title: 'Мастер: Почта уже используется на другой панели', status: 'proto', via: 'Код из письма → «Продолжить», если аккаунт привязан к другой панели (предложение, нужно решение)' },
     { id: 'wz5',              group: 'Мастера', title: 'Мастер: Всё готово', status: 'done', via: 'Код из письма → «Продолжить»' },
     { id: 'wzf',              group: 'Мастера', title: 'Мастер: Файл настроек', status: 'done', via: 'Привет → «Перенести настройки из файла». Состояние: файл не подошёл' },
     { id: 'wz6',              group: 'Мастера', title: 'Мастер: Пустой стол', status: 'done', via: 'Готово без устройств → «Открыть мой дом»' }
@@ -2425,13 +2435,16 @@ const wSheet = () => { if (S.wSheetAll) return wSheetAll(); const d = WDEV.find(
   return `<div class="dlg" data-go="wzsheetno"><div class="box wzsheet" data-go="wznoop"><div class="wzdh"><div><h2>${d[1]}</h2><p class="wzsq">${d[5] ? d[5] + ' · ' : ''}${cur ? 'Переместить в комнату' : 'В какой комнате стоит?'}</p></div><button class="wzx" data-go="wzsheetno" aria-label="Закрыть">${ICON('close')}</button></div><div class="wzsl">` +
   wRooms().map(n => `<button class="gr ls wzsr" data-go="wzset:${d[0]}:${n}"><span class="li">${ICON('r-' + roomIconFor(n))}</span><span class="tx"><span class="rt">${n}</span></span>${n === cur ? `<span class="wzok">${ICON('check')}</span>` : ''}</button>`).join('') +
   `<button class="gr ls wzsr wzsn" data-go="wzadd:${d[0]}"><span class="li">${ICON('plus')}</span><span class="tx"><span class="rt">Новая комната</span></span></button></div></div></div>`; };
+const wzHelp = () => `<div class="dlg wzbot" data-go="wzhelpno"><div class="box wzsheet" data-go="wznoop"><div class="wzdh"><div><h2>Письмо не пришло?</h2><p class="wzsq">Обычно оно идёт до 2 минут</p></div><button class="wzx" data-go="wzhelpno" aria-label="Закрыть">${ICON('close')}</button></div>
+  <ul class="wztips"><li>Проверьте папку «Спам» и «Рассылки»</li><li>Убедитесь, что адрес верный: <b>${S.wEmail || 'anna@example.com'}</b></li><li>Подождите до 2 минут, прежде чем запрашивать новый код</li></ul>
+  <div class="wzhf"><button class="btn text" data-go="wzhelpback">Изменить почту</button><button class="btn primary" data-go="wzhelpno">Понятно</button></div></div></div>`;
 const wCap = t => t ? t.charAt(0).toUpperCase() + t.slice(1) : t;
 const wDlg = () => { let h = dlgHtml(); if (!h || h.includes('Значок комнаты</h2>')) return h;
   h = h.replace('<div class="dlg">', '<div class="dlg" data-go="dlg:no">').replace('<div class="box">', '<div class="box" data-go="wznoop">');
   h = h.replace('<p class="rhint" id="dlgHint">', '<p class="rhint" id="dlgHint" style="display:none">');
   if (S.wEditRoom) h = h.replace('<button class="btn primary" id="dlgOk"', '<button class="btn tonal wzdel" data-go="wzdelroom">Удалить</button><button class="btn primary" id="dlgOk"');
   return h; };
-function wzResetState() { S.wCase = ''; S.wSheetAll = ''; S.wKey = ''; S.wEmail = ''; S.wCode = ''; S.dev.wCons = false; S.wpanel = ''; S.wCustom = []; S.wSheet = ''; S.wOpen = ''; S.wEdit = ''; S.wEditRoom = ''; S.wFile = false; S.wRestored = false; Object.keys(S).filter(k => k.startsWith('wexp_') || k.startsWith('wa_')).forEach(k => delete S[k]); S.wbOn = true; S.z2mOn = true; S.wSkip = false; S.wHome = false; S.dev.g1 = S.dev.g2 = true; S.dlg = false; S.rName = ''; }
+function wzResetState() { S.wLater = false; S.wHelp = false; S.wCase = ''; S.wSheetAll = ''; S.wKey = ''; S.wEmail = ''; S.wCode = ''; S.dev.wCons = false; S.wpanel = ''; S.wCustom = []; S.wSheet = ''; S.wOpen = ''; S.wEdit = ''; S.wEditRoom = ''; S.wFile = false; S.wRestored = false; Object.keys(S).filter(k => k.startsWith('wexp_') || k.startsWith('wa_')).forEach(k => delete S[k]); S.wbOn = true; S.z2mOn = true; S.wSkip = false; S.wHome = false; S.dev.g1 = S.dev.g2 = true; S.dlg = false; S.rName = ''; }
 const wRadio = (g, v, cur, label) => `<button class="gr ls wz1l" role="radio" aria-checked="${v === cur}" data-radio="${g}" data-v="${v}">${v ? `<span class="li">${ICON('r-' + roomIconFor(v))}</span>` : ''}<span class="tx"><span class="rt">${label || v}</span></span>${v && S.wCustom.includes(v) ? `<span class="wzpen" role="button" aria-label="Изменить комнату" data-go="wzeditroom:${v}">${ICON('pencil')}</span>` : ''}<span class="mk"></span></button>`;
 const DEVS = [['a', 'NSPanel Pro', 'NsPro-1001e0aed1', 13], ['b', '_TZE200_znlqjmih TS0601', 'NsPro_0x804b50fffee0fc86', 15]];
 Object.assign(PAGES, {
@@ -2462,22 +2475,44 @@ Object.assign(PAGES, {
     `<div class="wzhero wzokh">${WART_HOUSE}
       <h1>Дом настроен</h1><p>Остался последний шаг: регистрация в альфе</p>
       <button class="btn primary wzbtn" data-go="wzkey">Зарегистрироваться</button></div>` }),
-  wzkey: () => { const okE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test((S.wEmail || '').trim());
+  wzkey: () => { const c = S.wCase, em = (S.wEmail || '').trim(), okE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em), mailErr = ['badmail', 'noat', 'nozone', 'layout'].includes(c),
+    plate = { offline: ['wifioff', 'Нет интернета. Для регистрации нужно подключение, проверьте сеть и повторите'], nowan: ['wifioff', 'Панель подключена к Wi-Fi, но выхода в интернет нет. Проверьте роутер и подключение к провайдеру'], server: ['alert', 'Сервер регистрации не отвечает. Настройки сохранены, повторите чуть позже'], outdated: ['info', 'Для регистрации нужна новая версия Фионы. Обновите приложение и вернитесь сюда'] }[c],
+    err = { badmail: 'После @ не хватает домена, например mail.ru', noat: 'В адресе не хватает @', nozone: 'Не хватает зоны, например .ru или .com', layout: 'Похоже, включена русская раскладка. Переключите на английскую и введите адрес снова' }[c],
+    busy = c === 'sending', lim = c === 'mlimit';
+    if (lim) return { back: true, title: 'Регистрация', body: `<div class="empty"><i class="eic">${ICON('lock')}</i><b>Слишком много кодов</b>Мы уже отправили 3 кода на ${S.wEmail || 'вашу почту'}. Новый можно запросить через 58 минут или укажите другую почту</div>`, foot: () => foot(`<button class="btn text" data-go="wzretry">Изменить почту</button>`) };
     return { back: true, title: 'Регистрация', body:
     `<div class="wzbadge">${WMAIL}</div><p class="sd wzlede wzc">Укажите почту, мы пришлём на неё код подтверждения</p>
-     ${S.wCase === 'offline' ? `<div class="card2 tip wzwarn wzoffc">${ICON('wifioff')}<p class="sd">Нет интернета. Для регистрации нужно подключение, проверьте сеть и повторите</p></div>` : ''}
-     <div class="wzfld"><label class="tf m${S.wCase === 'badmail' ? ' bad' : ''}"><input data-in="wEmail" type="email" inputmode="email" placeholder=" " value="${S.wEmail || ''}" autocomplete="off"><span>Электронная почта</span></label>${S.wCase === 'badmail' ? `<p class="wzerr">Проверьте адрес: после @ не хватает домена, например mail.ru</p>` : ''}</div>
-     <div class="wzfld"><div class="wzcons opt" role="checkbox" aria-checked="${!!S.dev.wCons}" data-chk2="wCons"><span class="mk c">${CHECK}</span><span class="wzct">Согласен с <span class="wzlnk" role="link" data-go="wzpolicy">политикой конфиденциальности</span></span></div></div>`,
-    foot: () => foot(S.wCase === 'offline' ? `<button class="btn primary" data-go="wzretry">Повторить</button>` : `<button class="btn primary" data-go="wzcode" ${okE && !!S.dev.wCons && S.wCase !== 'badmail' ? '' : 'disabled'}>Получить код</button>`) }; },
+     ${plate ? `<div class="card2 tip wzwarn wzoffc">${ICON(plate[0])}<p class="sd">${plate[1]}</p></div>` : ''}
+     <div class="wzfld"><label class="tf m${mailErr ? ' bad' : ''}"><input data-in="wEmail" type="email" inputmode="email" placeholder=" " value="${S.wEmail || ''}" autocomplete="off" ${busy ? 'disabled' : ''}><span>Электронная почта</span></label>${mailErr ? `<p class="wzerr">${err}</p>` : ''}${c === 'typo' ? `<div class="wzsug"><span>Возможно, <b>gmail.com</b>?</span><button class="btn text" data-go="wzfixtypo">Исправить</button></div>` : ''}</div>
+     <div class="wzfld"><div class="wzcons opt${c === 'nocons' ? ' bad' : ''}" role="checkbox" aria-checked="${!!S.dev.wCons}" data-chk2="wCons"><span class="mk c">${CHECK}</span><span class="wzct">Согласен с <span class="wzlnk" role="link" data-go="wzpolicy">политикой конфиденциальности</span></span></div>${c === 'nocons' && !S.dev.wCons ? `<p class="wzerr">Без согласия зарегистрировать нельзя</p>` : ''}</div>`,
+    foot: () => { const later = `<button class="btn text" data-go="wzlater">Зарегистрируюсь позже</button>`;
+      if (c === 'offline' || c === 'nowan' || c === 'server') return foot(later, `<button class="btn primary" data-go="wzretry">Повторить</button>`);
+      if (c === 'outdated') return foot(later, `<button class="btn primary" data-go="note:Откроется проверка обновлений приложения">Проверить обновления</button>`);
+      if (busy) return foot(`<button class="btn primary" disabled><span class="wzspin"></span>Отправляем код…</button>`);
+      if (c === 'nocons') return foot(`<button class="btn primary" data-go="${S.dev.wCons ? 'wzcode' : 'wznocons'}">Получить код</button>`);
+      return foot(`<button class="btn primary" data-go="wzcode" ${okE && !!S.dev.wCons && !mailErr ? '' : 'disabled'}>Получить код</button>`); } }; },
   wzpolicy: () => ({ back: true, title: 'Политика конфиденциальности', body:
     `<div class="wzpol"><h3>Какие данные мы храним</h3><p>Адрес почты и признак регистрации в альфе. Комнаты, устройства и сценарии остаются на панели и не уходят в облако</p><h3>Зачем нужна почта</h3><p>Чтобы привязать доступ к аккаунту и не потерять его при переустановке</p><h3>Как удалить данные</h3><p>Напишите в поддержку, и мы удалим аккаунт вместе с почтой</p></div>`,
     foot: () => foot(`<button class="btn primary" data-go="wzaccept">Принимаю</button>`) }),
-  wzcode: () => { const c = S.wCase, lock = c === 'locked';
-    return { back: true, title: 'Код из письма', body: lock
-    ? `<div class="empty"><i class="eic">${ICON('lock')}</i><b>Слишком много попыток</b>Мы временно заблокировали ввод кода. Попробуйте снова через 15 минут или укажите другую почту</div>`
-    : `<div class="wzbadge">${WMAIL}</div><p class="sd wzlede wzc">Отправили код на<br><b>${S.wEmail || 'вашу почту'}</b></p><div class="wzfld"><label class="tf m${c === 'wrong' || c === 'expired' ? ' bad' : ''}"><input data-in="wCode" inputmode="numeric" maxlength="6" placeholder=" " value="${S.wCode || ''}" autocomplete="off"><span>Код из письма</span></label>${c === 'wrong' ? `<p class="wzerr">Неверный код. Осталось 2 попытки</p>` : c === 'expired' ? `<p class="wzerr">Срок действия кода истёк. Запросите новый</p>` : ''}</div>
-     <div class="wzresend">${c === 'expired' ? `<button class="btn tonal" data-go="wzresend">Отправить новый код</button>` : `<button class="btn text" data-go="wzresend" disabled>Отправить ещё раз через 0:42</button>`}</div>`,
-    foot: () => foot(`<button class="btn text" data-go="back">Изменить почту</button>`, `<button class="btn primary" data-go="wz5" ${!lock && c !== 'expired' && c !== 'wrong' && /^\d{6}$/.test(S.wCode || '') ? '' : 'disabled'}>Продолжить</button>`) }; },
+  wzcode: () => { const c = S.wCase, lock = c === 'locked', lim = c === 'limit', stop = lock || lim, em = S.wEmail || 'вашу почту',
+    plate = { voffline: ['wifioff', 'Нет интернета. Код сохранён, попытка не потрачена'], vserver: ['alert', 'Сервер не отвечает. Код сохранён, попытка не потрачена'], saveerr: ['alert', 'Код верный, но панель не смогла сохранить доступ. Повторите сохранение'] }[c],
+    err = { wrong: 'Неверный код. Осталось 2 попытки', wrong1: 'Неверный код. Осталась 1 попытка', expired: 'Срок действия кода истёк. Запросите новый', used: 'Этот код уже использован. Запросите новый' }[c],
+    bad = !!err, canGo = !stop && !bad && !plate || c === 'voffline' || c === 'vserver' || c === 'saveerr';
+    return { back: true, title: 'Код из письма', body: (lock
+    ? `<div class="empty"><i class="eic">${ICON('lock')}</i><b>Слишком много попыток</b>Ввод кода заблокирован. Повторите через <span class="wzcd">14:32</span> или укажите другую почту</div>`
+    : lim ? `<div class="empty"><i class="eic">${ICON('lock')}</i><b>Код больше отправить нельзя</b>Мы уже отправили 3 кода на ${em}. Попробуйте через 58 минут или укажите другую почту</div>`
+    : `<div class="wzbadge">${WMAIL}</div><p class="sd wzlede wzc">Отправили код на<br><b>${em}</b></p>
+     ${plate ? `<div class="card2 tip wzwarn wzoffc">${ICON(plate[0])}<p class="sd">${plate[1]}</p></div>` : ''}
+     <div class="wzfld"><label class="tf m${bad ? ' bad' : ''}"><input data-in="wCode" inputmode="numeric" maxlength="6" placeholder=" " value="${S.wCode || ''}" autocomplete="off"><span>Код из письма</span></label>${err ? `<p class="wzerr">${err}</p>` : ''}</div>
+     <div class="wzresend">${c === 'expired' || c === 'used' ? `<button class="btn tonal" data-go="wzresend">Отправить новый код</button>` : `<button class="btn text" data-go="wzresend" disabled>Отправить ещё раз через 0:42</button>`}</div>
+     ${plate ? '' : `<div class="wzresend"><button class="btn text" data-go="wzhelp">Письмо не пришло?</button></div>`}`) + (S.wHelp ? wzHelp() : ''),
+    foot: () => stop ? foot(`<button class="btn text" data-go="back">Изменить почту</button>`)
+      : c === 'voffline' || c === 'vserver' ? foot(`<button class="btn text" data-go="back">Изменить почту</button>`, `<button class="btn primary" data-go="wzretry">Повторить</button>`)
+      : c === 'saveerr' ? foot(`<button class="btn text" data-go="back">Изменить почту</button>`, `<button class="btn primary" data-go="wz5">Повторить сохранение</button>`)
+      : foot(`<button class="btn text" data-go="back">Изменить почту</button>`, `<button class="btn primary" data-go="${c === 'bound' ? 'wzbound' : 'wz5'}" ${!bad && /^\d{6}$/.test(S.wCode || '') ? '' : 'disabled'}>Продолжить</button>`) }; },
+  wzbound: () => ({ back: true, title: 'Аккаунт уже используется', body:
+    `<div class="empty"><i class="eic">${ICON('info')}</i><b>Почта уже используется на другой панели</b>Если перенести доступ сюда, на прежней панели он отключится. Настройки дома остаются там, где они сейчас</div>`,
+    foot: () => foot(`<button class="btn text" data-go="wzretry">Другая почта</button>`, `<button class="btn primary" data-go="wz5">Перенести сюда</button>`) }),
   wz1: () => ({ back: true, title: 'Где будет висеть панель?', body: stepBar(1, 'Панель', 4) +
     grp('', WBASE.concat(S.wCustom).map(n => wRadio('wpanel', n, S.wpanel)).join('')),
     foot: () => foot(`<button class="btn secondary wzl" data-go="dlg:open">Создать комнату</button>`, `<button class="btn primary" data-go="wzsearch" ${S.wpanel ? '' : 'disabled'}>Продолжить</button>`), fab: wDlg() }),
@@ -2529,7 +2564,7 @@ Object.assign(PAGES, {
   wz5: () => { const rs = wRooms().length, n = wCount(); return { title: '', body:
     `<div class="wzhero fin">${WART_DONE}
       <h1>Всё готово</h1><p>${S.wRestored ? 'Настройки перенесены · ' + plr(n, 'устройство', 'устройства', 'устройств') : plr(rs, 'комната', 'комнаты', 'комнат') + ' · ' + (S.wSkip ? 'устройств пока нет' : plr(n, 'устройство', 'устройства', 'устройств'))}</p>
-      <div class="wzoff">${ICON('wifioff')}<span>Фиона работает и без интернета</span></div>
+      <div class="wzoff">${ICON('wifioff')}<span>Фиона работает и без интернета</span></div>${S.wLater ? `<div class="wzoff">${ICON('info')}<span>Регистрацию можно завершить позже в настройках</span></div>` : ''}
       <button class="btn primary wzbtn" data-go="${S.wSkip ? 'wz6' : 'note:Здесь откроется «Мой дом»'}">Открыть мой дом</button></div>` }; },
 });
 
@@ -2716,7 +2751,13 @@ $('#page').addEventListener('click', e => {
   if (g === 'wzstart') return goPage(S.wOsRu !== false ? 'wz1' : 'wzlang');
   if (g === 'wzfile') { S.wCase = ''; S.wFile = !S.wFile; return drawPage(); }
   if (g === 'wzretry') { S.wCase = ''; return drawPage(); }
-  if (g === 'wzresend') { S.wCase = ''; S.wCode = ''; return drawPage(); }
+  if (g === 'wzresend') { S.wCase = ''; S.wCode = ''; drawPage(); return showSnack('Новый код отправлен на ' + (S.wEmail || 'вашу почту')); }
+  if (g === 'wzfixtypo') { S.wEmail = 'anna@gmail.com'; S.wCase = ''; return drawPage(); }
+  if (g === 'wznocons') { S.wCase = 'nocons'; return drawPage(); }
+  if (g === 'wzlater') { S.wLater = true; S.wCase = ''; return goPage('wz5'); }
+  if (g === 'wzhelp') { S.wHelp = true; return drawPage(); }
+  if (g === 'wzhelpno') { S.wHelp = false; return drawPage(); }
+  if (g === 'wzhelpback') { S.wHelp = false; return goPage('wzkey', false); }
   if (g === 'wzrestore') { S.wRestored = true; return wzJump('search'); }
   if (g.startsWith('wzeditroom:')) { const n = g.slice(11); S.wEditRoom = n; S.dlg = true; S.rName = n; S.rIc = roomIconFor(n); S.rIcMan = false; S.dlgPick = false; return drawPage(); }
   if (g === 'wzdelroom') { const n = S.wEditRoom; S.wCustom = S.wCustom.filter(x => x !== n); if (S.wpanel === n) S.wpanel = ''; Object.keys(S).filter(k => k.startsWith('wa_') && S[k] === n).forEach(k => S[k] = ''); S.wEditRoom = ''; S.dlg = false; S.rName = ''; return drawPage(); }
@@ -2899,7 +2940,7 @@ const GROUPS = [
     opts: [['off', 'Выкл'], ['listening', 'Слушает'], ['no-permission', 'Нет доступа']] },
   { label: 'Мастера', cls: 'grid3', get: () => state.screen === 'page' && curPage !== 'settings' ? (curPage === 'add-controller' && S.ctrl === 'manual' ? 'add-controller-m' : curPage) : '',
     set: v => { if (v === 'add-controller-m') { S.ctrl = 'manual'; goPage('add-controller', false); } else { if (v === 'add-controller') S.ctrl = ''; goPage(v, false); } },
-    opts: [['add-controller', 'Контроллер'], ['add-controller-m', 'Ручной ввод'], ['add-ha', 'Home Assistant'], ['add-devices', 'Устройства'], ['wz0', 'Привет'], ['wzlang', 'Язык'], ['wz1', 'Панель'], ['wz2', 'Устройства'], ['wz2n', 'Не нашлись'], ['wz2s', 'Без устройств'], ['wz3', 'Комнаты'], ['wz4', 'Группы'], ['wzok', 'Дом настроен'], ['wzkey', 'Регистрация'], ['wzpolicy', 'Политика'], ['wzcode', 'Код из письма'], ['wz5', 'Готово'], ['wzf', 'Файл'], ['wz6', 'Пустой стол']] },
+    opts: [['add-controller', 'Контроллер'], ['add-controller-m', 'Ручной ввод'], ['add-ha', 'Home Assistant'], ['add-devices', 'Устройства'], ['wz0', 'Привет'], ['wzlang', 'Язык'], ['wz1', 'Панель'], ['wz2', 'Устройства'], ['wz2n', 'Не нашлись'], ['wz2s', 'Без устройств'], ['wz3', 'Комнаты'], ['wz4', 'Группы'], ['wzok', 'Дом настроен'], ['wzkey', 'Регистрация'], ['wzpolicy', 'Политика'], ['wzcode', 'Код из письма'], ['wzbound', 'Почта на другой панели'], ['wz5', 'Готово'], ['wzf', 'Файл'], ['wz6', 'Пустой стол']] },
   { label: 'Мой дом', cls: 'grid3', get: () => state.screen === 'page' ? (curPage === 'cc' ? S.cct + (S.cct === 'conn' && S.fab ? '-fab' : '') : curPage) : '',
     set: v => { if (v === 'dlg' || v === 'dlgpick') { S.cct = 'loc'; S.dlg = true; S.rName = 'Гостиная'; S.rIc = roomIconFor(S.rName); S.rIcMan = false; S.dlgPick = v === 'dlgpick'; goPage('cc', false); return; } S.dlg = false; S.dlgPick = false; if (v === 'cc-scen' ) S.steps = []; if (v === 'conn-fab') { S.cct = 'conn'; S.fab = true; goPage('cc', false); } else { S.fab = false; goPage(['loc','conn','dev','wid'].includes(v) ? 'cc-' + v : v, false); } },
     opts: [['loc', 'Локации'], ['conn', 'Подключения'], ['conn-fab', 'Подключения + меню'], ['dev', 'Список устройств'], ['wid', 'Виджеты'], ['cc-integ', 'Интеграция'], ['cc-broker', 'Брокер'], ['add-systems', 'Найденные системы'], ['cc-ha', 'Сервер HA'], ['dlg', 'Диалог «Комната»'], ['dlgpick', 'Диалог: значок'], ['cc-vdevs', 'Виртуальные устройства'], ['cc-vdev', 'Виртуальное устройство'], ['cc-devedit', 'Правка устройства'], ['cc-scen', 'Сценарий: шаги'], ['cc-pick', 'Сценарий: что включить']] },
@@ -3108,8 +3149,10 @@ function wzJump(k) {
   const base = () => { wzResetState(); S.wOne = false; S.wpanel = 'Кухня'; };
   if (k === 'hello') { wzResetState(); S.wOne = false; return goPage('wz0', false); }
   if (k === 'lang') { wzResetState(); S.wOsRu = false; return goPage('wzlang', false); }
-  if (['badmail', 'offline'].includes(k)) { wzResetState(); S.dev.wCons = true; S.wEmail = k === 'badmail' ? 'anna@mail' : 'anna@example.com'; S.wCase = k; return goPage('wzkey', false); }
-  if (['wrong', 'expired', 'locked'].includes(k)) { wzResetState(); S.wEmail = 'anna@example.com'; S.wCode = k === 'locked' ? '' : '482915'; S.wCase = k; return goPage('wzcode', false); }
+  if (k === 'bound') { wzResetState(); S.wEmail = 'anna@example.com'; return goPage('wzbound', false); }
+  const MAILS = { badmail: 'anna@mail', noat: 'annamail.ru', nozone: 'anna@mail', layout: 'фттф@ьфшд.кг', typo: 'anna@gmial.com', nocons: 'anna@example.com', sending: 'anna@example.com', offline: 'anna@example.com', nowan: 'anna@example.com', server: 'anna@example.com', outdated: 'anna@example.com', mlimit: 'anna@example.com' };
+  if (k in MAILS) { wzResetState(); S.dev.wCons = k !== 'nocons'; S.wEmail = MAILS[k]; S.wCase = k; return goPage('wzkey', false); }
+  if (['wrong', 'wrong1', 'expired', 'used', 'voffline', 'vserver', 'saveerr', 'limit', 'locked', 'resent', 'help'].includes(k)) { wzResetState(); S.wEmail = 'anna@example.com'; S.wCode = ['locked', 'limit', 'resent', 'help'].includes(k) ? '' : '482915'; S.wCase = ['resent', 'help'].includes(k) ? '' : k; goPage('wzcode', false); if (k === 'help') { S.wHelp = true; drawPage(); } if (k === 'resent') showSnack('Новый код отправлен на anna@example.com'); return; }
   if (k === 'badfile') { wzResetState(); S.wCase = k; return goPage('wzf', false); }
   if (k === 'ready') { wzResetState(); return goPage('wzok', false); }
   if (k === 'key') { wzResetState(); return goPage('wzkey', false); }
@@ -3130,7 +3173,9 @@ function wzJump(k) {
 }
 (() => {
   const G = [['Основной путь', [['hello', 'Привет'], ['lang', 'Язык (если ОС не русская)'], ['panel', 'Где панель'], ['search', 'Поиск устройств'], ['devices', 'Устройства'], ['rooms', 'Комнаты'], ['groups', 'Группы устройств'], ['key', 'Ключ и регистрация'], ['code', 'Код из письма'], ['done', 'Готово']]],
-    ['Нестандартные ситуации', [['badmail', 'Почта с ошибкой'], ['offline', 'Нет интернета'], ['wrong', 'Неверный код'], ['expired', 'Код истёк'], ['locked', 'Слишком много попыток'], ['badfile', 'Файл не подошёл']]],
+    ['Регистрация · почта', [['badmail', 'Нет домена'], ['noat', 'Нет @'], ['nozone', 'Нет зоны'], ['layout', 'Русская раскладка'], ['typo', 'Опечатка в домене'], ['nocons', 'Нет согласия (предложение)'], ['sending', 'Отправка кода'], ['offline', 'Нет интернета'], ['nowan', 'Wi-Fi без интернета'], ['server', 'Сервер не отвечает'], ['outdated', 'Приложение устарело'], ['mlimit', 'Слишком много кодов']]],
+    ['Регистрация · код', [['wrong', 'Неверный код, 2 попытки'], ['wrong1', 'Неверный код, последняя'], ['expired', 'Код истёк'], ['used', 'Код уже использован'], ['resent', 'Новый код отправлен'], ['help', 'Письмо не пришло'], ['voffline', 'Нет интернета при проверке'], ['vserver', 'Сервер не ответил'], ['limit', 'Лимит отправок'], ['locked', 'Блокировка ввода'], ['bound', 'Почта на другой панели (предложение)'], ['saveerr', 'Не удалось сохранить доступ']]],
+    ['Файл', [['badfile', 'Файл не подошёл']]],
     ['Ответвления', [['file', 'Перенос из файла'], ['none', 'Устройства не нашлись'], ['one', 'Один контроллер'], ['skip', 'Продолжить без устройств'], ['empty', 'Пустой стол'], ['newroom', 'Новая комната'], ['editroom', 'Изменить или удалить комнату']]]];
   const d = document.createElement('details'); d.id = 'wzjump'; d.open = innerWidth > 1100;
   d.innerHTML = '<summary>Сценарии мастера</summary><label class="wzos"><input type="checkbox" id="wzos"> После приветствия показывать экран «Язык»</label>' + G.map(([t, l]) => `<div class="wzjt">${t}</div>` + l.map(([k, n]) => `<button data-wz="${k}">${n}</button>`).join('')).join('');
