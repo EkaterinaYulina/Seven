@@ -595,6 +595,10 @@ button.banner > .ic:last-child { transform: rotate(-90deg); color: var(--ui-on-s
 .shade .q .s { min-height: 14px; font-size: var(--font-secondary); line-height: 14px; font-weight: 400; color: var(--c-text-secondary); }
 .shade .q:active { background: color-mix(in srgb, var(--ui-on-surface) 14%, transparent); }
 .shade .q[aria-pressed="true"] .s { color: var(--ui-on-surface); }
+/* «Фиона»: пока слушает, плитка подсвечена мягким зелёным (как индикатор микрофона) и орб медленно дышит; когда не слушает, плитка нейтральная, как остальные «Выкл» */
+.shade .q[data-q="quiet"][aria-pressed="true"] { background: color-mix(in srgb, var(--ui-primary-container) 22%, transparent); }
+.shade .q[data-q="quiet"][aria-pressed="true"] svg.ic { color: var(--ui-primary-container); animation: fionaBreath 3.4s ease-in-out infinite; }
+@keyframes fionaBreath { 0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0 transparent); } 50% { transform: scale(1.08); filter: drop-shadow(0 0 5px var(--ui-primary-container)); } }
 .shade .rw { display: flex; align-items: center; gap: var(--dim-space-md); height: 56px; margin-top: var(--dim-space-sm); }
 .shade .rw .big { width: 56px; order: 2; text-align: right; font-size: var(--font-value); line-height: var(--lh-value); font-weight: 400; font-variant-numeric: tabular-nums; }
 .shade .rw .dim.h { flex: 1; margin-top: 0; }
@@ -1392,7 +1396,7 @@ window.SEVEN_SCREENS = {
   <symbol id="i-size" viewBox="0 0 24 24"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></symbol>
   <symbol id="i-move" viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M9 6l3-3 3 3M9 18l3 3 3-3M6 9l-3 3 3 3M18 9l3 3-3 3"/></symbol>
   <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></symbol>
-  <symbol id="i-micoff" viewBox="0 0 24 24"><path opacity=".3" d="M11.9998 19.0006V22.0008M4.99902 9.99984V12C4.99902 13.8567 5.73661 15.6373 7.04951 16.9501C8.36241 18.263 10.1431 19.0006 11.9998 19.0006C13.8566 19.0006 15.6372 18.263 16.9501 16.9501C18.263 15.6373 19.0006 13.8567 19.0006 12V9.99984M11.9998 1.9992C13.6569 1.9992 15.0002 3.34245 15.0002 4.99944V12C15.0002 13.657 13.6569 15.0002 11.9998 15.0002C10.3428 15.0002 8.99948 13.657 8.99948 12V4.99944C8.99948 3.34245 10.3428 1.9992 11.9998 1.9992Z"/><path d="M10.4 9a1.6 1.6 0 1 0 3.2 0a1.6 1.6 0 1 0-3.2 0"/></symbol><symbol id="i-quietoff" viewBox="0 0 24 24"><path d="M4 10v4M8 6v12M12 3v18M16 7v10M20 10v4"/></symbol>
+  <symbol id="i-micoff" viewBox="0 0 24 24"><path opacity=".3" d="M11.9998 19.0006V22.0008M4.99902 9.99984V12C4.99902 13.8567 5.73661 15.6373 7.04951 16.9501C8.36241 18.263 10.1431 19.0006 11.9998 19.0006C13.8566 19.0006 15.6372 18.263 16.9501 16.9501C18.263 15.6373 19.0006 13.8567 19.0006 12V9.99984M11.9998 1.9992C13.6569 1.9992 15.0002 3.34245 15.0002 4.99944V12C15.0002 13.657 13.6569 15.0002 11.9998 15.0002C10.3428 15.0002 8.99948 13.657 8.99948 12V4.99944C8.99948 3.34245 10.3428 1.9992 11.9998 1.9992Z"/><path d="M10.4 9a1.6 1.6 0 1 0 3.2 0a1.6 1.6 0 1 0-3.2 0"/></symbol><symbol id="i-fiona" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 10.5v3M12 8v8M15.5 10.5v3"/></symbol><symbol id="i-fionaoff" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" opacity=".35"/><path d="M8.5 10.5v3M12 8v8M15.5 10.5v3" opacity=".35"/><path d="M3.5 3.5l17 17"/></symbol><symbol id="i-quietoff" viewBox="0 0 24 24"><path d="M4 10v4M8 6v12M12 3v18M16 7v10M20 10v4"/></symbol>
   <symbol id="i-voloff" viewBox="0 0 24 24"><path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5zM16 9.5l5 5M21 9.5l-5 5"/></symbol>
   <symbol id="i-alert" viewBox="0 0 24 24"><path d="M21.7 18l-8-14a2 2 0 0 0-3.5 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3z"/><path d="M12 9v4M12 17h.01"/></symbol>
   <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 22a10 10 0 1 1 10-10c0 3-2 4-4.5 4H15a2 2 0 0 0-1.5 3.3c.6.8.3 2.7-1.5 2.7z"/><circle cx="7.5" cy="11" r="1"/><circle cx="12" cy="7" r="1"/><circle cx="16.5" cy="11" r="1"/></symbol>
@@ -2934,7 +2938,7 @@ function syncKb() {
 }
 $('#page').addEventListener('focusin', () => { clearTimeout(kbT); syncKb(); });
 $('#page').addEventListener('focusout', () => { clearTimeout(kbT); kbT = setTimeout(syncKb, 300); });
-// «Тишина»: полный mute — микрофон выкл, громкость динамиков 0. Переключатель с памятью прежних значений.
+// Плитка «Фиона» (внутреннее имя режима — quiet): слух ассистента выкл + громкость динамиков 0. Переключатель с памятью прежних значений.
 function setQuiet(on) {
   if (on === S.quiet) return;
   S.quiet = on;
@@ -2956,16 +2960,17 @@ function sleepScreen() {
 $('#off').addEventListener('pointerdown', e => { e.preventDefault(); $('#off').dataset.on = 'false'; note(''); });
 S.wifi = true;
 const SBTN = (q, ic, name, pressed, st = '', cls = '') => `<button class="q ${cls}" data-q="${q}"${pressed == null ? '' : ` aria-pressed="${pressed}"`}>${ICON(ic)}<span class="n">${name}</span><span class="s">${st}</span></button>`;
-const MIC_OFF = () => S.quiet ? 'Микрофон выкл' : '';
+const MIC_OFF = () => S.quiet ? 'Фиона не слушает' : '';
 // после смены «Тишины» обновляем кнопку и статус, не перерисовывая шторку (иначе оборвётся перетаскивание)
 function syncShadeQuiet() {
   const b = $('#shade [data-q="quiet"]'); if (!b) return;
-  b.setAttribute('aria-pressed', S.quiet); b.querySelector('.s').textContent = S.quiet ? 'Вкл' : 'Выкл';
+  b.setAttribute('aria-pressed', !S.quiet); b.querySelector('.s').textContent = S.quiet ? 'Не слушает' : 'Слушает';
+  b.querySelector('use').setAttribute('href', S.quiet ? '#i-fionaoff' : '#i-fiona');
   $('#shade .mc').innerHTML = MIC_OFF();
 }
 function drawShade() {
   $('#shade').innerHTML = `<div class="st">00:08 · 11.10.2026 <i></i> MQTT: на связи<span class="mc">${MIC_OFF()}</span></div>` +
-    `<div class="qs">${SBTN('quiet', S.quiet ? 'micoff' : 'mic', 'Тишина', S.quiet, S.quiet ? 'Вкл' : 'Выкл')}${SBTN('sleep', 'moon', 'Погасить экран')}${SBTN('wifi', S.wifi ? 'wifi' : 'wifioff', 'Wi-Fi', S.wifi, S.wifi ? 'Вкл' : 'Выкл')}${SBTN('set', 'gear', 'Настройки')}</div>` +
+    `<div class="qs">${SBTN('quiet', S.quiet ? 'fionaoff' : 'fiona', 'Фиона', !S.quiet, S.quiet ? 'Не слушает' : 'Слушает')}${SBTN('sleep', 'moon', 'Погасить экран')}${SBTN('wifi', S.wifi ? 'wifi' : 'wifioff', 'Wi-Fi', S.wifi, S.wifi ? 'Вкл' : 'Выкл')}${SBTN('set', 'gear', 'Настройки')}</div>` +
     `<div class="rw"><span class="big"></span>${dimInner('h', 0, 'sun', false)}</div><div class="rw"><span class="big"></span>${dimInner('h', 0, 'vol', false)}</div><div class="grab"></div>`;
   $('#shade').querySelectorAll('.dim').forEach((dm, i) => {
     const k = i ? 'vol' : 'br', big = dm.parentNode.querySelector('.big');
@@ -2977,7 +2982,7 @@ function drawShade() {
       if (!ready) return;
       // яркость 0 экран не гасит: интерфейс остаётся видимым
       if (k === 'br') { S.br = p; return; }
-      if (p === 0 && !S.quiet) { S.vol = 0; setQuiet(true); syncShadeQuiet(); return; }  // громкость в ноль включает «Тишину»
+      if (p === 0 && !S.quiet) { S.vol = 0; setQuiet(true); syncShadeQuiet(); return; }  // громкость в ноль выключает слух Фионы
       if (p > 0) { S.vol = p; if (p >= 10) S.volRest = p; if (S.quiet) { setQuiet(false); S.vol = p; syncShadeQuiet(); } }
     } };
     bindDim(dm, t, dm.parentNode); ready = true; dm.setAttribute('aria-label', i ? 'Громкость' : 'Яркость'); });
