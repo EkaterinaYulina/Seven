@@ -1529,7 +1529,7 @@ window.SEVEN_SCREENS = {
 
 <script>
 /* ───────── Состояние прототипа ───────── */
-const state = { edit: false, theme: 'light', dimmer: 'h', mic: 'off', showHit: false, screen: 'desk', move: null };
+const state = { edit: false, theme: 'light', mic: 'off', showHit: false, screen: 'desk', move: null };
 /* ───────── Каталог значений и готовых плиток ─────────
    Каждое значение плитки (vals) имеет свои зоны цвета: Норма, Средне, Внимание, у каждой диапазон «от — до» и текстовая подсказка.
    Пороги и подсказки черновые, их согласуем с Серёгой. Граница «от» входит в зону, «до» не входит. Вне всех зон плитка остаётся без цвета. */
@@ -1632,7 +1632,7 @@ function dimInner(o, t, ic = 'sun', pct = true) {
 function switchInner(t) {
   const w = t.w, h = t.h, ic = ICON(t.icon), nm = `<div class="name">${t.name}</div>`;
   const st = `<div class="sec" data-role="state">${t.on ? 'Включен' : 'Выключен'}</div>`;
-  const dim = t.level == null ? '' : state.dimmer === 'old' ? '<div class="slider"><div class="track"></div><div class="thumb"></div></div>' : dimInner('h', t);
+  const dim = t.level == null ? '' : dimInner('h', t);
   if (w === 1 && h === 2) return `<div class="top">${ic}</div>${nm}${st}<div class="stepb"><span>${ICON('plus')}</span><span>${ICON('minus')}</span></div>`;
   if (w === 1) return `<div class="top">${ic}</div>${nm}${st}`;
   if (w >= 4) return `${ic}<div class="col">${nm}${st}</div>${dim ? `<div class="grow">${dim}</div>` : ''}`;
@@ -3003,8 +3003,6 @@ const GROUPS = [
     opts: [['normal', 'Обычный'], ['edit', 'Правка']] },
   { label: 'Тема',     get: () => state.theme, set: v => { state.theme = v; document.documentElement.dataset.theme = v; },
     opts: [['light', 'Светлая'], ['dark', 'Тёмная']] },
-  { label: 'Ползунок света', get: () => state.dimmer, set: v => { state.dimmer = v; render(); },
-    opts: [['old', 'Было'], ['h', 'Колбаса']] },
   { label: 'Баннеры на столе', cls: 'grid3', get: () => state.banners.length === 4 ? 'all' : state.banners[0] || 'none',
     set: v => { state.banners = v === 'none' ? [] : v === 'all' ? ['mic', 'safe', 'ctrl', 'broker'] : [v]; drawBanners(); if (state.screen !== 'desk') setScreen('desk'); },
     opts: [['none', 'Нет'], ['mic', 'Нет микрофона'], ['safe', 'Безопасный режим'], ['ctrl', 'Нет связи'], ['broker', 'Брокер недоступен'], ['all', 'Все']] },
@@ -3055,7 +3053,6 @@ if (q.get('pal')) { S.pal = q.get('pal'); document.documentElement.dataset.pal =
 drawDrawer();
 if (q.get('theme')) G('Тема').set(q.get('theme'));
 desk.dataset.dstyle = 'a';
-if (q.get('dimmer')) state.dimmer = q.get('dimmer');
 if (q.get('mic')) G('Микрофон').set(q.get('mic'));
 if (q.get('empty')) S.empty = q.get('empty') === '1';
 if (q.get('mode') === 'edit') state.edit = true;
