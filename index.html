@@ -237,9 +237,10 @@ svg.ic.dots { stroke-width: 2.6; }
 .drawer .scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; padding: 0 var(--dim-space-md) 0 var(--dim-space-sm);
   -webkit-mask-image: linear-gradient(#000 calc(100% - 20px), transparent); mask-image: linear-gradient(#000 calc(100% - 20px), transparent); }
 .drawer .scroll::-webkit-scrollbar { display: none; }
-.drawer .title .prof { margin-left: auto; width: 44px; height: 44px; border-radius: 22px; display: flex; align-items: center; justify-content: center; color: var(--ui-on-surface); background: transparent; border: 1px solid var(--ui-outline); }
-.drawer .title .prof:active { background: var(--menu-press); }
-.drawer .title .prof .ic { width: 22px; height: 22px; }
+.drawer .title .tact { margin-left: auto; display: flex; gap: var(--dim-space-sm); }
+.drawer .title .tact button { width: 44px; height: 44px; border-radius: 22px; display: flex; align-items: center; justify-content: center; color: var(--ui-on-surface); background: transparent; border: 1px solid var(--ui-outline); }
+.drawer .title .tact button:active { background: var(--menu-press); }
+.drawer .title .tact .ic { width: 22px; height: 22px; }
 .drawer .title { height: 56px; padding: 0 var(--dim-space-md); display: flex; align-items: center; font-size: 22px; line-height: 28px; font-weight: 500; }
 .drawer .label { padding: var(--dim-space-sm) var(--dim-space-md) 4px; font-size: 13px; line-height: 18px; font-weight: 500; color: var(--ui-on-surface-variant); }
 .drawer .room-row { width: 100%; height: 56px; padding: 0 var(--dim-space-md); border-radius: 18px; display: flex; align-items: center; gap: var(--dim-space-md);
@@ -1461,13 +1462,9 @@ window.SEVEN_SCREENS = {
       <div class="scrim" id="scrim"></div>
       <nav class="drawer" id="drawer" aria-label="Меню">
         <div class="scroll" id="drawerScroll">
-          <div class="title">Фиона<button class="prof" data-go="profile" aria-label="Профиль" title="Профиль"><svg class="ic"><use href="#i-user"/></svg></button></div>
+          <div class="title">Фиона<span class="tact"><button data-go="shade" aria-label="Яркость и звук" title="Яркость и звук"><svg class="ic"><use href="#i-sliders"/></svg></button><button data-go="edit" aria-label="Править экраны" title="Править экраны"><svg class="ic"><use href="#i-pencil"/></svg></button><button data-go="profile" aria-label="Профиль" title="Профиль"><svg class="ic"><use href="#i-user"/></svg></button></span></div>
           <div class="label">Комнаты</div>
           <div id="drawerRooms"></div>
-        </div>
-        <div class="quick" role="group" aria-label="Быстрые действия">
-          <button data-go="shade"><svg class="ic"><use href="#i-sliders"/></svg>Яркость и звук</button>
-          <button data-go="edit"><svg class="ic"><use href="#i-pencil"/></svg>Править экраны</button>
         </div>
         <div class="bar" role="toolbar" aria-label="Разделы">
           <button data-go="cc" aria-label="Мой дом" title="Мой дом"><svg class="ic"><use href="#i-cc"/></svg>Мой дом</button>
@@ -1909,7 +1906,7 @@ $('#btnHideApps').addEventListener('click', () => setScreen('desk'));
 $('#appSearch').addEventListener('focus', () => { if (state.screen === 'apps') setScreen('kbd'); });
 $('#appSearch').addEventListener('keydown', e => { if (e.key === 'Escape') setScreen('apps'); });
 $('#drawer').addEventListener('click', e => {
-  const b = e.target.closest('.bar button, .quick button, .room-row, .title .prof'); if (!b) return;
+  const b = e.target.closest('.bar button, .quick button, .room-row, .title .tact button'); if (!b) return;
   const go = b.dataset.go;
   if (go === 'room') return setScreen('desk');   /* перейти в комнату: в прототипе экран один */
   if (go === 'apps') return setScreen('apps');
