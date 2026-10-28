@@ -237,6 +237,9 @@ svg.ic.dots { stroke-width: 2.6; }
 .drawer .scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; padding: 0 var(--dim-space-md) 0 var(--dim-space-sm);
   -webkit-mask-image: linear-gradient(#000 calc(100% - 20px), transparent); mask-image: linear-gradient(#000 calc(100% - 20px), transparent); }
 .drawer .scroll::-webkit-scrollbar { display: none; }
+.drawer .title .prof { margin-left: auto; width: 44px; height: 44px; border-radius: 22px; display: flex; align-items: center; justify-content: center; color: var(--ui-on-surface); background: transparent; border: 1px solid var(--ui-outline); }
+.drawer .title .prof:active { background: var(--menu-press); }
+.drawer .title .prof .ic { width: 22px; height: 22px; }
 .drawer .title { height: 56px; padding: 0 var(--dim-space-md); display: flex; align-items: center; font-size: 22px; line-height: 28px; font-weight: 500; }
 .drawer .label { padding: var(--dim-space-sm) var(--dim-space-md) 4px; font-size: 13px; line-height: 18px; font-weight: 500; color: var(--ui-on-surface-variant); }
 .drawer .room-row { width: 100%; height: 56px; padding: 0 var(--dim-space-md); border-radius: 18px; display: flex; align-items: center; gap: var(--dim-space-md);
@@ -950,6 +953,7 @@ window.SEVEN_SCREENS = {
     { id: 'shade',           group: 'Стол и меню', title: 'Шторка «Панель»', status: 'proto', via: 'Меню → «Яркость и звук»' },
     { id: 'ph-gallery',      group: 'Стол и меню', title: 'Добавить плитку', status: 'proto', via: 'Правка → «+» в пустой клетке или «+ Виджет»', code: 'DeskGallery' },
     { id: 'ph-move',         group: 'Стол и меню', title: 'Перенос плитки', status: 'done', via: 'Правка → потянуть плитку, или «Плитка» → «Переместить»' },
+    { id: 'ph-profile',      group: 'Стол и меню', title: 'Профиль пользователя', status: 'stub', via: 'Меню → значок профиля рядом с «Фиона»' },
     { id: 'ph-more',         group: 'Стол и меню', title: 'Меню «⋮» панели правки', status: 'stub', via: 'Правка → «⋮»' },
 
     { id: 'settings-voice',    group: 'Настройки', title: 'Голос и ответы', status: 'proto', via: 'Настройки → Голос и ответы' },
@@ -1370,6 +1374,7 @@ window.SEVEN_SCREENS = {
   <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h8M18 7h2M4 17h2M12 17h8"/><circle cx="15" cy="7" r="2.5"/><circle cx="9" cy="17" r="2.5"/></symbol>
   <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M4 20l1-4.2L16.2 4.6a1.6 1.6 0 0 1 2.2 0l1 1a1.6 1.6 0 0 1 0 2.2L8.2 19z"/></symbol>
   <symbol id="i-lock" viewBox="0 0 24 24"><path d="M6 11h12v9H6zM8.5 11V8a3.5 3.5 0 0 1 7 0v3"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.6"/><path d="M4.8 20c.6-3.6 3.6-5.8 7.2-5.8s6.6 2.2 7.2 5.8"/></symbol>
   <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="6.5"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></symbol>
   <symbol id="i-cc" viewBox="0 0 24 24"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
   <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.4-4.4"/></symbol>
@@ -1456,7 +1461,7 @@ window.SEVEN_SCREENS = {
       <div class="scrim" id="scrim"></div>
       <nav class="drawer" id="drawer" aria-label="Меню">
         <div class="scroll" id="drawerScroll">
-          <div class="title">Seven assistant</div>
+          <div class="title">Фиона<button class="prof" data-go="profile" aria-label="Профиль" title="Профиль"><svg class="ic"><use href="#i-user"/></svg></button></div>
           <div class="label">Комнаты</div>
           <div id="drawerRooms"></div>
         </div>
@@ -1904,13 +1909,14 @@ $('#btnHideApps').addEventListener('click', () => setScreen('desk'));
 $('#appSearch').addEventListener('focus', () => { if (state.screen === 'apps') setScreen('kbd'); });
 $('#appSearch').addEventListener('keydown', e => { if (e.key === 'Escape') setScreen('apps'); });
 $('#drawer').addEventListener('click', e => {
-  const b = e.target.closest('.bar button, .quick button, .room-row'); if (!b) return;
+  const b = e.target.closest('.bar button, .quick button, .room-row, .title .prof'); if (!b) return;
   const go = b.dataset.go;
   if (go === 'room') return setScreen('desk');   /* перейти в комнату: в прототипе экран один */
   if (go === 'apps') return setScreen('apps');
   if (go === 'edit') { setScreen('desk'); return setEdit(true); }
   if (go === 'settings') return goPage('voice', false);
   if (go === 'cc') return goPage('cc-loc', false);
+  if (go === 'profile') return goPage('ph-profile', false);
   if (go === 'shade') return setScreen('shade');
   setScreen('desk');
   note({ shade: 'Панель: шторка с яркостью и громкостью. В этот прототип не входит.', settings: 'Откроются «Настройки». В этот прототип не входят.', cc: 'Откроется «Мой дом». В этот прототип не входит.' }[go]);
@@ -2736,17 +2742,18 @@ const PH = {
     foot: `<button class="btn primary" data-go="ph-se-preview">Продолжить</button>` },
   'ph-se-preview': { title: 'Новый сценарий', ctx: 'Предпросмотр', code: 'SEPreview', via: 'Редактор сценария, после «Название»', has: 'Последний шаг редактора сценария: предпросмотр.', shot: 'нужен', n: 5, close: true,
     foot: `<button class="btn primary" data-go="cc-wid">Сохранить</button>` },
+  'ph-profile': { title: 'Профиль', code: 'профиль пользователя', via: 'Меню → значок профиля справа от названия «Фиона»', has: 'Раздел профиля пользователя. Содержимое ещё не придумано: нужно решить, что здесь хранится (имя, почта регистрации, голос, язык) и что можно менять.', shot: 'не нужен, макета нет', n: 0 },
   'ph-vd-suggest': { title: 'Собрать из найденного', code: 'VirtualDeviceSuggest', via: 'Комнаты или Группы устройств → «Собрать из найденного»', has: 'Предложения групп устройств из найденных свойств. На панели кнопка не отображается, вероятно, нет предложений.', shot: 'нужен', n: 6 },
   'ph-mqtt-tail': { title: 'Добавление оборудования', ctx: 'Контроллер', code: 'шаги мастера MQTT после «Адрес»', via: 'Дополнительно → Подключения → «Добавить» → «Брокер MQTT» → «Указать вручную» → «Продолжить»', has: 'Провайдер, порт, авторизация, проверка соединения.', shot: 'нужен', n: 7,
     foot: `<button class="btn primary" data-go="add-devices">Продолжить</button>` },
 };
 Object.keys(PH).forEach(k => {
   const c = PH[k];
-  PAGES[k] = () => ({ back: ['ph-vd-suggest'].includes(k), title: c.title, ctx: c.ctx, close: c.close, foot: c.foot ? () => c.foot : undefined,
+  PAGES[k] = () => ({ back: ['ph-vd-suggest', 'ph-profile'].includes(k), title: c.title, ctx: c.ctx, close: c.close, foot: c.foot ? () => c.foot : undefined,
     body: (c.step ? stepBar(c.step, c.name) : '') +
       `<div class="phbox"><span class="stl warn">${ICON('info')}Заглушка</span><h3>Экран ещё не нарисован</h3><p>${c.has}</p>` +
       `<dl><dt>Экран в коде</dt><dd><code>${c.code}</code></dd><dt>Как открыть</dt><dd>${c.via}</dd><dt>Скриншот</dt><dd>${c.shot}</dd></dl>` +
-      `<p class="sd" style="margin:0">Пункт ${c.n} в задаче ALL-71.</p></div>` });
+      (c.n ? `<p class="sd" style="margin:0">Пункт ${c.n} в задаче ALL-71.</p>` : '') + `</div>` });
 });
 PAGES['ph-gallery'] = galleryPage;
 function goPage(name, push = true) {
@@ -3011,7 +3018,7 @@ const GROUPS = [
     set: v => { if (v === 'dlg' || v === 'dlgpick') { S.cct = 'loc'; S.dlg = true; S.rName = 'Гостиная'; S.rIc = roomIconFor(S.rName); S.rIcMan = false; S.dlgPick = v === 'dlgpick'; goPage('cc', false); return; } S.dlg = false; S.dlgPick = false; if (v === 'cc-scen' ) S.steps = []; if (v === 'conn-fab') { goPage('cc-conn', false); S.fab = true; drawPage(false); } else { S.fab = false; goPage(['loc','conn','dev','grp','wid'].includes(v) ? 'cc-' + v : v, false); } },
     opts: [['loc', 'Комнаты'], ['dev', 'Устройства'], ['grp', 'Группы устройств'], ['wid', 'Сценарии'], ['conn', 'Подключения'], ['conn-fab', 'Подключения + меню'], ['cc-integ', 'Интеграция'], ['cc-broker', 'Брокер'], ['add-systems', 'Найденные системы'], ['cc-ha', 'Сервер HA'], ['dlg', 'Диалог «Комната»'], ['dlgpick', 'Диалог: значок'], ['cc-vdevs', 'Группы устройств'], ['cc-vdev', 'Группа устройств'], ['cc-devedit', 'Правка устройства'], ['cc-scen', 'Сценарий: шаги'], ['cc-pick', 'Сценарий: что включить']] },
   { label: 'Не проработаны (заглушки)', cls: 'grid3', get: () => state.screen === 'page' && (curPage in PH) ? curPage : '', set: v => { if (v === 'ph-se-action') S.steps = []; goPage(v, false); },
-    opts: [['ph-more', 'Меню ⋮'], ['ph-se-action', 'Сценарий: действие'], ['ph-se-order', 'Сценарий: порядок'], ['ph-se-name', 'Сценарий: название'], ['ph-se-preview', 'Сценарий: просмотр'], ['ph-vd-suggest', 'Собрать из найденного'], ['ph-mqtt-tail', 'MQTT: хвост']] },
+    opts: [['ph-more', 'Меню ⋮'], ['ph-profile', 'Профиль'], ['ph-se-action', 'Сценарий: действие'], ['ph-se-order', 'Сценарий: порядок'], ['ph-se-name', 'Сценарий: название'], ['ph-se-preview', 'Сценарий: просмотр'], ['ph-vd-suggest', 'Собрать из найденного'], ['ph-mqtt-tail', 'MQTT: хвост']] },
   { label: 'Пустые состояния',   get: () => S.empty ? 'empty' : 'full', set: v => { S.empty = v === 'empty'; if (state.screen === 'page') drawPage(false); },
     opts: [['full', 'Есть данные'], ['empty', 'Пусто']] },
   { label: 'Экран стола', get: () => String(cur), set: v => { const n = +v; if (n !== cur) { cur = n; tiles = pagesData[cur]; undoStack = []; hideSnack(); render(); updateDots(); } }, opts: [['0', '1'], ['1', '2'], ['2', '3'], ['3', '4']] },
