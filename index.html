@@ -237,10 +237,10 @@ svg.ic.dots { stroke-width: 2.6; }
 .drawer .scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; padding: 0 var(--dim-space-md) 0 var(--dim-space-sm);
   -webkit-mask-image: linear-gradient(#000 calc(100% - 20px), transparent); mask-image: linear-gradient(#000 calc(100% - 20px), transparent); }
 .drawer .scroll::-webkit-scrollbar { display: none; }
-.drawer .title .tact { margin-left: auto; display: flex; gap: var(--dim-space-sm); }
-.drawer .title .tact button { width: 44px; height: 44px; border-radius: 22px; display: flex; align-items: center; justify-content: center; color: var(--ui-on-surface); background: transparent; border: 1px solid var(--ui-outline); }
+.drawer .title .tact { margin-left: auto; display: flex; gap: 0; margin-right: -8px; }
+.drawer .title .tact button { width: 48px; height: 48px; border-radius: 24px; display: flex; align-items: center; justify-content: center; color: var(--ui-on-surface); background: transparent; border: 0; }
 .drawer .title .tact button:active { background: var(--menu-press); }
-.drawer .title .tact .ic { width: 22px; height: 22px; }
+.drawer .title .tact .ic { width: 24px; height: 24px; }
 .drawer .title { height: 56px; padding: 0 var(--dim-space-md); display: flex; align-items: center; font-size: 22px; line-height: 28px; font-weight: 500; }
 .drawer .label { padding: var(--dim-space-sm) var(--dim-space-md) 4px; font-size: 13px; line-height: 18px; font-weight: 500; color: var(--ui-on-surface-variant); }
 .drawer .room-row { width: 100%; height: 56px; padding: 0 var(--dim-space-md); border-radius: 18px; display: flex; align-items: center; gap: var(--dim-space-md);
@@ -954,7 +954,7 @@ window.SEVEN_SCREENS = {
     { id: 'shade',           group: 'Стол и меню', title: 'Шторка «Панель»', status: 'proto', via: 'Меню → «Яркость и звук»' },
     { id: 'ph-gallery',      group: 'Стол и меню', title: 'Добавить плитку', status: 'proto', via: 'Правка → «+» в пустой клетке или «+ Виджет»', code: 'DeskGallery' },
     { id: 'ph-move',         group: 'Стол и меню', title: 'Перенос плитки', status: 'done', via: 'Правка → потянуть плитку, или «Плитка» → «Переместить»' },
-    { id: 'ph-profile',      group: 'Стол и меню', title: 'Профиль пользователя', status: 'stub', via: 'Меню → значок профиля рядом с «Фиона»' },
+    { id: 'ph-profile',      group: 'Стол и меню', title: 'Профиль пользователя', status: 'stub', via: 'Меню → «Профиль»' },
     { id: 'ph-more',         group: 'Стол и меню', title: 'Меню «⋮» панели правки', status: 'stub', via: 'Правка → «⋮»' },
 
     { id: 'settings-voice',    group: 'Настройки', title: 'Голос и ответы', status: 'proto', via: 'Настройки → Голос и ответы' },
@@ -1462,7 +1462,7 @@ window.SEVEN_SCREENS = {
       <div class="scrim" id="scrim"></div>
       <nav class="drawer" id="drawer" aria-label="Меню">
         <div class="scroll" id="drawerScroll">
-          <div class="title">Фиона<span class="tact"><button data-go="shade" aria-label="Яркость и звук" title="Яркость и звук"><svg class="ic"><use href="#i-sliders"/></svg></button><button data-go="edit" aria-label="Править экраны" title="Править экраны"><svg class="ic"><use href="#i-pencil"/></svg></button><button data-go="profile" aria-label="Профиль" title="Профиль"><svg class="ic"><use href="#i-user"/></svg></button></span></div>
+          <div class="title">Фиона<span class="tact"><button data-go="shade" aria-label="Яркость и звук" title="Яркость и звук"><svg class="ic"><use href="#i-sliders"/></svg></button><button data-go="edit" aria-label="Править экраны" title="Править экраны"><svg class="ic"><use href="#i-pencil"/></svg></button></span></div>
           <div class="label">Комнаты</div>
           <div id="drawerRooms"></div>
         </div>
@@ -1470,6 +1470,7 @@ window.SEVEN_SCREENS = {
           <button data-go="cc" aria-label="Мой дом" title="Мой дом"><svg class="ic"><use href="#i-cc"/></svg>Мой дом</button>
           <button data-go="apps" aria-label="Все приложения" title="Все приложения"><svg class="ic"><use href="#i-apps"/></svg>Приложения</button>
           <button data-go="settings" aria-label="Настройки панели" title="Настройки панели"><svg class="ic"><use href="#i-gear"/></svg>Настройки</button>
+          <button data-go="profile" aria-label="Профиль" title="Профиль"><svg class="ic"><use href="#i-user"/></svg>Профиль</button>
         </div>
       </nav>
 
@@ -2739,7 +2740,7 @@ const PH = {
     foot: `<button class="btn primary" data-go="ph-se-preview">Продолжить</button>` },
   'ph-se-preview': { title: 'Новый сценарий', ctx: 'Предпросмотр', code: 'SEPreview', via: 'Редактор сценария, после «Название»', has: 'Последний шаг редактора сценария: предпросмотр.', shot: 'нужен', n: 5, close: true,
     foot: `<button class="btn primary" data-go="cc-wid">Сохранить</button>` },
-  'ph-profile': { title: 'Профиль', code: 'профиль пользователя', via: 'Меню → значок профиля справа от названия «Фиона»', has: 'Раздел профиля пользователя. Содержимое ещё не придумано: нужно решить, что здесь хранится (имя, почта регистрации, голос, язык) и что можно менять.', shot: 'не нужен, макета нет', n: 0 },
+  'ph-profile': { title: 'Профиль', code: 'профиль пользователя', via: 'Меню → «Профиль»', has: 'Раздел профиля пользователя. Содержимое ещё не придумано: нужно решить, что здесь хранится (имя, почта регистрации, голос, язык) и что можно менять.', shot: 'не нужен, макета нет', n: 0 },
   'ph-vd-suggest': { title: 'Собрать из найденного', code: 'VirtualDeviceSuggest', via: 'Комнаты или Группы устройств → «Собрать из найденного»', has: 'Предложения групп устройств из найденных свойств. На панели кнопка не отображается, вероятно, нет предложений.', shot: 'нужен', n: 6 },
   'ph-mqtt-tail': { title: 'Добавление оборудования', ctx: 'Контроллер', code: 'шаги мастера MQTT после «Адрес»', via: 'Дополнительно → Подключения → «Добавить» → «Брокер MQTT» → «Указать вручную» → «Продолжить»', has: 'Провайдер, порт, авторизация, проверка соединения.', shot: 'нужен', n: 7,
     foot: `<button class="btn primary" data-go="add-devices">Продолжить</button>` },
