@@ -2637,7 +2637,7 @@ Object.assign(PAGES, {
 });
 
 /* ───────── Мой дом ───────── */
-Object.assign(S, { empty: false, cct: 'loc', roomOpen: true, fab: false, wTab: 'scen', devTab: 'all',
+Object.assign(S, { empty: false, cct: 'loc', roomOpen: true, fab: false, wTab: 'scen',
   brokers: [{ n: '192.168.23.102:18901', a: '192.168.23.102', p: '18901', on: true, tls: false, ints: [{ n: 'Wirenboard', pr: 'wirenboard', pfx: '', on: true }] }, { n: '192.168.23.133:1883', a: '192.168.23.133', p: '1883', on: true, tls: false, ints: [{ n: 'wirenboard-AEYCHJC', pr: 'wirenboard', pfx: '', on: true }] }], has: [{ n: 'Home Assistant', a: '192.168.23.20:8123', on: true }], eb: 0, ei: 0, prot: 'zigbee2mqtt', pfx: '', iName: '', haName: 'Home Assistant', protOpen: false, bauth: false, iPfx: '', iAddr: '', iToken: '', bName: '', bAddr: '', bPort: '1883', bUser: '', bPass: '' });
 Object.assign(S, { rooms: [{ n: 'Гостиная', alt: 'кухня', v: 1, p: 6 }, { n: 'Спальня', alt: '', v: 2, p: 4 }], dlg: false, rName: '', rIc: 'room', rIcMan: false, dlgPick: false, vdName: 'Свет', vdAlt: '', steps: [], dName: 'Зуммер', dPlace: '', br: 85, vol: 53, quiet: false });
 const fld = (k, v, mic = true) => `<label class="fld"><input data-in="${k}" value="${v}" autocomplete="off">${mic ? `<button type="button" class="mi" data-go="note:Голосовой ввод в этот прототип не входит." aria-label="Голосовой ввод">${ICON('mic')}</button>` : ''}</label>`;
@@ -2672,13 +2672,11 @@ const ccPage = () => {
       grow(r.n, r.alt ? 'Другие названия: ' + r.alt : '', `<span class="dg" data-drag="${i}" role="button" aria-label="Перетащить, чтобы изменить порядок">${ICON('grip')}</span>`) +
       `<button class="gr act" data-go="vdevs:${i}">${ICON('devices')}<span class="tx">Группы устройств</span><span class="cnt">${plr(r.v, 'группа', 'группы', 'групп')}, ${plr(r.p, 'свойство', 'свойства', 'свойств')}</span><span class="go">${ICON('chev')}</span></button>`) + '</div>').join(''),
     conn: () => S.empty || !S.brokers.length && !S.has.length ? emptyState('conn') : S.brokers.map((b, i) => card('signal', b.n, 'Интеграций: ' + b.ints.length, 'bk' + i, b.on, 'brk:' + i)).join('') + S.has.map((h, i) => card('signal', h.n, 'Сервер', 'hk' + i, h.on, 'ha:' + i)).join(''),
-    dev: () => { if (S.empty) return emptyState('dev'); const by = {}; CCDEV.filter(d => S.devTab === 'all' || d[3] === S.devTab).forEach(d => (by[d[0].split(' / ')[0]] = by[d[0].split(' / ')[0]] || []).push(d));
+    dev: () => { if (S.empty) return emptyState('dev'); const by = {}; CCDEV.forEach(d => (by[d[0].split(' / ')[0]] = by[d[0].split(' / ')[0]] || []).push(d));
       return Object.entries(by).map(([h, ds]) => grp(h, ds.map(d => grow(d[1], '', `<span class="go">${ICON('chev')}</span>`, { attrs: `data-go="devedit:${d[1]}"`, c: d[2] })).join(''))).join(''); },
     wid: () => S.steps.length && S.wTab === 'scen' && !S.empty ? '' : emptyState('scen'),
   };
-  return { title: 'Мой дом', mainTabs: CCT.map(([k, n]) => `<button class="tab" role="tab" aria-selected="${S.cct === k}" data-go="cct:${k}">${n}</button>`).join(''), filter: S.cct === 'dev' && !S.empty ? [['all', 'Все'], ['wb', 'Wirenboard'], ['ha', 'Home Assistant через MQTT']].map(([k, n]) => `<button class="chip" aria-pressed="${S.devTab === k}" data-go="dtab:${k}">${n}</button>`).join('') :
-      '',
-    body: S.cct === 'grp' ? vdAll() : bodies[S.cct](),
+  return { title: 'Мой дом', mainTabs: CCT.map(([k, n]) => `<button class="tab" role="tab" aria-selected="${S.cct === k}" data-go="cct:${k}">${n}</button>`).join(''), body: S.cct === 'grp' ? vdAll() : bodies[S.cct](),
     fab: S.cct === 'conn' && S.fab ? `<div class="scrim2" data-go="fab"></div><div class="speed"><button data-go="cc-ha">Home Assistant (API)</button><button data-go="add-controller">Брокер MQTT</button></div>` : '',
     foot: () => { const P = (t, go) => `<button class="btn primary" data-go="${go}">${ICON('plus')} ${t}</button>`; return S.cct === 'loc' ? P('Создать комнату', 'dlg:open') : S.cct === 'conn' ? `<button class="btn primary" data-go="fab" aria-expanded="${S.fab}">${ICON('plus')} Добавить</button>` : S.cct === 'dev' ? P('Добавить устройство', 'add-controller') : S.cct === 'grp' ? P('Создать группу устройств', 'cc-vdev') : S.cct === 'wid' ? P('Создать сценарий', 'cc-scen') : ''; } };
 };
@@ -2847,7 +2845,6 @@ $('#page').addEventListener('click', e => {
   if (g.startsWith('gal:')) return addFromGallery(g.slice(4));
   if (g === 'close') { if (curPage === 'cc-pick') { const p = pageStack.pop(); curPage = p || 'cc-scen'; return drawPage(false); } return setScreen('desk'); }
   if (g.startsWith('cct:')) { S.cct = g.slice(4); S.fab = false; return drawPage(false); }
-  if (g.startsWith('dtab:')) { S.devTab = g.slice(5); return drawPage(false); }
   if (g.startsWith('wtab:')) { S.wTab = g.slice(5); return drawPage(false); }
   if (g === 'dlg:open') { S.dlg = true; S.rName = ''; S.rIc = 'room'; S.rIcMan = false; S.dlgPick = false; return drawPage(); }
   if (g === 'dlg:no') { S.dlg = false; S.dlgPick = false; return drawPage(); }
