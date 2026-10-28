@@ -254,6 +254,25 @@ svg.ic.dots { stroke-width: 2.6; }
 .drawer .bar button { position: relative; width: 64px; height: 56px; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; line-height: 13px; color: var(--ui-on-surface-variant); white-space: nowrap; }
 .drawer .bar button .ic { color: var(--ui-on-surface); }
 .drawer .bar button:active { background: var(--menu-press); }
+.drawer .bar button { flex: 1; width: auto; }
+.drawer .quick { flex: none; display: flex; margin-bottom: 8px; gap: var(--dim-space-sm); margin: 0 var(--dim-space-md); }
+.drawer .quick button { flex: 1; min-width: 0; height: 44px; border-radius: 16px; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; line-height: 16px; color: var(--ui-on-surface); background: transparent; border: 1px solid var(--ui-outline); white-space: nowrap; }
+.banners { position: absolute; left: var(--dim-space-sm); right: var(--dim-space-sm); bottom: var(--dim-space-sm); z-index: 3; display: none; flex-direction: column; gap: 6px; }
+.desk:not(.edit):is(:not([data-screen]), [data-screen="desk"]) .banners:not(:empty) { display: flex; }
+.banner { display: flex; flex-wrap: wrap; align-items: center; gap: 4px var(--dim-space-md); padding: 10px 12px; border: 0; border-radius: 16px; font: inherit; font-size: 14px; line-height: 20px; text-align: left; color: var(--ui-on-surface); }
+.banner.err { background: color-mix(in srgb, var(--ui-error) 16%, var(--ui-surface-card, #FCFBF7)); }
+.banner.warn { background: color-mix(in srgb, var(--menu-warn) 16%, var(--ui-surface-card, #FCFBF7)); }
+.banner > .ic { flex: none; width: 20px; height: 20px; }
+.banner.err > .ic { color: var(--ui-error); } .banner.warn > .ic { color: var(--menu-warn); }
+.banner .tx { flex: 1; min-width: 0; }
+.banner .btn { flex: none; height: 40px; padding: 0 16px; margin-left: auto; }
+button.banner { width: 100%; cursor: pointer; }
+button.banner > .ic:last-child { transform: rotate(-90deg); color: var(--ui-on-surface-variant); }
+.swatches { display: flex; gap: var(--dim-space-md); padding: var(--dim-space-sm) var(--dim-space-md) var(--dim-space-md); }
+.swatches button { width: 40px; height: 40px; border-radius: 50%; border: 0; box-shadow: inset 0 0 0 1px var(--ui-outline); }
+.swatches button[aria-checked="true"] { box-shadow: 0 0 0 2px var(--ui-surface, #fff), 0 0 0 4px var(--ui-on-surface); }
+.drawer .quick button:active { background: var(--menu-press); }
+.drawer .quick .ic { width: 18px; height: 18px; }
 .drawer .bar button:active::after { content: ""; position: absolute; bottom: 2px; width: 24px; height: 3px; border-radius: 2px; background: var(--menu-acc); }
 .desk > .launcher { inset: 0; z-index: 7; background: var(--ui-surface-card); color: var(--ui-on-surface); display: none; flex-direction: column; }
 .desk[data-screen="apps"] > .launcher, .desk[data-screen="kbd"] > .launcher { display: flex; }
@@ -508,7 +527,7 @@ svg.ic.dots { stroke-width: 2.6; }
 .card2 { margin: 0 var(--dim-gutter) var(--dim-space-sm); border: 1px solid var(--ui-outline-subtle); border-radius: var(--dim-radius-card); padding: var(--dim-space-md); background: color-mix(in srgb, var(--ui-on-surface) 4%, transparent); }
 .card2 .hd, button.card2 { text-align: left; } .card2 .hd { display: flex; align-items: center; gap: var(--dim-space-md); width: 100%; text-align: left; min-height: 48px; }
 .card2 .hd .tx { flex: 1; min-width: 0; }
-/* на экране виртуальных устройств блоки стоят врозь: между плашками такой же зазор, как между группами в «Настройках» */
+/* на экране групп устройств блоки стоят врозь: между плашками такой же зазор, как между группами в «Настройках» */
 .page .vdl .grp + .grp, .page .vdl .grp + .card2 { margin-top: var(--dim-space-md); }
 .card2.tip { display: flex; align-items: flex-start; gap: var(--dim-space-md); }
 .card2.tip .ic { flex: none; margin-top: 2px; }
@@ -917,7 +936,7 @@ input::placeholder { color: var(--a11y-ph); opacity: 1; }
 window.SEVEN_SCREENS = {
   version: 3,
   date: '22.10.2026',
-  note: 'Тексты на экранах черновые. Тёмная тема на панели не снималась.',
+  note: 'ВАРИАНТ НАВИГАЦИИ «ДЛЯ ДОМОХОЗЯЙКИ»: меню, Мой дом и Настройки пересобраны по задачам. Не согласовано с разработкой. Тексты на экранах черновые.',
   items: [
     { id: 'desk',            group: 'Стол и меню', title: 'Стол', status: 'done', via: 'Стартовый экран' },
     { id: 'desk-edit',       group: 'Стол и меню', title: 'Режим правки стола', status: 'done', via: 'Меню → «Править экраны»' },
@@ -929,26 +948,25 @@ window.SEVEN_SCREENS = {
     { id: 'ph-move',         group: 'Стол и меню', title: 'Перенос плитки', status: 'done', via: 'Правка → потянуть плитку, или «Плитка» → «Переместить»' },
     { id: 'ph-more',         group: 'Стол и меню', title: 'Меню «⋮» панели правки', status: 'stub', via: 'Правка → «⋮»' },
 
-    { id: 'settings-voice',    group: 'Настройки', title: 'Голос', status: 'done', via: 'Настройки → Голос' },
-    { id: 'settings-device',   group: 'Настройки', title: 'Устройство', status: 'done', via: 'Настройки → Устройство' },
-    { id: 'settings-conn',     group: 'Настройки', title: 'Подключение', status: 'done', via: 'Настройки → Подключение' },
-    { id: 'settings-security', group: 'Настройки', title: 'Безопасность', status: 'proto', via: 'Настройки → Безопасность' },
-    { id: 'settings-data',     group: 'Настройки', title: 'Данные', status: 'proto', via: 'Настройки → Данные' },
-    { id: 'dev-lang',          group: 'Настройки', title: 'Язык', status: 'done', via: 'Устройство → Язык' },
-    { id: 'dev-room',          group: 'Настройки', title: 'Комната панели', status: 'done', via: 'Устройство → Комната панели' },
-    { id: 'dev-appearance',    group: 'Настройки', title: 'Оформление', status: 'done', via: 'Устройство → Оформление' },
-    { id: 'wallpaper',         group: 'Настройки', title: 'Обои', status: 'proto', via: 'Устройство → Обои' },
-    { id: 'display',           group: 'Настройки', title: 'Экран', status: 'done', via: 'Устройство → Экран' },
-    { id: 'dev-launcher',      group: 'Настройки', title: 'Лаунчер', status: 'proto', via: 'Устройство → Лаунчер' },
-    { id: 'export',            group: 'Настройки', title: 'Экспорт и импорт', status: 'proto', via: 'Данные → «Экспорт и импорт»' },
-    { id: 'journal',           group: 'Настройки', title: 'Журнал команд', status: 'proto', via: 'Данные → «Журнал команд»' },
+    { id: 'settings-voice',    group: 'Настройки', title: 'Голос и ответы', status: 'done', via: 'Настройки → Голос и ответы' },
+    { id: 'settings-device',   group: 'Настройки', title: 'Экран и вид', status: 'done', via: 'Настройки → Экран и вид' },
+    { id: 'settings-data',     group: 'Настройки', title: 'Дополнительно', status: 'proto', via: 'Настройки → Дополнительно' },
+    { id: 'dev-lang',          group: 'Настройки', title: 'Язык', status: 'done', via: 'Экран и вид → Язык' },
+    { id: 'dev-room',          group: 'Настройки', title: 'Комната панели', status: 'done', via: 'Экран и вид → Комната панели' },
+    { id: 'dev-appearance',    group: 'Настройки', title: 'Оформление', status: 'done', via: 'Экран и вид → Оформление' },
+    { id: 'wallpaper',         group: 'Настройки', title: 'Обои', status: 'proto', via: 'Экран и вид → Обои' },
+    { id: 'wallpaper-adv',     group: 'Настройки', title: 'Расширенные обои (Обои экранов)', status: 'proto', via: 'Обои → кнопка «Расширенные обои»', code: 'DeskWallpaper' },
+    { id: 'display',           group: 'Настройки', title: 'Экран', status: 'done', via: 'Экран и вид → Экран' },
+    { id: 'dev-launcher',      group: 'Настройки', title: 'Лаунчер', status: 'proto', via: 'Экран и вид → Лаунчер' },
+    { id: 'export',            group: 'Настройки', title: 'Экспорт и импорт', status: 'proto', via: 'Дополнительно → «Экспорт и импорт»' },
+    { id: 'journal',           group: 'Настройки', title: 'Журнал команд', status: 'proto', via: 'Дополнительно → «Журнал команд»' },
 
-    { id: 'cc-loc',          group: 'Мой дом', title: 'Локации', status: 'done', via: 'Меню → «Мой дом»' },
-    { id: 'cc-vdevs',        group: 'Мой дом', title: 'Виртуальные устройства комнаты', status: 'done', via: 'Локации → «Виртуальные устройства»' },
-    { id: 'cc-vdev',         group: 'Мой дом', title: 'Редактор виртуального устройства', status: 'proto', via: 'Виртуальные устройства → «Настроить»' },
-    { id: 'ph-vd-suggest',   group: 'Мой дом', title: 'Собрать из найденного', status: 'stub', via: 'Виртуальные устройства → «Собрать из найденного»', code: 'VirtualDeviceSuggest' },
-    { id: 'ph-groups',       group: 'Мой дом', title: 'Группы комнат', status: 'stub', via: 'Локации → карточка комнаты → «Группы»', code: 'LocationGroups' },
-    { id: 'cc-conn',         group: 'Мой дом', title: 'Подключения', status: 'done', via: 'Мой дом → Подключения' },
+    { id: 'cc-loc',          group: 'Мой дом', title: 'Комнаты', status: 'done', via: 'Меню → «Мой дом»' },
+    { id: 'cc-vdevs',        group: 'Мой дом', title: 'Группы устройств комнаты', status: 'done', via: 'Комнаты → «Группы устройств»' },
+    { id: 'cc-vdev',         group: 'Мой дом', title: 'Редактор группы устройств', status: 'proto', via: 'Группы устройств → «Настроить»' },
+    { id: 'ph-vd-suggest',   group: 'Мой дом', title: 'Собрать из найденного', status: 'stub', via: 'Группы устройств → «Собрать из найденного»', code: 'VirtualDeviceSuggest' },
+    { id: 'ph-groups',       group: 'Мой дом', title: 'Группы комнат', status: 'stub', via: 'Комнаты → карточка комнаты → «Группы»', code: 'LocationGroups' },
+    { id: 'cc-conn',         group: 'Мой дом', title: 'Подключения', status: 'done', via: 'Настройки → Дополнительно → Подключения' },
     { id: 'cc-integ',        group: 'Мой дом', title: 'Интеграция', status: 'done', via: 'Подключения → строка интеграции' },
     { id: 'cc-broker',       group: 'Мой дом', title: 'Брокер', status: 'proto', via: 'Подключения → строка брокера' },
     { id: 'add-check',      group: 'Мастера', title: 'Проверка брокера', status: 'proto', via: '«Добавить интеграцию» → проверка → «Добавление оборудования»' },
@@ -956,15 +974,16 @@ window.SEVEN_SCREENS = {
     { id: 'cc-ha',           group: 'Мой дом', title: 'Сервер Home Assistant', status: 'proto', via: 'Подключения → «Добавить» → Home Assistant (API)' },
     { id: 'cc-dev',          group: 'Мой дом', title: 'Устройства', status: 'done', via: 'Мой дом → Устройства' },
     { id: 'cc-devedit',      group: 'Мой дом', title: 'Редактирование устройства', status: 'done', via: 'Устройства → карточка устройства' },
-    { id: 'cc-wid',          group: 'Мой дом', title: 'Виджеты и сценарии', status: 'proto', via: 'Мой дом → Виджеты' },
-    { id: 'cc-scen',         group: 'Мой дом', title: 'Редактор сценария', status: 'proto', via: 'Виджеты → «Добавить сценарий»' },
+    { id: 'cc-wid',          group: 'Мой дом', title: 'Сценарии', status: 'proto', via: 'Мой дом → Сценарии' },
+    { id: 'cc-vdlist',       group: 'Мой дом', title: 'Группы устройств (список)', status: 'proto', via: 'Мой дом → Группы устройств', code: 'VirtualDeviceList' },
+    { id: 'cc-scen',         group: 'Мой дом', title: 'Редактор сценария', status: 'proto', via: 'Сценарии → «Создать сценарий»' },
     { id: 'cc-pick',         group: 'Мой дом', title: 'Выбор цели шага', status: 'proto', via: 'Редактор сценария → «Добавить шаг»' },
     { id: 'ph-se-action',    group: 'Мой дом', title: 'Сценарий: действие', status: 'stub', via: 'Редактор сценария → «Продолжить»', code: 'SEAction' },
     { id: 'ph-se-order',     group: 'Мой дом', title: 'Сценарий: порядок', status: 'stub', via: 'После «Действие»', code: 'SEOrder' },
     { id: 'ph-se-name',      group: 'Мой дом', title: 'Сценарий: название', status: 'stub', via: 'После «Порядок»', code: 'SEName' },
     { id: 'ph-se-preview',   group: 'Мой дом', title: 'Сценарий: предпросмотр', status: 'stub', via: 'После «Название»', code: 'SEPreview' },
 
-    { id: 'add-controller',  group: 'Мастера', title: 'Добавление оборудования: контроллер', status: 'done', via: 'Подключения → «Добавить»' },
+    { id: 'add-controller',  group: 'Мастера', title: 'Добавление оборудования: контроллер', status: 'done', via: 'Мой дом → Устройства → «Добавить устройство»' },
     { id: 'add-ha',          group: 'Мастера', title: 'Добавление Home Assistant', status: 'done', via: 'Подключения → «Добавить» → Home Assistant' },
     { id: 'add-devices',     group: 'Мастера', title: 'Добавление оборудования: устройства', status: 'done', via: 'Мастер → «Продолжить»' },
     { id: 'ph-mqtt-tail',    group: 'Мастера', title: 'Мастер MQTT после «Адрес»', status: 'stub', via: 'Подключения → «Добавить» → «Брокер MQTT» → «Указать вручную»' },
@@ -1427,6 +1446,8 @@ window.SEVEN_SCREENS = {
       <!-- DeskGrid: плитки и пустые клетки рисует render() -->
       <div class="grid" id="grid"></div>
       <div class="dots-pager" id="pager" aria-label="Экран 1 из 4"></div>
+      <!-- Баннеры внизу стола (Main): предупреждения с действием -->
+      <div class="banners" id="banners" role="region" aria-label="Предупреждения"></div>
 
       <!-- Боковое меню -->
       <div class="scrim" id="scrim"></div>
@@ -1436,12 +1457,14 @@ window.SEVEN_SCREENS = {
           <div class="label">Комнаты</div>
           <div id="drawerRooms"></div>
         </div>
+        <div class="quick" role="group" aria-label="Быстрые действия">
+          <button data-go="shade"><svg class="ic"><use href="#i-sliders"/></svg>Яркость и звук</button>
+          <button data-go="edit"><svg class="ic"><use href="#i-pencil"/></svg>Править экраны</button>
+        </div>
         <div class="bar" role="toolbar" aria-label="Разделы">
           <button data-go="cc" aria-label="Мой дом" title="Мой дом"><svg class="ic"><use href="#i-cc"/></svg>Мой дом</button>
           <button data-go="apps" aria-label="Все приложения" title="Все приложения"><svg class="ic"><use href="#i-apps"/></svg>Приложения</button>
           <button data-go="settings" aria-label="Настройки панели" title="Настройки панели"><svg class="ic"><use href="#i-gear"/></svg>Настройки</button>
-          <button data-go="shade" aria-label="Панель" title="Панель"><svg class="ic"><use href="#i-sliders"/></svg>Панель</button>
-          <button data-go="edit" aria-label="Править экраны" title="Править экраны"><svg class="ic"><use href="#i-pencil"/></svg>Правка</button>
         </div>
       </nav>
 
@@ -1878,7 +1901,7 @@ $('#btnHideApps').addEventListener('click', () => setScreen('desk'));
 $('#appSearch').addEventListener('focus', () => { if (state.screen === 'apps') setScreen('kbd'); });
 $('#appSearch').addEventListener('keydown', e => { if (e.key === 'Escape') setScreen('apps'); });
 $('#drawer').addEventListener('click', e => {
-  const b = e.target.closest('.bar button, .room-row'); if (!b) return;
+  const b = e.target.closest('.bar button, .quick button, .room-row'); if (!b) return;
   const go = b.dataset.go;
   if (go === 'room') return setScreen('desk');   /* перейти в комнату: в прототипе экран один */
   if (go === 'apps') return setScreen('apps');
@@ -2304,12 +2327,31 @@ function drawDrawer() {
       (st ? `<span class="st" data-k="${st[0]}">${ICON(st[2])}${st[1]}</span>` : '') + '</button>';
   }).join('');
 }
+/* баннеры внизу стола: что случилось и что нажать */
+const BANNERS = {
+  mic: ['err', 'Seven не слушает: нет доступа к микрофону', 'Разрешить', 'Откроется системный запрос доступа к микрофону.'],
+  safe: ['err', 'Безопасный режим: несколько падений подряд. Прослушивание отключено', 'Включить прослушивание', 'Прослушивание включено.'],
+  ctrl: ['warn', 'Нет связи с контроллерами 12 мин, проверьте сеть', 'Открыть настройки Wi-Fi', 'Откроются системные настройки Wi-Fi. В этот прототип не входят.'],
+  broker: ['warn', 'Брокер «Wirenboard гостиная» недоступен', '', '']
+};
+state.banners = state.banners || [];
+function drawBanners() {
+  $('#banners').innerHTML = state.banners.map(k => { const [c, t, b] = BANNERS[k];
+    return b ? `<div class="banner ${c}">${ICON('alert')}<span class="tx">${t}</span><button class="btn primary" data-bn="${k}">${b}</button></div>`
+      : `<button class="banner ${c}" data-bn="${k}">${ICON('alert')}<span class="tx">${t}</span>${ICON('chev')}</button>`; }).join('');
+}
+$('#banners').addEventListener('click', e => {
+  const b = e.target.closest('[data-bn]'); if (!b) return; const k = b.dataset.bn;
+  if (k === 'broker') return goPage('cc-conn', false);   /* тап по баннеру ведёт в «Подключения» (предложение, в атласе перехода от баннера нет) */
+  if (k !== 'ctrl') { state.banners = state.banners.filter(x => x !== k); drawBanners(); }
+  note(BANNERS[k][3]);
+});
 /* ───────── Настройки: страницы ───────── */
 const S = { pal: 'mint', tab: 'voice', voice: true, speak: true, listen: 'always', lang: 'ru', room: 'living', mqtt: false, broker: false,
   confirm: 8, cancel: 10, manage: true, dimAfter: 30, dimBright: 40, dim: 40, glass: 50,
   exp: { panel: true, phone: false, pc: false }, ctrl: '', addr: '', port: '1883', haAddr: '', haPort: '8123', https: false, dev: { a: false, b: false }, jFilters: false, jq: '', jstat: { err: true, warn: true, ok: true } };
 let pageStack = [], curPage = null;
-const TABS = [['voice', 'Голос'], ['device', 'Устройство'], ['conn', 'Подключение'], ['security', 'Безопасность'], ['data', 'Данные']];
+const TABS = [['voice', 'Голос и ответы'], ['device', 'Экран и вид'], ['data', 'Дополнительно']];
 const CHECK = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 const sw = (k, on) => `<button class="sw" role="switch" aria-checked="${on}" data-sw="${k}"><span class="trk">${CHECK}</span><span class="lb">${on ? 'Вкл' : 'Выкл'}</span></button>`;
 const grp = (title, rows, desc = '') => (title ? `<div class="gh">${title}</div>` : '') + (desc ? `<p class="gd">${desc}</p>` : '') + `<div class="grp${title || desc ? '' : ' nt'}">${rows}</div>`;
@@ -2347,9 +2389,14 @@ const JOURNAL = [['err', 'Не понято', 'не надо делать', '10.
   ['ok', 'Выполнено', 'включи свет в гостиной', '10.10 23:18:41'], ['ok', 'Выполнено', 'какая температура', '10.10 22:57:12']];
 const SICON = { err: 'close', warn: 'info', ok: 'check' };
 
+const WP_SRC = [['def', 'Как у стола'], ['color', 'Цвет'], ['grad', 'Градиент'], ['pic', 'Картинка'], ['none', 'Без обоев']];
+const WP_COL = ['#16294a', '#6f8f80', '#8c5a4a', '#4a3f6b', '#2b2b2b'];
+Object.assign(S, { wpSrc: 'def', wpCol: '#16294a', wpNote: true, wpDirty: false, wpExit: false, wpSaved: { dim: S.dim, glass: S.glass } });
+const wpExitDlg = () => `<div class="dlg"><div class="box"><h2>Сохранить изменения?</h2><p class="sd" style="margin:8px 0 0">Затемнение и прозрачность плиток ещё не сохранены.</p><div class="ac" style="grid-template-columns:1fr"><button class="btn primary" data-go="wpexit:save">Сохранить</button><button class="btn danger" data-go="wpexit:drop">Выйти без сохранения</button><button class="btn text" data-go="wpexit:stay">Остаться</button></div></div></div>`;
+const wpAdvBg = () => ({ color: `background:${S.wpCol}`, grad: `background:linear-gradient(135deg,${S.wpCol},#0a2d34)`, pic: 'background:linear-gradient(160deg,#c9b58a,#6e8f9c 55%,#2d4a3a)', none: 'background:#FCFBF7' }[S.wpSrc] || '');
 const PAGES = {
-  settings: () => ({ title: 'Настройки', tabs: true, body: ({
-    voice: () => grp('', srow('Голосовое управление', 'Ассистент принимает голосовые команды', 'voice', S.voice) + srow('Озвучивать ответы', 'Ассистент отвечает голосом. Если нужной записи нет, ответ появится только на экране.', 'speak', S.speak)) +
+  settings: () => { const B = ({
+    voice0: () => grp('', srow('Голосовое управление', 'Ассистент принимает голосовые команды', 'voice', S.voice) + srow('Озвучивать ответы', 'Ассистент отвечает голосом. Если нужной записи нет, ответ появится только на экране.', 'speak', S.speak)) +
       grp('Как слушать', rrow('listen', 'always', S.listen, 'Всегда (по умолчанию)', 'Ассистент выполняет любую распознанную фразу') +
         rrow('listen', 'word', S.listen, 'По слову «Фиона»', 'Ассистент выполняет только фразы со словом «Фиона», например «Фиона, включи свет»')),
     device: () => grp('', lrow('globe', 'Язык', LANG_LABEL[S.lang], 'dev-lang') + lrow('pin', 'Комната панели', roomLabel(), 'dev-room') +
@@ -2357,18 +2404,21 @@ const PAGES = {
       lrow('apps', 'Лаунчер', '', 'dev-launcher')),
     conn: () => grp('', srow('Панель в MQTT', 'Панель появится в брокере как устройство seven_panel_1756903f. Другие системы смогут менять яркость, громкость, экран и микрофон и читать датчики. Если связь оборвётся, брокер пометит панель как «не отвечает». При включении и выключении панель один раз переподключится к брокеру.', 'mqtt', S.mqtt)) +
       grp('Брокер для панели', rrow('broker', 'b1', S.broker ? 'b1' : '', '192.168.23.141:1883')),
+    voice: () => B.voice0() + B.security(),
     security: () => grp('Время на подтверждение', `<div class="gr ctr col">${stepper('confirm', S.confirm, 'сек', 3, 30)}<span class="rc">От 3 до 30 сек</span></div>`, 'Ассистент переспросит и подождёт ваш ответ') +
       grp('Время на отмену', `<div class="gr ctr col">${stepper('cancel', S.cancel, 'сек', 3, 60)}<span class="rc">От 3 до 60 сек</span></div>`, 'Ассистент выполнит команду, а вы сможете её отменить'),
-    data: () => grp('Экспорт и импорт', nrow('Открыть экспорт и импорт', '', 'export'), 'Перенесите комнаты, виртуальные устройства, голосовые настройки, сценарии и экраны на другое устройство: файлом или через буфер обмена') +
+    data: () => grp('Оборудование', nrow('Подключения', 'Контроллеры и интеграции', 'cc-conn') + nrow('Модели', 'Каталог моделей устройств', 'note:Модели: каталог в этот прототип не входит.'), 'Настраивается один раз при монтаже. Добавить лампу или датчик можно в «Мой дом → Устройства»') +
+      '<div class="gh">Связь панели с другими системами</div>' + B.conn() +
+      grp('Экспорт и импорт', nrow('Открыть экспорт и импорт', '', 'export'), 'Перенесите комнаты, группы устройств, голосовые настройки, сценарии и экраны на другое устройство: файлом или через буфер обмена') +
       grp('Журнал команд', nrow('Открыть журнал', '', 'journal'), 'Что ассистент услышал, как понял и что отправил устройствам') +
       grp('Мастер настройки', nrow('Запустить мастер настройки', '', 'wz0')),
-  })[S.tab]() }),
+  }); return { title: 'Настройки', tabs: true, body: B[S.tab]() }; },
   'dev-lang': () => ({ title: 'Язык', back: true, body:
     grp('', rrow('lang', 'ru', S.lang, 'Русский') + rrow('lang', 'en', S.lang, 'English') + rrow('lang', 'dev', S.lang, 'Как в системе', 'Сейчас в системе: English'),
       'Язык меню и подсказок. Голосовые команды ассистент понимает только по-русски') }),
   'dev-room': () => ({ title: 'Комната панели', back: true, body:
     grp('', ROOMS.map(([v, t]) => rrow('room', v, S.room, t)).join(''), 'Если в команде нет комнаты, например «включи свет», ассистент управляет этой комнатой') +
-    grp('', lrow('pin', 'Управление комнатами', '', 'note:Управление комнатами — это экран «Мой дом → Локации». В этот прототип не входит.')).replace('class="grp nt"', 'class="grp sep"') }),
+    grp('', lrow('pin', 'Управление комнатами', '', 'cc-loc')).replace('class="grp nt"', 'class="grp sep"') }),
   'dev-appearance': () => ({ title: 'Оформление', back: true, body:
     `<p class="gd">Цвета меню, фона и плиток. Применяется сразу</p><div class="pal-opts" role="radiogroup" aria-label="Оформление">${palCard('mint', 'Мята')}${palCard('clay', 'Глина')}</div>` +
     (document.documentElement.dataset.theme === 'dark' ? '<p class="gd">В тёмной теме цвета остаются мятными</p>' : '') }),
@@ -2380,7 +2430,19 @@ const PAGES = {
     `<div class="sec"><div class="wp" id="wpPrev"><div class="wpdim"></div><div class="st"><span>Кухня</span><span>14:02</span></div>` +
     `<div class="mt" style="left:8px;width:92px">${ICON('bulb')}<b>Свет</b>Включен</div><div class="mt" style="left:108px;width:92px"><b>22,5 °C</b>Кухня</div></div>` +
     slider('dim', 'Затемнение', S.dim, '%', 0, 80) + slider('glass', 'Прозрачность плиток', S.glass, '%', 0, 100) + '</div>' +
-    `<div class="sec"><h3 class="sh sm">Где применять</h3><p class="sd">Экраны этой панели</p><button class="dd"><span>Все комнаты (по умолчанию)</span>${ICON('chev')}</button></div>` }),
+    `<div class="sec"><h3 class="sh sm">Где применять</h3><p class="sd">Экраны этой панели</p><button class="dd"><span>Все комнаты (по умолчанию)</span>${ICON('chev')}</button></div>`,
+    foot: () => foot(`<button class="btn secondary" data-go="wallpaper-adv">${ICON('palette')}Расширенные обои</button>`, `<button class="btn primary" id="wpSave" data-go="wpsave" ${S.wpDirty ? '' : 'disabled'}>Сохранить</button>`),
+    fab: S.wpExit ? wpExitDlg() : '' }),
+  'wallpaper-adv': () => { const none = S.wpSrc === 'none';
+    return { title: 'Обои экранов', back: true, body:
+    (S.wpSrc === 'pic' && S.wpNote !== false ? `<div class="gr" style="gap:var(--dim-space-md)"><span class="tx"><span class="rd" style="color:var(--ui-error,#b3261e)">Картинку не удалось прочитать. Выберите другую или используйте цвет</span></span><button class="btn text" data-go="wpnote">Закрыть</button></div>` : '') +
+    `<div class="sec"><div class="wp" ${S.wpSrc === 'def' ? 'id="wpPrev"' : `style="${wpAdvBg()}"`}><div class="wpdim"></div><div class="st"><span>Кухня</span><span>14:02</span></div>` +
+    `<div class="mt" style="left:8px;width:92px">${ICON('bulb')}<b>Свет</b>Включен</div><div class="mt" style="left:108px;width:92px"><b>22,5 °C</b>Кухня</div></div>` +
+    `<div class="${none ? 'dis' : ''}">` + slider('dim', 'Затемнение', none ? 0 : S.dim, '%', 0, 80) + '</div>' + slider('glass', 'Прозрачность плиток', S.glass, '%', 0, 100) + '</div>' +
+    `<div class="sec"><h3 class="sh sm">Для чего</h3><p class="sd">Экраны этой панели</p><button class="dd"><span>Все комнаты (по умолчанию)</span>${ICON('chev')}</button></div>` +
+    `<div class="gh">Источник</div><div class="chiprow five flat">${WP_SRC.map(([v, t]) => `<button class="chip" data-radio="wpSrc" data-v="${v}" aria-pressed="${S.wpSrc === v}">${t}</button>`).join('')}</div>` +
+    (S.wpSrc === 'color' || S.wpSrc === 'grad' ? `<div class="gh">Цвет</div><div class="swatches" role="radiogroup" aria-label="Цвет">${WP_COL.map(c => `<button role="radio" aria-checked="${S.wpCol === c}" aria-label="${c}" data-radio="wpCol" data-v="${c}" style="background:${c}"></button>`).join('')}</div>` : '') +
+    (S.wpSrc === 'pic' ? `<div class="sec"><button class="btn secondary wide" data-go="note:Откроется выбор картинки.">Выбрать картинку</button></div>` : '') }; },
   display: () => ({ title: 'Экран', back: true, body: '<div class="flush">' +
     grp('', srow('Приглушать экран, когда им не пользуются', '', 'manage', S.manage)) +
     `<div class="${S.manage ? '' : 'dis'}">` +
@@ -2389,9 +2451,9 @@ const PAGES = {
     `<p class="gd" style="margin-top:var(--dim-space-sm)">Коснитесь тусклого экрана, и яркость вернётся</p>` +
     '</div></div>' }),
   export: () => ({ back: true, title: 'Экспорт и импорт', body:
-    `<div class="sec"><h3 class="sh">Экспорт</h3><p class="sd">В файл config.json попадут комнаты, виртуальные устройства, голосовые настройки, сценарии и экраны. Пароли, настройки брокеров и будильники в него не попадут.</p>` +
+    `<div class="sec"><h3 class="sh">Экспорт</h3><p class="sd">В файл config.json попадут комнаты, группы устройств, голосовые настройки, сценарии и экраны. Пароли, настройки брокеров и будильники в него не попадут.</p>` +
     `<h3 class="sh sm" style="margin-top:var(--dim-space-md)">Экраны профилей</h3>` + grp('', crow('panel', S.exp.panel, 'Панель (это устройство)') + crow('phone', S.exp.phone, 'Телефон') + crow('pc', S.exp.pc, 'Компьютер')) +
-    `<p class="sd" style="margin-top:var(--dim-space-md)">В файле: комнат 1, виртуальных устройств 1, свойств 51, сценариев 0, экранов 1 (виджетов 6)</p>` +
+    `<p class="sd" style="margin-top:var(--dim-space-md)">В файле: комнат 1, групп устройств 1, свойств 51, сценариев 0, экранов 1 (виджетов 6)</p>` +
     `<button class="btn primary wide" data-go="note:Файл config.json сохранится на панель. В этот прототип не входит.">Сохранить в файл</button><button class="btn secondary wide" data-go="note:Конфигурация скопируется в буфер обмена.">Копировать в буфер</button></div>` +
     `<div class="sec"><h3 class="sh">Импорт</h3><p class="sd">Загрузите config.json из файла или буфера обмена. Перед заменой данных приложение покажет, что изменится.</p><button class="btn secondary wide" data-go="note:Откроется выбор файла.">Выбрать файл</button><button class="btn secondary wide" data-go="note:Конфигурация будет вставлена из буфера обмена.">Вставить из буфера</button></div>` }),
   journal: () => ({ back: true, title: 'Журнал команд', actions: `<button class="icon-btn" data-go="note:Настройки журнала в прототип не входят." aria-label="Настройки журнала">${ICON('gear')}</button><button class="icon-btn" data-go="note:Очистка журнала запросит подтверждение. В прототип не входит." aria-label="Очистить журнал">${ICON('trash')}</button>`, body: (() => {
@@ -2460,7 +2522,7 @@ Object.assign(PAGES, {
   'add-devices': () => ({ back: true, title: 'Добавление оборудования', body:
     `<div class="sec"><p class="sd" style="color:var(--ui-on-surface)">Можно не выбирать устройства: соединение сохранится, устройства добавите позже</p><h3 class="sh sm" style="margin-top:var(--dim-space-md)">Home Assistant · Home Assistant (MQTT Discovery)</h3>` +
     DEVS.map(([k, n, id, c]) => grp('', crow(k, S.dev[k], n, `${id}<br>часть добавлена<br>Новых свойств: ${c}`, 'data-chk2') + `<button class="gr act" data-go="note:Откроется список свойств устройства."><span class="tx">Свойства</span></button>`)).join('') + '</div>',
-    foot: () => nextBtn('note:Мастер завершён: оборудование добавится в «Мой дом → Подключения». В прототип этот экран не входит.') }),
+    foot: () => nextBtn('note:Мастер завершён: оборудование добавится в «Мой дом → Устройства». В прототип этот экран не входит.') }),
   /* ── Мастер первого запуска v8: 4 шага (панель → устройства → комнаты → группы) + «Готово» ── */
   wz0: () => ({ title: '', body:
     `<div class="wzhero wel2"><div class="wzcontent"><div class="wzlogo">${FIONA}</div><h1>${WHELLO[S.wHi ?? 1][0]}</h1><p>${WHELLO[S.wHi ?? 1][1]}</p>
@@ -2574,7 +2636,7 @@ Object.assign(S, { empty: false, cct: 'loc', roomOpen: true, fab: false, wTab: '
 Object.assign(S, { rooms: [{ n: 'Гостиная', alt: 'кухня', v: 1, p: 6 }, { n: 'Спальня', alt: '', v: 2, p: 4 }], dlg: false, rName: '', rIc: 'room', rIcMan: false, dlgPick: false, vdName: 'Свет', vdAlt: '', steps: [], dName: 'Зуммер', dPlace: '', br: 85, vol: 53, quiet: false });
 const fld = (k, v, mic = true) => `<label class="fld"><input data-in="${k}" value="${v}" autocomplete="off">${mic ? `<button type="button" class="mi" data-go="note:Голосовой ввод в этот прототип не входит." aria-label="Голосовой ввод">${ICON('mic')}</button>` : ''}</label>`;
 const fabGo = (t, go) => `<button class="fab" data-go="${go}">${ICON('plus')}${t}</button>`;
-const CCT = [['loc', 'Локации', 'pin', 'Комнаты и виртуальные устройства'], ['conn', 'Подключения', 'signal', 'Контроллеры и интеграции'], ['dev', 'Устройства', 'bulb', 'Всё, что найдено у подключений'], ['wid', 'Виджеты', 'apps', 'Сценарии и виджеты']];
+const CCT = [['loc', 'Комнаты', 'pin', 'Комнаты и группы устройств'], ['dev', 'Устройства', 'bulb', 'Всё, что найдено у подключений'], ['grp', 'Группы устройств', 'devices', 'Несколько устройств под одним названием'], ['wid', 'Сценарии', 'list', 'Несколько действий одной командой']];
 const CCDEV = [['wirenboard-AEYCHFJC / wb-mr6c_105', 'Реле 1', 'wb-mr6c_105/K1', 'wb'], ['wirenboard-AEYCHFJC / wb-msw-v3_21', 'Датчик движения', 'wb-msw-v3_21/Motion', 'wb'],
   ['Home Assistant / NsPro-1001e0aed1', 'NSPanel Pro', 'NsPro-1001e0aed1', 'ha'], ['Home Assistant / NsPro_0x804b50fffee0fc86', '_TZE200_znlqjmih TS0601', 'NsPro_0x804b50fffee0fc86', 'ha']];
 const extFab = (t, ic = 'plus', exp) => `<button class="fab" data-go="${exp ? 'fab' : 'note:' + t}" ${exp ? `aria-expanded="${S.fab}"` : ''}>${ICON(ic)}${S.fab && exp ? 'Добавить' : t}</button>`;
@@ -2589,28 +2651,31 @@ const EMPTY = {
   dev: ['bulb', 'Устройств пока нет', 'Они появятся, когда вы подключите контроллер или интеграцию'],
   wid: ['apps', 'Виджетов пока нет', 'Добавьте виджет на экран через режим правки'],
   scen: ['list', 'Сценариев пока нет', 'Сценарий выполняет несколько действий одной командой'],
-  vdevs: ['group', 'Виртуальных устройств пока нет', 'Виртуальное устройство собирает свойства из разного оборудования и работает как одно'],
+  vdevs: ['group', 'Групп устройств пока нет', 'Группа устройств собирает свойства из разного оборудования и работает как одно'],
 };
 const emptyState = k => { const [ic, t, d] = EMPTY[k]; return `<div class="empty"><i class="eic">${ICON(ic)}</i><b>${t}</b>${d}</div>`; };
 const plr = (n, a, b, c) => n + ' ' + (n % 10 === 1 && n % 100 !== 11 ? a : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? b : c);
+/* общий список групп устройств (VirtualDeviceList): все комнаты в одном месте */
+const VDALL = [['Гостиная', [['Свет', 3]]], ['Спальня', [['Свет', 2], ['Шторы', 2]]]];
+const vdAll = () => S.empty ? emptyState('vdevs') : grp('', arow('Собрать из найденного', 'ph-vd-suggest', 'list')) + VDALL.map(([r, ds]) => grp(r, ds.map(([n, m]) => nrow(r === 'Гостиная' && n === 'Свет' ? S.vdName : n, 'Участников: ' + m, 'cc-vdev')).join(''))).join('') + '<div style="height:72px"></div>';
 const ccPage = () => {
   const t = CCT.find(x => x[0] === S.cct);
   const bodies = {
     loc0: () => `<div class="card2"><button class="hd" data-go="exp"><div class="tx"><div class="nm">Гостиная</div><div class="ds">Панель находится здесь</div></div><span style="display:flex;transform:rotate(${S.roomOpen ? 180 : 0}deg)">${ICON('chev')}</span></button>` +
-      (S.roomOpen ? `<div class="ex"><div class="ds">Устройств: 2 · Виртуальных: 1</div><div class="row" style="margin-top:8px"><button class="btn secondary" data-go="note:Откроется диалог «Комната».">Изменить</button><button class="btn text" data-go="note:Удаление комнаты запросит подтверждение.">Удалить</button></div></div>` : '') + '</div>' +
-      `<div class="chiprow" style="padding-top:var(--dim-space-sm)"><button class="btn secondary" data-go="note:Виртуальные устройства: список в прототип не входит.">Виртуальные устройства</button></div>`,
+      (S.roomOpen ? `<div class="ex"><div class="ds">Устройств: 2 · Групп: 1</div><div class="row" style="margin-top:8px"><button class="btn secondary" data-go="note:Откроется диалог «Комната».">Изменить</button><button class="btn text" data-go="note:Удаление комнаты запросит подтверждение.">Удалить</button></div></div>` : '') + '</div>' +
+      `<div class="chiprow" style="padding-top:var(--dim-space-sm)"><button class="btn secondary" data-go="note:Группы устройств: список в прототип не входит.">Группы устройств</button></div>`,
     loc: () => S.empty || !S.rooms.length ? emptyState('loc') : S.rooms.map((r, i) => `<div class="room" data-room="${i}">` + grp('',
       grow(r.n, r.alt ? 'Другие названия: ' + r.alt : '', `<span class="dg" data-drag="${i}" role="button" aria-label="Перетащить, чтобы изменить порядок">${ICON('grip')}</span>`) +
-      `<button class="gr act" data-go="vdevs:${i}">${ICON('devices')}<span class="tx">Виртуальные устройства</span><span class="cnt">${plr(r.v, 'устройство', 'устройства', 'устройств')}, ${plr(r.p, 'свойство', 'свойства', 'свойств')}</span><span class="go">${ICON('chev')}</span></button>`) + '</div>').join(''),
+      `<button class="gr act" data-go="vdevs:${i}">${ICON('devices')}<span class="tx">Группы устройств</span><span class="cnt">${plr(r.v, 'группа', 'группы', 'групп')}, ${plr(r.p, 'свойство', 'свойства', 'свойств')}</span><span class="go">${ICON('chev')}</span></button>`) + '</div>').join(''),
     conn: () => S.empty || !S.brokers.length && !S.has.length ? emptyState('conn') : S.brokers.map((b, i) => card('signal', b.n, 'Интеграций: ' + b.ints.length, 'bk' + i, b.on, 'brk:' + i)).join('') + S.has.map((h, i) => card('signal', h.n, 'Сервер', 'hk' + i, h.on, 'ha:' + i)).join(''),
     dev: () => { if (S.empty) return emptyState('dev'); const by = {}; CCDEV.filter(d => S.devTab === 'all' || d[3] === S.devTab).forEach(d => (by[d[0].split(' / ')[0]] = by[d[0].split(' / ')[0]] || []).push(d));
       return Object.entries(by).map(([h, ds]) => grp(h, ds.map(d => grow(d[1], '', `<span class="go">${ICON('chev')}</span>`, { attrs: `data-go="devedit:${d[1]}"`, c: d[2] })).join(''))).join(''); },
     wid: () => S.steps.length && S.wTab === 'scen' && !S.empty ? '' : emptyState('scen'),
   };
   return { title: 'Мой дом', mainTabs: CCT.map(([k, n]) => `<button class="tab" role="tab" aria-selected="${S.cct === k}" data-go="cct:${k}">${n}</button>`).join(''), filter: S.cct === 'dev' && !S.empty ? [['all', 'Все'], ['wb', 'Wirenboard'], ['ha', 'Home Assistant через MQTT']].map(([k, n]) => `<button class="chip" aria-pressed="${S.devTab === k}" data-go="dtab:${k}">${n}</button>`).join('') :
-      S.cct === 'wid' ? [['wid', 'Виджеты'], ['scen', 'Сценарии']].map(([k, n]) => `<button class="chip" aria-pressed="${S.wTab === k}" data-go="wtab:${k}">${n}</button>`).join('') : '',
-    body: S.cct === 'wid' && S.wTab === 'wid' ? emptyState('wid') : bodies[S.cct](),
-    fab: S.cct === 'loc' ? `<button class="fab" data-go="dlg:open">${ICON('plus')}Создать комнату</button>` : S.cct === 'conn' ? (S.fab ? `<div class="scrim2" data-go="fab"></div><div class="speed"><button data-go="cc-ha">Home Assistant (API)</button><button data-go="add-controller">Брокер MQTT</button></div>` : '') + extFab('Добавить', 'plus', true) : S.cct === 'dev' ? fabGo('Добавить', 'note:Откроется добавление устройства.') : S.cct === 'wid' && S.wTab === 'scen' ? fabGo('Добавить сценарий', 'cc-scen') : '' };
+      '',
+    body: S.cct === 'grp' ? vdAll() : bodies[S.cct](),
+    fab: S.cct === 'loc' ? `<button class="fab" data-go="dlg:open">${ICON('plus')}Создать комнату</button>` : S.cct === 'conn' ? (S.fab ? `<div class="scrim2" data-go="fab"></div><div class="speed"><button data-go="cc-ha">Home Assistant (API)</button><button data-go="add-controller">Брокер MQTT</button></div>` : '') + extFab('Добавить', 'plus', true) : S.cct === 'dev' ? fabGo('Добавить устройство', 'add-controller') : S.cct === 'grp' ? fabGo('Создать группу устройств', 'cc-vdev') : S.cct === 'wid' ? fabGo('Создать сценарий', 'cc-scen') : '' };
 };
 const dlgIcBtn = () => ICON('r-' + S.rIc) + `<i class="bdg">${ICON('chev')}</i>`;
 const dlgHint = () => S.rIcMan ? 'Значок выбран вручную' : S.rName.trim() ? 'Значок подобран по названию' : 'Значок подберётся по названию';
@@ -2618,15 +2683,16 @@ const dlgHtml = () => !S.dlg ? '' : `<div class="dlg"><div class="box">` + (S.dl
   ? `<h2>Значок комнаты</h2><div class="icgrid" role="radiogroup" aria-label="Значок комнаты">${ROOM_ICONS.map(([k, t]) => `<button type="button" class="icc" role="radio" aria-checked="${k === S.rIc}" aria-label="${t}" data-go="dlg:ic:${k}">${ICON('r-' + k)}</button>`).join('')}</div><div class="ac" style="grid-template-columns:1fr"><button class="btn tonal" data-go="dlg:pickno">Назад</button></div>`
   : `<div class="wzdh wzdh2"><h2>Комната</h2><button class="wzx" data-go="dlg:no" aria-label="Закрыть">${ICON('close')}</button></div><div class="rrow2"><button type="button" class="icsel" id="dlgIc" data-go="dlg:pick" aria-label="Выбрать значок комнаты">${dlgIcBtn()}</button><div style="position:relative;flex:1;min-width:0"><label class="tf m"><input data-in="rName" placeholder=" " value="${S.rName}" autocomplete="off"><span>Название</span><button type="button" class="mi" data-go="note:Голосовой ввод в этот прототип не входит." aria-label="Голосовой ввод">${ICON('mic')}</button></label></div></div><p class="rhint" id="dlgHint">${dlgHint()}</p><div class="ac wzac2"><button class="btn primary" id="dlgOk" data-go="dlg:ok" ${S.rName.trim() ? '' : 'disabled'}>Сохранить</button></div>`) + `</div></div>`;
 Object.assign(PAGES, {
+  'cc-conn': () => { const sv = S.cct; S.cct = 'conn'; const r = ccPage(); S.cct = sv; return { back: true, title: 'Подключения', body: r.body, fab: r.fab }; },
   cc: () => { const r = ccPage(); r.fab = (r.fab || '') + dlgHtml(); return r; },
 
-  'cc-vdevs': () => ({ back: true, title: 'Виртуальные устройства', sub: S.vdRoom || 'Гостиная', body: (S.empty ? emptyState('vdevs') : '') + (S.empty ? '' :
+  'cc-vdevs': () => ({ back: true, title: 'Группы устройств', sub: S.vdRoom || 'Гостиная', body: (S.empty ? emptyState('vdevs') : '') + (S.empty ? '' :
     '<div class="vdl">' + grp('', nrow(S.vdName, 'Участников: 3', 'cc-vdev', { c: S.vdAlt ? 'Другие названия: ' + S.vdAlt : '' })) +
     grp('', arow('Собрать из найденного', 'ph-vd-suggest', 'list')) +
-    `<div class="card2 tip" style="background:none;border-color:var(--ui-outline)">${ICON('info')}<p class="sd">Виртуальное устройство вызывают по его названию: «включи <b>свет</b>». Если в разных комнатах названия одинаковые, команда сработает во всех этих комнатах, поэтому называйте устройства по-разному</p></div><div style="height:72px"></div></div>`),
-    fab: fabGo('Создать виртуальное устройство', 'cc-vdev') }),
-  'cc-vdev': () => ({ back: true, title: 'Виртуальное устройство', body:
-    `<div class="fgap"><p class="sd" style="margin:0;color:var(--ui-on-surface)">Виртуальное устройство собирает свойства из разного оборудования и работает как одно: «включи свет», «шторы на 30 %». Каналы нужны, только если у устройства несколько разных функций.</p>` +
+    `<div class="card2 tip" style="background:none;border-color:var(--ui-outline)">${ICON('info')}<p class="sd">Группу устройств вызывают по её названию: «включи <b>свет</b>». Если в разных комнатах названия одинаковые, команда сработает во всех этих комнатах, поэтому называйте группы по-разному</p></div><div style="height:72px"></div></div>`),
+    fab: fabGo('Создать группу устройств', 'cc-vdev') }),
+  'cc-vdev': () => ({ back: true, title: 'Группа устройств', body:
+    `<div class="fgap"><p class="sd" style="margin:0;color:var(--ui-on-surface)">Группа устройств собирает свойства из разного оборудования и работает как одно: «включи свет», «шторы на 30 %». Каналы нужны, только если у устройства несколько разных функций.</p>` +
     `${tfm('vdName', 'Название', S.vdName)}${tfm('vdAlt', 'Другие названия через запятую', S.vdAlt)}<div><span class="lab" style="font-weight:400">Комната</span><div class="fld dd"><span style="color:var(--ui-on-surface)">Гостиная</span>${ICON('chev')}</div></div></div>`,
     foot: () => foot(`<button class="btn text" data-go="note:Проверка покажет, какие свойства услышит ассистент.">Проверить</button>`, `<button class="btn primary" data-go="back" ${S.vdName.trim() ? '' : 'disabled'}>Сохранить</button>`) }),
   'cc-devedit': () => ({ back: true, title: 'Редактирование устройства', foot: () => `<button class="btn danger" style="margin-right:auto" data-go="note:Удаление устройства запросит подтверждение.">Удалить</button><button class="btn primary" data-go="back" ${S.dName.trim() ? '' : 'disabled'}>Сохранить</button>`, body:
@@ -2639,8 +2705,8 @@ Object.assign(PAGES, {
     fab: fabGo('Добавить шаг', 'cc-pick'),
     foot: () => foot(`<button class="btn text" data-go="note:Проверка выполнит сценарий без отправки команд устройствам.">Проверить</button>`, nextBtn('ph-se-action', S.steps.length > 0)) }),
   'cc-pick': () => ({ title: 'Новый сценарий', ctx: 'Что включить', close: true, body:
-    `<div class="sec" style="border:0;padding-bottom:0"><p class="sd" style="color:var(--ui-on-surface)">Выберите, чем управляет шаг. Виртуальное устройство — сразу несколько свойств комнаты.</p></div><label class="search2" style="margin-top:0">${ICON('search')}<input type="text" placeholder="Поиск: название или комната" autocomplete="off"></label>` +
-    `<div class="gh">Гостиная</div>` + [['Свет', 'Виртуальное устройство — свойств: 3 · спросит подтверждение'], ['Бра', 'спросит подтверждение'], ['Громкость', '']].map(([n, d]) => `<button class="pick" data-go="pickstep:${n}"><b>${n}</b><span>${d || '&nbsp;'}</span></button>`).join('') }),
+    `<div class="sec" style="border:0;padding-bottom:0"><p class="sd" style="color:var(--ui-on-surface)">Выберите, чем управляет шаг. Группа устройств — сразу несколько свойств комнаты.</p></div><label class="search2" style="margin-top:0">${ICON('search')}<input type="text" placeholder="Поиск: название или комната" autocomplete="off"></label>` +
+    `<div class="gh">Гостиная</div>` + [['Свет', 'Группа устройств — свойств: 3 · спросит подтверждение'], ['Бра', 'спросит подтверждение'], ['Громкость', '']].map(([n, d]) => `<button class="pick" data-go="pickstep:${n}"><b>${n}</b><span>${d || '&nbsp;'}</span></button>`).join('') }),
   'cc-integ': () => { const b = S.brokers[S.eb], x = b.ints[S.ei]; return ({ back: true, title: 'Интеграция',
     body: `<div class="fgap">${tfm('iName', 'Название', S.iName)}${roField('Протокол', protName(x.pr))}${roField('Брокер', b.n)}${tfm('iPfx', 'Префикс топиков', S.iPfx, 'Обычно пусто. Нужно, если контроллер публикует топики с префиксом, для «site1/devices/…» укажите «site1»', false, false)}</div>`,
     foot: () => `<button class="btn secondary" style="margin-right:auto" data-go="add-devices">${ICON('plus')} Добавить устройства</button><button class="btn primary" data-go="save:integ">Сохранить</button>` }); },
@@ -2671,7 +2737,7 @@ const PH = {
     foot: `<button class="btn text" data-go="w6">Пропустить</button><button class="btn primary" data-go="w6">Продолжить</button>` },
   w6: { title: 'Мастер настройки', step: 6, name: 'Итог', code: 'FRSummary', via: 'Мастер первого запуска, шаг 6', has: 'Шаг «Итог» мастера первого запуска.', shot: 'нужен', n: 3, close: true,
     foot: `<button class="btn primary" data-go="close">Готово</button>` },
-  'ph-se-action': { title: 'Новый сценарий', ctx: 'Действие', code: 'SEAction', via: 'ЦУ → Виджеты → «Сценарии» → «Добавить сценарий» → шаги → «Продолжить»', has: 'Шаг редактора сценария после выбора цели.', shot: 'нужен', n: 5, close: true,
+  'ph-se-action': { title: 'Новый сценарий', ctx: 'Действие', code: 'SEAction', via: 'Мой дом → Сценарии → «Добавить сценарий» → шаги → «Продолжить»', has: 'Шаг редактора сценария после выбора цели.', shot: 'нужен', n: 5, close: true,
     foot: `<button class="btn primary" data-go="ph-se-order">Продолжить</button>` },
   'ph-se-order': { title: 'Новый сценарий', ctx: 'Порядок', code: 'SEOrder', via: 'Редактор сценария, после «Действие»', has: 'Шаг редактора сценария: порядок шагов.', shot: 'нужен', n: 5, close: true,
     foot: `<button class="btn primary" data-go="ph-se-name">Продолжить</button>` },
@@ -2679,9 +2745,9 @@ const PH = {
     foot: `<button class="btn primary" data-go="ph-se-preview">Продолжить</button>` },
   'ph-se-preview': { title: 'Новый сценарий', ctx: 'Предпросмотр', code: 'SEPreview', via: 'Редактор сценария, после «Название»', has: 'Последний шаг редактора сценария: предпросмотр.', shot: 'нужен', n: 5, close: true,
     foot: `<button class="btn primary" data-go="cc-wid">Сохранить</button>` },
-  'ph-groups': { title: 'Группы комнат', code: 'LocationGroups', via: 'ЦУ → Локации → карточка комнаты → «Группы»', has: 'Группы комнат. На панели вход недоступен: шевроны карточки комнаты обрезаны краем экрана и не нажимаются.', shot: 'нужен', n: 6 },
-  'ph-vd-suggest': { title: 'Собрать из найденного', code: 'VirtualDeviceSuggest', via: 'ЦУ → Локации → «Виртуальные устройства» → «Собрать из найденного»', has: 'Предложения виртуальных устройств из найденных свойств. На панели кнопка не отображается, вероятно, нет предложений.', shot: 'нужен', n: 6 },
-  'ph-mqtt-tail': { title: 'Добавление оборудования', ctx: 'Контроллер', code: 'шаги мастера MQTT после «Адрес»', via: 'ЦУ → Подключения → «Добавить» → «Брокер MQTT» → «Указать вручную» → «Продолжить»', has: 'Провайдер, порт, авторизация, проверка соединения.', shot: 'нужен', n: 7,
+  'ph-groups': { title: 'Группы комнат', code: 'LocationGroups', via: 'Мой дом → Комнаты → карточка комнаты → «Группы»', has: 'Группы комнат. На панели вход недоступен: шевроны карточки комнаты обрезаны краем экрана и не нажимаются.', shot: 'нужен', n: 6 },
+  'ph-vd-suggest': { title: 'Собрать из найденного', code: 'VirtualDeviceSuggest', via: 'Комнаты или Группы устройств → «Собрать из найденного»', has: 'Предложения групп устройств из найденных свойств. На панели кнопка не отображается, вероятно, нет предложений.', shot: 'нужен', n: 6 },
+  'ph-mqtt-tail': { title: 'Добавление оборудования', ctx: 'Контроллер', code: 'шаги мастера MQTT после «Адрес»', via: 'Дополнительно → Подключения → «Добавить» → «Брокер MQTT» → «Указать вручную» → «Продолжить»', has: 'Провайдер, порт, авторизация, проверка соединения.', shot: 'нужен', n: 7,
     foot: `<button class="btn primary" data-go="add-devices">Продолжить</button>` },
 };
 Object.keys(PH).forEach(k => {
@@ -2694,14 +2760,16 @@ Object.keys(PH).forEach(k => {
 });
 PAGES['ph-gallery'] = galleryPage;
 function goPage(name, push = true) {
-  if (name.startsWith('cc-') && ['loc','conn','dev','wid'].includes(name.slice(3))) { S.cct = name.slice(3); name = 'cc'; }
-  const m = { voice: 'settings', device: 'settings', conn: 'settings', security: 'settings', data: 'settings' };
+  if (name.startsWith('cc-') && ['loc','dev','grp','wid'].includes(name.slice(3))) { S.cct = name.slice(3); name = 'cc'; }
+  if (name === 'cc-conn' && push) S.fab = false;
+  const m = { voice: 'settings', device: 'settings', data: 'settings' };
   if (m[name]) { S.tab = name; name = 'settings'; }
   if (push && curPage && curPage !== name && state.screen === 'page') pageStack.push(curPage);
   if (!push) pageStack = [];
-  curPage = name; setScreen('page'); drawPage();
+  const keep = curPage === name && state.screen === 'page';
+  curPage = name; setScreen('page'); drawPage(keep);
 }
-const TICON = { voice: 'mic', device: 'sliders', conn: 'signal', security: 'lock', data: 'list' };
+const TICON = { voice: 'mic', device: 'sliders', data: 'list' };
 const escH = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 function drawPage(keepScroll = true) {
   const pg = PAGES[curPage](), el = $('#page'), old = el.querySelector('.body'), top = keepScroll && old ? old.scrollTop : 0;
@@ -2774,6 +2842,11 @@ $('#page').addEventListener('click', e => {
   if (g === 'wzsheetno') { S.wSheetAll = ''; S.wSheet = ''; return drawPage(); }
   if (g.startsWith('wzset:')) { const [, id, n] = g.split(':'); S['wa_' + id] = n; S.wEdit = ''; S.wSheet = ''; S.wSheetAll = ''; return drawPage(); }
   if (g.startsWith('wzadd:')) { S.wAddFor = g.slice(6); S.wSheet = ''; S.wSheetAll = ''; S.dlg = true; S.rName = ''; S.rIc = 'room'; S.rIcMan = false; S.dlgPick = false; return drawPage(); }
+  if (g === 'wpnote') { S.wpNote = false; return drawPage(); }
+  if (g === 'wpsave') { S.wpSaved = { dim: S.dim, glass: S.glass }; S.wpDirty = false; drawPage(); return note('Обои сохранены'); }
+  if (g === 'wpexit:stay') { S.wpExit = false; return drawPage(); }
+  if (g === 'wpexit:save' || g === 'wpexit:drop') { if (g === 'wpexit:save') S.wpSaved = { dim: S.dim, glass: S.glass }; else { S.dim = S.wpSaved.dim; S.glass = S.wpSaved.glass; } S.wpDirty = false; S.wpExit = false; const p = pageStack.pop(); if (p) { curPage = p; drawPage(false); syncControls(); } else setScreen('desk'); return; }
+  if (g === 'back' && curPage === 'wallpaper' && S.wpDirty) { S.wpExit = true; return drawPage(); }
   if (g === 'back') { const p = pageStack.pop(); if (p) { curPage = p; drawPage(false); syncControls(); } else { setScreen('desk'); } return; }
   if (g === 'custom') return openNewTile(addTarget);
   if (g.startsWith('gal:')) return addFromGallery(g.slice(4));
@@ -2800,13 +2873,13 @@ $('#page').addEventListener('click', e => {
   if (g.startsWith('adds:')) { S.eb = +g.slice(5); S.pfx = ''; S.protOpen = false; S.dev.f1 = S.dev.f2 = false; goPage('add-check'); setTimeout(() => { if (curPage === 'add-check') { curPage = 'add-systems'; drawPage(false); } }, 2500); return; }
   if (g === 'protopen') { S.protOpen = !S.protOpen; return drawPage(); }
   if (g.startsWith('ha:')) { const h = S.has[+g.slice(3)]; S.iName = h.n; S.iAddr = h.a; return goPage('cc-ha'); }
-  if (g.startsWith('del:')) { const b = S.brokers[S.eb]; if (g === 'del:integ') b.ints.splice(S.ei, 1); else S.brokers.splice(S.eb, 1); const p = pageStack.pop(); curPage = p || 'cc'; drawPage(false); return note('Удалено'); }
+  if (g.startsWith('del:')) { const b = S.brokers[S.eb]; if (g === 'del:integ') b.ints.splice(S.ei, 1); else S.brokers.splice(S.eb, 1); const p = pageStack.pop(); curPage = p || 'cc-conn'; drawPage(false); return note('Удалено'); }
   if (g.startsWith('save:')) {
     const b = S.brokers[S.eb];
     if (g === 'save:ha') { S.has.push({ n: S.iName, a: S.iAddr, on: true }); S.iName = S.iAddr = S.iToken = ''; }
     else if (g === 'save:integ') { b.ints[S.ei].n = S.iName; b.ints[S.ei].pfx = S.iPfx; }
     else { b.a = S.bAddr; b.p = S.bPort; b.n = S.bName.trim() || (S.bAddr + ':' + S.bPort); }
-    S.fab = false; S.cct = 'conn'; const p = pageStack.pop(); curPage = p || 'cc'; drawPage(false); return note('Подключение сохранено');
+    S.fab = false; const p = pageStack.pop(); curPage = p || 'cc-conn'; drawPage(false); return note('Подключение сохранено');
   }
   if (g === 'jfil') { S.jFilters = !S.jFilters; return drawPage(); }
   if (g.startsWith('note:')) return note(g.slice(5));
@@ -2844,6 +2917,7 @@ $('#page').addEventListener('pointerdown', e => {
     const v = Math.round(mn + f * (mx - mn)); S[k] = v;
     zone.querySelector('.fl').style.width = f * 100 + '%'; zone.querySelector('.th').style.left = f * 100 + '%';
     box.querySelector('.lr b').textContent = v + ' %'; zone.setAttribute('aria-valuenow', v); syncWp();
+    if (curPage === 'wallpaper' && (k === 'dim' || k === 'glass')) { S.wpDirty = true; const sv = document.getElementById('wpSave'); if (sv) sv.disabled = false; }
   };
   upd(e);
   const mv = ev => upd(ev), up = () => { zone.removeEventListener('pointermove', mv); zone.removeEventListener('pointerup', up); };
@@ -2929,21 +3003,24 @@ const GROUPS = [
     },
     opts: [['desk', 'Стол'], ['drawer', 'Меню'], ['apps', 'Приложения'], ['kbd', 'Поиск + клавиатура'], ['shade', 'Панель'], ['gallery', 'Добавить плитку'], ['tile', 'Плитка'], ['custom', 'Своя плитка'], ['states', 'Цвет по значению'], ['pick', 'Что показывать'], ['move', 'Перенос']] },
   { label: 'Настройки', cls: 'grid3', get: () => state.screen === 'page' ? (curPage === 'settings' ? S.tab : curPage) : '', set: v => goPage(v, false),
-    opts: [['voice', 'Голос'], ['device', 'Устройство'], ['conn', 'Подключение'], ['security', 'Безопасность'], ['data', 'Данные'], ['dev-lang', 'Язык'], ['dev-room', 'Комната панели'], ['wallpaper', 'Обои'], ['dev-appearance', 'Оформление'], ['display', 'Экран'], ['dev-launcher', 'Лаунчер'], ['export', 'Экспорт'], ['journal', 'Журнал']] },
+    opts: [['voice', 'Голос и ответы'], ['device', 'Экран и вид'], ['data', 'Дополнительно'], ['dev-lang', 'Язык'], ['dev-room', 'Комната панели'], ['wallpaper', 'Обои'], ['wallpaper-adv', 'Расширенные обои'], ['dev-appearance', 'Оформление'], ['display', 'Экран'], ['dev-launcher', 'Лаунчер'], ['export', 'Экспорт'], ['journal', 'Журнал']] },
   { label: 'Режим',    get: () => state.edit ? 'edit' : 'normal', set: v => setEdit(v === 'edit'),
     opts: [['normal', 'Обычный'], ['edit', 'Правка']] },
   { label: 'Тема',     get: () => state.theme, set: v => { state.theme = v; document.documentElement.dataset.theme = v; },
     opts: [['light', 'Светлая'], ['dark', 'Тёмная']] },
   { label: 'Ползунок света', get: () => state.dimmer, set: v => { state.dimmer = v; render(); },
     opts: [['old', 'Было'], ['h', 'Колбаса']] },
+  { label: 'Баннеры на столе', cls: 'grid3', get: () => state.banners.length === 4 ? 'all' : state.banners[0] || 'none',
+    set: v => { state.banners = v === 'none' ? [] : v === 'all' ? ['mic', 'safe', 'ctrl', 'broker'] : [v]; drawBanners(); if (state.screen !== 'desk') setScreen('desk'); },
+    opts: [['none', 'Нет'], ['mic', 'Нет микрофона'], ['safe', 'Безопасный режим'], ['ctrl', 'Нет связи'], ['broker', 'Брокер недоступен'], ['all', 'Все']] },
   { label: 'Микрофон', get: () => state.mic, set: v => { state.mic = v; $('#mic').dataset.state = v; },
     opts: [['off', 'Выкл'], ['listening', 'Слушает'], ['no-permission', 'Нет доступа']] },
   { label: 'Мастера', cls: 'grid3', get: () => state.screen === 'page' && curPage !== 'settings' ? (curPage === 'add-controller' && S.ctrl === 'manual' ? 'add-controller-m' : curPage) : '',
     set: v => { if (v === 'add-controller-m') { S.ctrl = 'manual'; goPage('add-controller', false); } else { if (v === 'add-controller') S.ctrl = ''; goPage(v, false); } },
     opts: [['add-controller', 'Контроллер'], ['add-controller-m', 'Ручной ввод'], ['add-ha', 'Home Assistant'], ['add-devices', 'Устройства'], ['wz0', 'Привет'], ['wzlang', 'Язык'], ['wz1', 'Панель'], ['wz2', 'Устройства'], ['wz2n', 'Не нашлись'], ['wz2s', 'Без устройств'], ['wz3', 'Комнаты'], ['wz4', 'Группы'], ['wzok', 'Дом настроен'], ['wzkey', 'Регистрация'], ['wzpolicy', 'Политика'], ['wzcode', 'Код из письма'], ['wzbound', 'Почта на другой панели'], ['wz5', 'Готово'], ['wzf', 'Файл'], ['wz6', 'Пустой стол']] },
-  { label: 'Мой дом', cls: 'grid3', get: () => state.screen === 'page' ? (curPage === 'cc' ? S.cct + (S.cct === 'conn' && S.fab ? '-fab' : '') : curPage) : '',
-    set: v => { if (v === 'dlg' || v === 'dlgpick') { S.cct = 'loc'; S.dlg = true; S.rName = 'Гостиная'; S.rIc = roomIconFor(S.rName); S.rIcMan = false; S.dlgPick = v === 'dlgpick'; goPage('cc', false); return; } S.dlg = false; S.dlgPick = false; if (v === 'cc-scen' ) S.steps = []; if (v === 'conn-fab') { S.cct = 'conn'; S.fab = true; goPage('cc', false); } else { S.fab = false; goPage(['loc','conn','dev','wid'].includes(v) ? 'cc-' + v : v, false); } },
-    opts: [['loc', 'Локации'], ['conn', 'Подключения'], ['conn-fab', 'Подключения + меню'], ['dev', 'Список устройств'], ['wid', 'Виджеты'], ['cc-integ', 'Интеграция'], ['cc-broker', 'Брокер'], ['add-systems', 'Найденные системы'], ['cc-ha', 'Сервер HA'], ['dlg', 'Диалог «Комната»'], ['dlgpick', 'Диалог: значок'], ['cc-vdevs', 'Виртуальные устройства'], ['cc-vdev', 'Виртуальное устройство'], ['cc-devedit', 'Правка устройства'], ['cc-scen', 'Сценарий: шаги'], ['cc-pick', 'Сценарий: что включить']] },
+  { label: 'Мой дом', cls: 'grid3', get: () => state.screen === 'page' ? (curPage === 'cc' ? S.cct : curPage === 'cc-conn' ? (S.fab ? 'conn-fab' : 'conn') : curPage) : '',
+    set: v => { if (v === 'dlg' || v === 'dlgpick') { S.cct = 'loc'; S.dlg = true; S.rName = 'Гостиная'; S.rIc = roomIconFor(S.rName); S.rIcMan = false; S.dlgPick = v === 'dlgpick'; goPage('cc', false); return; } S.dlg = false; S.dlgPick = false; if (v === 'cc-scen' ) S.steps = []; if (v === 'conn-fab') { goPage('cc-conn', false); S.fab = true; drawPage(false); } else { S.fab = false; goPage(['loc','conn','dev','grp','wid'].includes(v) ? 'cc-' + v : v, false); } },
+    opts: [['loc', 'Комнаты'], ['dev', 'Устройства'], ['grp', 'Группы устройств'], ['wid', 'Сценарии'], ['conn', 'Подключения'], ['conn-fab', 'Подключения + меню'], ['cc-integ', 'Интеграция'], ['cc-broker', 'Брокер'], ['add-systems', 'Найденные системы'], ['cc-ha', 'Сервер HA'], ['dlg', 'Диалог «Комната»'], ['dlgpick', 'Диалог: значок'], ['cc-vdevs', 'Группы устройств'], ['cc-vdev', 'Группа устройств'], ['cc-devedit', 'Правка устройства'], ['cc-scen', 'Сценарий: шаги'], ['cc-pick', 'Сценарий: что включить']] },
   { label: 'Не проработаны (заглушки)', cls: 'grid3', get: () => state.screen === 'page' && (curPage in PH) ? curPage : '', set: v => { if (v === 'ph-se-action') S.steps = []; goPage(v, false); },
     opts: [['ph-more', 'Меню ⋮'], ['w3', 'Мастер 3'], ['w4', 'Мастер 4'], ['w5', 'Мастер 5'], ['w6', 'Мастер 6'], ['ph-se-action', 'Сценарий: действие'], ['ph-se-order', 'Сценарий: порядок'], ['ph-se-name', 'Сценарий: название'], ['ph-se-preview', 'Сценарий: просмотр'], ['ph-groups', 'Группы комнат'], ['ph-vd-suggest', 'Собрать из найденного'], ['ph-mqtt-tail', 'MQTT: хвост']] },
   { label: 'Пустые состояния',   get: () => S.empty ? 'empty' : 'full', set: v => { S.empty = v === 'empty'; if (state.screen === 'page') drawPage(false); },
@@ -3037,7 +3114,7 @@ function currentScreenId() {
   if (v === 'kbd') return 'apps';
   if (v === 'tile' || v === 'custom') return 'tile-form';
   if (v === 'page' && curPage === 'ph-gallery') return 'ph-gallery';
-  if (v === 'page') return curPage === 'settings' ? 'settings-' + S.tab : curPage === 'cc' ? 'cc-' + S.cct : curPage;
+  if (v === 'page') return curPage === 'settings' ? 'settings-' + S.tab : curPage === 'cc' ? (S.cct === 'grp' ? 'cc-vdlist' : 'cc-' + S.cct) : curPage;
   return v;
 }
 const spill = it => `<span class="sp ${it.status}">${ST_LABEL[it.status]}</span>` + (it.changed ? `<span class="sp chg">Изменён в версии ${it.changed}</span>` : '');
@@ -3062,7 +3139,7 @@ function setPanelDev(v) {
 }
 /* точки статуса на кнопках списка экранов справа */
 const BTN_ID = { 'Экран': { kbd: 'apps', tile: 'tile-form', custom: 'tile-form', states: 'tile-form', pick: 'tile-form', gallery: 'ph-gallery', move: 'ph-move' }, 'Мастера': { 'add-controller-m': 'add-controller' },
-  'Мой дом': { loc: 'cc-loc', conn: 'cc-conn', 'conn-fab': 'cc-conn', dev: 'cc-dev', wid: 'cc-wid', dlg: 'cc-loc', dlgpick: 'cc-loc' } };
+  'Мой дом': { loc: 'cc-loc', conn: 'cc-conn', 'conn-fab': 'cc-conn', grp: 'cc-vdlist', dev: 'cc-dev', wid: 'cc-wid', dlg: 'cc-loc', dlgpick: 'cc-loc' } };
 GROUPS.forEach(g => {
   if (!['Экран', 'Настройки', 'Мастера', 'Мой дом', 'Не проработаны (заглушки)'].includes(g.label)) return;
   g.opts.forEach(([val], i) => {
