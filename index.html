@@ -898,7 +898,7 @@ input::placeholder { color: var(--a11y-ph); opacity: 1; }
 .desk.voicing .banners { display: none !important; }
 .vcard .vh { display: flex; align-items: center; gap: var(--dim-space-sm); font-size: var(--font-name); line-height: var(--lh-name); font-weight: 500; }
 .vcard .vh .ic { flex: none; width: 20px; height: 20px; }
-.vcard .vh .fi-ic { flex: none; display: flex; width: 24px; height: 24px; margin: -2px; } .vcard .vh .fi { --fi-ink: currentColor; --fi-acc: var(--ui-primary-container); }
+.vcard .vh .fi-ic { flex: none; display: flex; width: 32px; height: 32px; margin: -4px; } .vcard .vh .fi { --fi-ink: currentColor; --fi-acc: var(--ui-primary-container); }
 .vcard .vt { font-size: 16px; line-height: 22px; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .vcard .vt2 { font-size: var(--font-name); line-height: var(--lh-name); color: var(--ui-on-surface-variant); margin-top: -4px; }
 .vcard .vrow { display: flex; gap: var(--dim-space-sm); }
@@ -962,7 +962,7 @@ input::placeholder { color: var(--a11y-ph); opacity: 1; }
 .vhelp .vfm .flogo { width: 72px; height: 72px; transform: scale(calc(1 + var(--lvl) * .06)); transition: transform .08s linear; }
 .vhelp .flogo .fi { --fi-ink: var(--ui-primary-container); }
 .vhelp .vfm.vfm-off .disc { background: color-mix(in srgb, var(--ui-on-surface) 8%, transparent); }
-.vhelp .vfm.vfm-off .flogo .fi { --fi-ink: var(--ui-on-surface-variant); }
+.vhelp .flogo .fi { --fi-mute: var(--ui-on-surface-variant); }
 .vhelp .ftxt b { display: block; font-size: 20px; line-height: 24px; font-weight: 500; }
 .vhelp .ftxt span { display: block; margin-top: 2px; color: var(--ui-on-surface-variant); font-size: var(--font-name); line-height: var(--lh-name); }
 .vhelp .fstage + .vrow { margin-top: var(--dim-space-md); }
@@ -1412,61 +1412,53 @@ window.SEVEN_SCREENS = {
 .wzfld { padding: 8px var(--dim-gutter); } .wzwarn { margin-top: 8px; } .wzrs { display: flex; align-items: center; justify-content: space-between; gap: 8px; } .wzrs .sd { margin: 0; }
 #wzjump .wzos { display: flex; gap: 8px; align-items: center; padding: 6px 8px; font-size: 13px; }
 
-/* ── знак Фиона: стебель и две дуги. Состояния по lottie fiona-intro / idle / listening / speaking / done / off (60 кадров/с), класс s-… на svg ── */
-.wzlogo { width: 112px; height: 112px; margin: -6px 0 0; }
-.fi { --fi-ink: #1E6B4F; --fi-acc: var(--ui-primary-container, #2F7D5B); display: block; width: 100%; height: 100%; overflow: visible; }
-.fi path { fill: none; stroke: var(--fi-ink); stroke-width: 35; stroke-linecap: round; stroke-linejoin: round; transform-box: view-box; transform-origin: 240px 240px; }
-.fi .fi-e { stroke-width: 22; opacity: 0; }
-.fi .fi-stem { stroke-dasharray: 1; } .fi .fi-aL, .fi .fi-aR { stroke-dasharray: 1 1; }
+/* ── знак Фиона: Ф из левой дуги, чаши и стебля, бары это голос. Состояния по lottie fiona-f-intro-b / idle / listening / speaking / done / off-b (60 кадров/с), класс s-… на svg ── */
+.wzlogo { width: 128px; height: 128px; margin: -10px 0 0; }
+.fi { --fi-ink: #1E6B4F; --fi-acc: var(--ui-primary-container, #2F7D5B); --fi-mute: #7B8D7F; display: block; width: 100%; height: 100%; overflow: visible; }
+.fi path { fill: none; stroke: var(--fi-ink); stroke-width: 23.4; stroke-linecap: round; stroke-linejoin: round; transform-box: view-box; transform-origin: 240px 240px; }
+.fi .fi-l, .fi .fi-b, .fi .fi-s { stroke-dasharray: 1; }
+.fi .fi-bar, .fi .fi-x { stroke-width: 18.7; stroke-dasharray: 1 1; opacity: 0; }
 @keyframes fiDraw { to { stroke-dashoffset: 0 } }
 @keyframes fiEcho { from { opacity: .55; transform: scale(1.18) } to { opacity: 0; transform: scale(1.65) } }
 @keyframes fiScaleIn { from { transform: scale(.94) } to { transform: scale(1) } }
 @keyframes fiBreath { 0%, 100% { transform: scale(1) } 50% { transform: scale(1.03) } }
-@keyframes fiGrow { 0% { stroke-dasharray: 0 1; stroke-dashoffset: -.5; opacity: 0 } 1% { opacity: 1 } 100% { stroke-dasharray: 1 1; stroke-dashoffset: 0; opacity: 1 } }
-@keyframes fiPop { 0%, 100% { transform: scale(1) } 50% { transform: scale(1.06) } }
-@keyframes fiEchoOut { 0% { opacity: .55; transform: scale(1); stroke-width: 22 } 100% { opacity: 0; transform: scale(1.42); stroke-width: 10 } }
-@keyframes fiIdleL { 0%, 100% { transform: translateX(0) } 50% { transform: translateX(-7px) } }
-@keyframes fiIdleR { 0%, 100% { transform: translateX(0) } 50% { transform: translateX(7px) } }
-@keyframes fiIdleS { 0%, 100% { transform: scaleY(1) } 50% { transform: scaleY(1.03) } }
-@keyframes fiPulse { 0%, 22.9%, 50%, 72.9%, 100% { transform: scale(1) } 6.25%, 56.25% { transform: scale(1.07) } }
-@keyframes fiLisO1 { 0% { opacity: 0 } 14.6%, 37.5% { opacity: .6 } 50%, 100% { opacity: 0 } }
-@keyframes fiLisT1 { 0% { transform: scale(1.42); stroke-width: 12 } 50%, 100% { transform: scale(1.04); stroke-width: 22 } }
-@keyframes fiLisO2 { 0%, 50% { opacity: 0 } 64.6%, 87.5% { opacity: .6 } 100% { opacity: 0 } }
-@keyframes fiLisT2 { 0%, 100% { transform: scale(1.04); stroke-width: 22 } 50% { transform: scale(1.42); stroke-width: 12 } }
-@keyframes fiSpkO { 0% { opacity: .55 } 47.2%, 100% { opacity: 0 } }
-@keyframes fiSpkT { 0% { transform: scale(1); stroke-width: 22 } 47.2% { transform: scale(1.42); stroke-width: 10 } 50%, 100% { transform: scale(1); stroke-width: 22 } }
-@keyframes fiBeat { 0%, 33.3%, 50%, 83.3%, 100% { transform: scale(1) } 11.1%, 61.1% { transform: scale(1.06) } }
-@keyframes fiBeatS { 0%, 33.3%, 50%, 83.3%, 100% { transform: scaleY(1) } 11.1%, 61.1% { transform: scaleY(1.05) } }
+@keyframes fiSettle { 0%, 100% { transform: scale(1) } 50% { transform: scale(1.03) } }
+@keyframes fiIdle { 0%, 100% { transform: scale(1) } 50% { transform: scale(1.02) } }
+@keyframes fiBarO1 { 0% { stroke-dasharray: 0.55 1; stroke-dashoffset: -0.225 } 25% { stroke-dasharray: 1 1; stroke-dashoffset: 0.000 } 50% { stroke-dasharray: 0.7 1; stroke-dashoffset: -0.150 } 75% { stroke-dasharray: 0.9 1; stroke-dashoffset: -0.050 } 100% { stroke-dasharray: 0.55 1; stroke-dashoffset: -0.225 } }
+@keyframes fiBarI1 { 0% { stroke-dasharray: 0.9 1; stroke-dashoffset: -0.050 } 25% { stroke-dasharray: 0.55 1; stroke-dashoffset: -0.225 } 50% { stroke-dasharray: 1 1; stroke-dashoffset: 0.000 } 75% { stroke-dasharray: 0.65 1; stroke-dashoffset: -0.175 } 100% { stroke-dasharray: 0.9 1; stroke-dashoffset: -0.050 } }
+@keyframes fiBarI2 { 0% { stroke-dasharray: 0.65 1; stroke-dashoffset: -0.175 } 25% { stroke-dasharray: 1 1; stroke-dashoffset: 0.000 } 50% { stroke-dasharray: 0.55 1; stroke-dashoffset: -0.225 } 75% { stroke-dasharray: 0.95 1; stroke-dashoffset: -0.025 } 100% { stroke-dasharray: 0.65 1; stroke-dashoffset: -0.175 } }
+@keyframes fiBarO2 { 0% { stroke-dasharray: 1 1; stroke-dashoffset: 0.000 } 25% { stroke-dasharray: 0.7 1; stroke-dashoffset: -0.150 } 50% { stroke-dasharray: 0.9 1; stroke-dashoffset: -0.050 } 75% { stroke-dasharray: 0.55 1; stroke-dashoffset: -0.225 } 100% { stroke-dasharray: 1 1; stroke-dashoffset: 0.000 } }
+@keyframes fiSpkI1 { 0% { stroke-dasharray: 1 1; stroke-dashoffset: 0.000 } 16.67% { stroke-dasharray: 0.6 1; stroke-dashoffset: -0.200 } 33.33% { stroke-dasharray: 0.95 1; stroke-dashoffset: -0.025 } 50% { stroke-dasharray: 0.65 1; stroke-dashoffset: -0.175 } 66.67% { stroke-dasharray: 1 1; stroke-dashoffset: 0.000 } 83.33% { stroke-dasharray: 0.7 1; stroke-dashoffset: -0.150 } 100% { stroke-dasharray: 1 1; stroke-dashoffset: 0.000 } }
+@keyframes fiSpkI2 { 0% { stroke-dasharray: 0.7 1; stroke-dashoffset: -0.150 } 16.67% { stroke-dasharray: 1 1; stroke-dashoffset: 0.000 } 33.33% { stroke-dasharray: 0.6 1; stroke-dashoffset: -0.200 } 50% { stroke-dasharray: 0.95 1; stroke-dashoffset: -0.025 } 66.67% { stroke-dasharray: 0.65 1; stroke-dashoffset: -0.175 } 83.33% { stroke-dasharray: 1 1; stroke-dashoffset: 0.000 } 100% { stroke-dasharray: 0.7 1; stroke-dashoffset: -0.150 } }
+@keyframes fiDriftL { 0% { opacity: 1; transform: translateX(0) } 47.2% { opacity: 0; transform: translateX(-34px) } 50%, 100% { opacity: 0; transform: translateX(0) } }
+@keyframes fiDriftR { 0% { opacity: 1; transform: translateX(0) } 47.2% { opacity: 0; transform: translateX(34px) } 50%, 100% { opacity: 0; transform: translateX(0) } }
 @keyframes fiDoneC { 0%, 97.8%, 100% { stroke: var(--fi-ink) } 20%, 62.2% { stroke: var(--fi-acc) } }
-@keyframes fiDoneP { 0%, 62.2%, 100% { transform: scale(1) } 15.6% { transform: scale(.86) } 40% { transform: scale(1.08) } }
-@keyframes fiDoneS { 0%, 62.2%, 100% { transform: scaleY(1) } 15.6% { transform: scaleY(.96) } 40% { transform: scaleY(1.04) } }
-@keyframes fiOffA { to { stroke-dasharray: .34 1; stroke-dashoffset: -.33; opacity: .5 } }
-@keyframes fiOffS { to { opacity: .5 } }
-/* появление: 2 с, дальше ожидание */
-.s-intro .fi-stem { stroke-dashoffset: 1; animation: fiDraw .67s cubic-bezier(.33, 1, .68, 1) forwards, fiIdleS 4s ease-in-out 2s infinite; }
-.s-intro .fi-aL { animation: fiGrow .67s cubic-bezier(.33, 1, .68, 1) .57s both, fiPop .58s ease-in-out 1.23s, fiIdleL 4s ease-in-out 2s infinite; }
-.s-intro .fi-aR { animation: fiGrow .67s cubic-bezier(.33, 1, .68, 1) .57s both, fiPop .58s ease-in-out 1.23s, fiIdleR 4s ease-in-out 2s infinite; }
-.s-intro .fi-e.p1 { animation: fiEchoOut .67s linear 1.2s forwards; }
-/* ожидание: 4 с по кругу */
-.s-idle .fi-stem { animation: fiIdleS 4s ease-in-out infinite; }
-.s-idle .fi-aL { animation: fiIdleL 4s ease-in-out infinite; } .s-idle .fi-aR { animation: fiIdleR 4s ease-in-out infinite; }
-/* слушает: 1,6 с по кругу, звук идёт к стеблю */
-.s-listen .fi-aL, .s-listen .fi-aR { animation: fiPulse 1.6s ease-in-out infinite; }
-.s-listen .fi-e.p1 { animation: fiLisO1 1.6s linear infinite, fiLisT1 1.6s ease-in-out infinite; }
-.s-listen .fi-e.p2 { animation: fiLisO2 1.6s linear infinite, fiLisT2 1.6s ease-in-out infinite; }
-/* говорит: 1,2 с по кругу, голос уходит от стебля */
-.s-speak .fi-e.p1 { animation: fiSpkO 1.2s ease-out infinite, fiSpkT 1.2s linear infinite; }
-.s-speak .fi-e.p2 { animation: fiSpkO 1.2s ease-out .6s infinite, fiSpkT 1.2s linear .6s infinite; }
-.s-speak .fi-aL, .s-speak .fi-aR { animation: fiBeat 1.2s ease-in-out infinite; } .s-speak .fi-stem { animation: fiBeatS 1.2s ease-in-out infinite; }
+@keyframes fiDoneP { 0%, 62.2%, 100% { transform: scale(1) } 15.6% { transform: scale(.93) } 40% { transform: scale(1.05) } }
+@keyframes fiOffC { 0% { stroke: var(--fi-ink) } 40%, 100% { stroke: var(--fi-mute) } }
+@keyframes fiBarOff { 0% { stroke-dasharray: 1 1; stroke-dashoffset: 0 } 43.3%, 100% { stroke-dasharray: 0 1; stroke-dashoffset: -.5 } }
+/* появление: сначала левая дуга, потом чаша, потом вертикальная черта, каждая после предыдущей; 2,9 с, дальше ожидание */
+.s-intro .fi-l { stroke-dashoffset: 1; animation: fiDraw .83s cubic-bezier(.65, 0, .35, 1) forwards; }
+.s-intro .fi-b { stroke-dashoffset: 1; animation: fiDraw .7s cubic-bezier(.65, 0, .35, 1) .93s forwards; }
+.s-intro .fi-s { stroke-dashoffset: 1; animation: fiDraw .63s cubic-bezier(.65, 0, .35, 1) 1.73s forwards; }
+.s-intro .fi-m { animation: fiSettle .53s ease-in-out 2.4s, fiIdle 4s ease-in-out 2.93s infinite; }
+/* ожидание: 4 с по кругу, бары спрятаны */
+.s-idle .fi-m { animation: fiIdle 4s ease-in-out infinite; }
+/* слушает: 1,6 с по кругу, четыре бара в неровном ритме */
+.s-listen .fi-bar { opacity: 1; }
+.s-listen .fi-bar.o1 { animation: fiBarO1 1.6s ease-in-out infinite; } .s-listen .fi-bar.i1 { animation: fiBarI1 1.6s ease-in-out infinite; }
+.s-listen .fi-bar.i2 { animation: fiBarI2 1.6s ease-in-out infinite; } .s-listen .fi-bar.o2 { animation: fiBarO2 1.6s ease-in-out infinite; }
+/* говорит: 1,2 с по кругу, внутренние бары в такт, внешние уходят в стороны и тают */
+.s-speak .fi-bar.i1 { opacity: 1; animation: fiSpkI1 1.2s ease-in-out infinite; } .s-speak .fi-bar.i2 { opacity: 1; animation: fiSpkI2 1.2s ease-in-out infinite; }
+.s-speak .fi-x.xl0, .s-speak .fi-x.xl1 { animation: fiDriftL 1.2s cubic-bezier(.33, 1, .68, 1) infinite; } .s-speak .fi-x.xr0, .s-speak .fi-x.xr1 { animation: fiDriftR 1.2s cubic-bezier(.33, 1, .68, 1) infinite; }
+.s-speak .fi-x.xl1, .s-speak .fi-x.xr1 { animation-delay: .6s; }
 /* готово: 1,5 с один раз, на миг зелёный */
-.s-done .fi-stem { animation: fiDoneC 1.5s linear, fiDoneS 1.5s ease-in-out; }
-.s-done .fi-aL, .s-done .fi-aR { animation: fiDoneC 1.5s linear, fiDoneP 1.5s ease-in-out; }
-.s-done .fi-e { stroke: var(--fi-acc); } .s-done .fi-e.p1 { animation: fiEchoOut .67s linear .5s forwards; }
-/* не слушает: 0,67 с один раз, остаётся */
-.s-off .fi-aL, .s-off .fi-aR { animation: fiOffA .67s cubic-bezier(.65, 0, .35, 1) forwards; } .s-off .fi-stem { animation: fiOffS .67s cubic-bezier(.65, 0, .35, 1) forwards; }
+.s-done .fi-l, .s-done .fi-b, .s-done .fi-s { animation: fiDoneC 1.5s linear; } .s-done .fi-m { animation: fiDoneP 1.5s ease-in-out; }
+/* не слушает: 1 с один раз, знак серый сплошным цветом (без прозрачности), бары ложатся в точки */
+.s-off .fi-l, .s-off .fi-b, .s-off .fi-s { animation: fiOffC 1s linear forwards; }
+.s-off .fi-bar { opacity: 1; animation: fiOffC 1s linear forwards, fiBarOff 1s cubic-bezier(.65, 0, .35, 1) forwards; }
 @media (prefers-reduced-motion: reduce) {
-  .fi path { animation: none !important; } .fi .fi-e { display: none; } .fi .fi-stem { stroke-dashoffset: 0 !important; }
-  .s-off .fi-aL, .s-off .fi-aR { stroke-dasharray: .34 1; stroke-dashoffset: -.33; opacity: .5; } .s-off .fi-stem { opacity: .5; }
+  .fi path, .fi .fi-m { animation: none !important; } .fi .fi-l, .fi .fi-b, .fi .fi-s { stroke-dashoffset: 0 !important; }
+  .s-off .fi-l, .s-off .fi-b, .s-off .fi-s { stroke: var(--fi-mute); } .s-off .fi-bar { stroke: var(--fi-mute); stroke-dasharray: 0 1; stroke-dashoffset: -.5; }
 }
 .wel2 { display: flex; align-items: center; justify-content: center; } .wel2 .wzcontent { padding-bottom: 0; }
 
@@ -2919,7 +2911,7 @@ S.dev.g1 = true; S.dev.g2 = true;
 const wOn = k => (k === 'wb' ? S.wbOn : (!S.wOne && S.z2mOn));
 const wDevs = () => S.wSkip ? [] : WDEV.filter(d => wOn(d[3]));
 const WHELLO = [['Привет!', 'Я Фиона, помогу управлять домом голосом'], ['Привет, я Фиона', 'Помогу управлять домом голосом'], ['Привет!', 'Я Фиона. Скажите, и дом сделает'], ['Здравствуйте', 'Фиона управляет домом голосом, даже без интернета'], ['Привет, я Фиона', 'Дом, который слушает, даже без интернета'], ['Давайте знакомиться', 'Я Фиона. Настроим дом за пару минут']];
-const FIONA = (st = 'idle') => `<svg class="fi s-${st}" viewBox="0 0 480 480" aria-hidden="true"><path class="fi-e p1" d="M121.2 323.2A145 145 0 0 1 121.2 156.8"/><path class="fi-e p1" d="M358.8 156.8A145 145 0 0 1 358.8 323.2"/><path class="fi-e p2" d="M121.2 323.2A145 145 0 0 1 121.2 156.8"/><path class="fi-e p2" d="M358.8 156.8A145 145 0 0 1 358.8 323.2"/><path class="fi-stem" pathLength="1" d="M240 50V430"/><path class="fi-aL" pathLength="1" d="M121.2 323.2A145 145 0 0 1 121.2 156.8"/><path class="fi-aR" pathLength="1" d="M358.8 156.8A145 145 0 0 1 358.8 323.2"/></svg>`;
+const FIONA = (st = 'idle') => `<svg class="fi s-${st}" viewBox="0 0 480 480" aria-hidden="true"><g class="fi-m"><path class="fi-l" pathLength="1" d="M271.6 95.0A96.7 118.6 0 1 0 225.3 322.2"/><path class="fi-b" pathLength="1" d="M224.4 172.9C224.4 153.5 240.1 137.8 259.5 137.8A81.9 101.2 0 1 1 224.4 330.5"/><path class="fi-s" pathLength="1" d="M224.4 172.9V395.2"/><path class="fi-bar o1" pathLength="1" d="M101.2 199.5V227.5"/><path class="fi-bar i1" pathLength="1" d="M189.3 197.9V252.5"/><path class="fi-bar i2" pathLength="1" d="M271.2 197.9V252.5"/><path class="fi-bar o2" pathLength="1" d="M374.9 201.8V229.8"/><path class="fi-x xl0" pathLength="1" d="M101.2 199.5V227.5"/><path class="fi-x xl1" pathLength="1" d="M101.2 199.5V227.5"/><path class="fi-x xr0" pathLength="1" d="M374.9 201.8V229.8"/><path class="fi-x xr1" pathLength="1" d="M374.9 201.8V229.8"/></g></svg>`;
 const WMAIL = `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M4 8l8 6 8-6"/></svg>`;
 const WART_HOUSE = `<svg class="wzart house" viewBox="0 0 480 480" aria-hidden="true"><g class="mk"><path class="echo" d="M290 390H330Q360 390 360 360V262Q360 245 348 234L254 148Q240 136 226 148L132 234Q120 245 120 262V360Q120 390 150 390H190V335A50 50 0 0 1 290 335" stroke="#1E6B4F"/><path class="a1" pathLength="1" d="M290 390H330Q360 390 360 360V262Q360 245 348 234L254 148Q240 136 226 148L132 234Q120 245 120 262V360Q120 390 150 390H190" stroke="#4B8069"/><path class="a2" pathLength="1" d="M190 390V335A50 50 0 0 1 290 335" stroke="#1E6B4F"/></g></svg>`;
 const WART_DONE = `<svg class="wzart done" viewBox="0 0 480 480" aria-hidden="true"><g class="mk"><path class="echo" d="M276.9 138.5A108 108 0 1 0 346.4 221.2" stroke="#1E6B4F"/><path class="echo e2" d="M276.9 138.5A108 108 0 1 0 346.4 221.2" stroke="#1E6B4F"/><path class="a1" pathLength="1" d="M276.9 138.5A108 108 0 1 0 346.4 221.2" stroke="#4B8069"/><path class="a2" pathLength="1" d="M188 242L229 282L345 140" stroke="#1E6B4F"/></g></svg>`;
