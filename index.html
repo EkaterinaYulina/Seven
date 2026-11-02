@@ -761,8 +761,8 @@ button.banner > .ic:last-child { transform: rotate(-90deg); color: var(--ui-on-s
 /* карточки выбора палитры в «Оформлении»: превью — свой градиент и кремовые плитки, не зависит от текущей палитры */
 .pal-opts { display: grid; grid-template-columns: 1fr 1fr; gap: var(--dim-space-md); padding: 0 var(--dim-gutter) var(--dim-gutter); }
 .pal { border-radius: 18px; padding: 6px 6px 0; text-align: left; box-shadow: inset 0 0 0 1px var(--ui-outline-subtle); background: var(--menu-tile); }
-.pal[aria-checked="true"] { box-shadow: inset 0 0 0 2px var(--c-select, var(--core-blue-700)); }
-[data-theme="dark"] .pal[aria-checked="true"] { box-shadow: inset 0 0 0 2px var(--core-blue-300); }
+.pal[aria-checked="true"] { box-shadow: inset 0 0 0 2px var(--ui-primary-container); }
+[data-theme="dark"] .pal[aria-checked="true"] { box-shadow: inset 0 0 0 2px var(--ui-primary-container); }
 .pal .pv { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; height: 88px; padding: 10px; border-radius: 14px; align-content: end; }
 .pal .pv i { height: 32px; border-radius: 8px; background: #FCFBF7; }
 .pal .pv.mint { background: linear-gradient(135deg, #E9F3E1 0%, #CDE7D3 55%, #A9D6C4 100%); }
