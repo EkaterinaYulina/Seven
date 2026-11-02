@@ -62,7 +62,7 @@
   --ui-on-surface: var(--core-ink); --ui-on-surface-variant: var(--core-ink-2);
   --ui-outline: var(--core-ink-3);  --ui-outline-subtle: var(--core-ink-10);
   --ui-slot-fill: var(--core-cream-40);
-  --ui-error: var(--core-red-700); --ui-on-error: var(--core-cream);
+  --ui-error: var(--core-red-700);
   /* Seven / Button, Primary: в светлой — primary-container (по Button.png) */
   --btn-primary-bg: var(--ui-primary-container); --btn-primary-fg: var(--ui-on-primary-container);
 }
@@ -78,7 +78,7 @@
   --ui-on-surface: var(--core-paper); --ui-on-surface-variant: var(--core-stone);
   --ui-outline: var(--core-ink-3);  --ui-outline-subtle: var(--core-paper-14);
   --ui-slot-fill: var(--core-ink-40);
-  --ui-error: var(--core-red-300); --ui-on-error: var(--core-graphite);
+  --ui-error: var(--core-red-300);
   /* в Button.png тёмный Primary залит светлым (ui/primary), а не olive: следуем компоненту */
   --btn-primary-bg: var(--ui-primary-container); --btn-primary-fg: var(--ui-on-primary-container);
 }
@@ -620,10 +620,10 @@ button.banner > .ic:last-child { transform: rotate(-90deg); color: var(--ui-on-s
 .film { position: absolute; inset: 0; }                /* «плёнка»: гасит нажатия на содержимое */
 .badge-hit { position: absolute; top: 0; right: 0; width: var(--dim-touch-min); height: var(--dim-touch-min);
   display: flex; align-items: center; justify-content: center; }
-.badge { width: var(--badge); height: var(--badge); border-radius: 50%; background: var(--ui-error); color: var(--ui-on-error); box-shadow: 0 1px 3px #0003; display: flex; align-items: center; justify-content: center; }
+.badge { width: var(--badge); height: var(--badge); border-radius: 50%; background: color-mix(in srgb, var(--ui-error) 18%, var(--ui-surface-card, #FCFBF7)); color: var(--ui-error); box-shadow: none; display: flex; align-items: center; justify-content: center; }
 .badge .ic { width: var(--badge); height: var(--badge); stroke-width: 2.2; }
-.tile .badge svg.ic, .btn .badge svg.ic { color: var(--ui-on-error); stroke-width: 2.2; }
-.btn .badge { box-shadow: none; flex: none; }   /* общее правило значков плитки не должно красить значок бейджа */
+.tile .badge svg.ic, .btn .badge svg.ic { color: var(--ui-error); stroke-width: 2.2; }
+.btn .badge { flex: none; }   /* общее правило значков плитки не должно красить значок бейджа */
 .slot { position: absolute; border-radius: var(--dim-radius-tile); background: var(--ui-slot-fill);
   border: 1px solid var(--ui-outline-subtle); color: var(--ui-outline);
   display: flex; align-items: center; justify-content: center; cursor: pointer; }
