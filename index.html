@@ -1441,8 +1441,10 @@ window.SEVEN_SCREENS = {
 #wzjump .wzvar { display: flex; gap: 4px; padding: 0 6px 4px; } #wzjump .wzvar button { width: auto; padding: 6px 10px; border: 1px solid #22261E1A; }
 
 /* ── Баннер в мастере: тот же компонент, что на столе ── */
-.wzbn { margin: 0 var(--dim-gutter) var(--dim-space-sm); }
-.wzbn.hint > .ic { color: var(--ui-primary-container); }
+.wzbn { margin: 0 var(--dim-gutter) var(--dim-space-sm); font-weight: 400; }
+.banner.info { background: color-mix(in srgb, var(--ui-primary-container) 14%, var(--ui-surface-card, #FCFBF7)); }
+.banner.info > .ic { color: var(--ui-primary-container); }
+.wzbn .tx { font-weight: 400; }
 /* ── Поля ввода: одна схема цветов. Эталон: экран «Цвет по значению» (заливка c-tile), рамка и фокус по токенам ──
    покой: заливка field-fill, рамка 1 px field-line (≥3:1); фокус: 2 px field-focus; ошибка: 2 px ui-error; недоступно: приглушено.
    Касается TextField, SearchField, выпадающего списка, полей «Цвет по значению» и полей в диалогах. */
@@ -1456,6 +1458,16 @@ html .dlg :is(.tf input:focus, .fld:focus-within, .dd:focus-visible) {
 html .desk > :is(.page, .form, .launcher, .sheet) :is(.tf.bad input, .tf.bad input:focus, .fld.bad, .fld.bad:focus-within),
 html .dlg :is(.tf.bad input, .tf.bad input:focus, .fld.bad, .fld.bad:focus-within) {
   border-color: transparent; box-shadow: inset 0 0 0 2px var(--ui-error); }
+html .desk > .form.tscr .dd, html .desk > .form.tscr .search3 { background: var(--field-fill); border: 0; box-shadow: inset 0 0 0 1px var(--field-line); }
+html .desk > .form.tscr .dd:focus-visible, html .desk > .form.tscr .search3:focus-within { box-shadow: inset 0 0 0 2px var(--field-focus); }
+/* подпись поля: фон под ней той же заливки, у вариантов с подписью внутри и у недоступного поля фона нет (иначе виден «пластырь») */
+html .tf span { background: var(--field-fill); }
+html .tf.m span, html .tf input:disabled + span { background: transparent; }
+/* ── Чекбокс и радио в строках .opt (согласие в мастере и др.): зелёные, как в списках настроек ── */
+.opt .mk.c, .opt .mk.r { border-color: var(--ui-primary-container); }
+.opt[aria-checked="true"] .mk.c { background: var(--ui-primary-container); }
+.opt .mk.c svg { stroke: var(--ui-on-primary-container); }
+.opt[aria-checked="true"] .mk.r::after { background: var(--ui-primary-container); }
 html .tf.bad span { color: var(--ui-error); }
 html .desk > :is(.page, .form, .launcher, .sheet) :is(.tf input:disabled, .fld:has(input:disabled)),
 html .dlg :is(.tf input:disabled) {
@@ -2891,7 +2903,7 @@ const wDlg = () => { let h = dlgHtml(); if (!h || h.includes('Значок ко�
   if (S.wEditRoom) h = h.replace('<button class="btn primary" id="dlgOk"', '<button class="btn tonal wzdel" data-go="wzdelroom">Удалить</button><button class="btn primary" id="dlgOk"');
   return h; };
 /* плашки мастера: тот же Banner, что на столе. Нет связи: янтарная (warn), ошибка: красная (err), сведение: мятная (hint) */
-const WZK = { offline: 'warn', nowan: 'warn', server: 'warn', voffline: 'warn', vserver: 'warn', saveerr: 'err', outdated: 'hint', badfile: 'err', lang: 'hint' };
+const WZK = { offline: 'warn', nowan: 'warn', server: 'warn', voffline: 'warn', vserver: 'warn', saveerr: 'err', outdated: 'info', badfile: 'err', lang: 'info' };
 const wzBanner = (k, ic, t) => `<div class="banner ${WZK[k]} wzbn" role="${WZK[k] === 'err' ? 'alert' : 'status'}">${ICON(ic)}<span class="tx">${t}</span></div>`;
 function wzResetState() { S.wLater = false; S.wHelp = false; S.wCase = ''; S.wSheetAll = ''; S.wKey = ''; S.wEmail = ''; S.wCode = ''; S.dev.wCons = false; S.wpanel = ''; S.wCustom = []; S.wSheet = ''; S.wOpen = ''; S.wEdit = ''; S.wEditRoom = ''; S.wFile = false; S.wRestored = false; Object.keys(S).filter(k => k.startsWith('wexp_') || k.startsWith('wa_')).forEach(k => delete S[k]); S.wbOn = true; S.z2mOn = true; S.wSkip = false; S.wHome = false; S.dev.g1 = S.dev.g2 = true; S.dlg = false; S.rName = ''; }
 const wRadio = (g, v, cur, label) => `<button class="gr ls wz1l" role="radio" aria-checked="${v === cur}" data-radio="${g}" data-v="${v}">${v ? `<span class="li">${ICON('r-' + roomIconFor(v))}</span>` : ''}<span class="tx"><span class="rt">${label || v}</span></span>${v && S.wCustom.includes(v) ? `<span class="wzpen" role="button" aria-label="Изменить комнату" data-go="wzeditroom:${v}">${ICON('pencil')}</span>` : ''}<span class="mk"></span></button>`;
