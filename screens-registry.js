@@ -19,6 +19,9 @@ window.SEVEN_SCREENS = {
     { id: 'ph-more',         group: 'Стол и меню', title: 'Меню «⋮» панели правки', status: 'stub', via: 'Правка → «⋮»' },
 
     { id: 'settings-voice',    group: 'Настройки', title: 'Голос и ответы', status: 'proto', via: 'Настройки → Голос и ответы' },
+    { id: 'voice-hint',        group: 'Голос (П6)', title: 'Баннер подсказки голоса', status: 'proto', via: 'Стол, после «Всё готово»' },
+    { id: 'voice-help',        group: 'Голос (П6)', title: 'Лист «Что можно сказать»', status: 'proto', via: 'Стол → значок микрофона' },
+    { id: 'voice-card',        group: 'Голос (П6)', title: 'Голосовая карточка: состояния', status: 'proto', via: 'Фраза после слова «Фиона»' },
     { id: 'settings-device',   group: 'Настройки', title: 'Экран и вид', status: 'proto', via: 'Настройки → Экран и вид' },
     { id: 'settings-data',     group: 'Настройки', title: 'Дополнительно', status: 'proto', via: 'Настройки → Дополнительно' },
     { id: 'dev-lang',          group: 'Настройки', title: 'Язык', status: 'done', via: 'Экран и вид → Язык' },

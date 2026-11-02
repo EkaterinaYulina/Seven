@@ -890,6 +890,89 @@ input::placeholder { color: var(--a11y-ph); opacity: 1; }
 .wzcd { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--ui-on-surface); }
 .wztips { margin: 0 0 12px; padding: 0 0 0 20px; font-size: var(--font-name); line-height: 22px; color: var(--c-text-secondary); } .wztips li { margin-bottom: 8px; } .wztips b { color: var(--ui-on-surface); font-weight: 600; }
 .wzhf { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 0 12px; }
+/* ── П6 голос: карточка сессии (Seven / VoiceCard), баннер подсказки, лист «Попробуйте сказать» ── */
+.vcard { position: absolute; left: var(--dim-space-sm); right: var(--dim-space-sm); bottom: var(--dim-space-sm); z-index: 7; display: none; flex-direction: column; gap: var(--dim-space-md);
+  padding: var(--dim-gutter); border-radius: 20px; background: var(--ui-surface-card); color: var(--ui-on-surface); box-shadow: 0 6px 24px #0003; }
+.desk:not(.edit):is(:not([data-screen]), [data-screen="desk"]) .vcard.show { display: flex; }
+.desk.voicing .banners { display: none !important; }
+.vcard .vh { display: flex; align-items: center; gap: var(--dim-space-sm); font-size: var(--font-name); line-height: var(--lh-name); font-weight: 500; }
+.vcard .vh .ic { flex: none; width: 20px; height: 20px; }
+.vcard .vt { font-size: 16px; line-height: 22px; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.vcard .vt2 { font-size: var(--font-name); line-height: var(--lh-name); color: var(--ui-on-surface-variant); margin-top: -4px; }
+.vcard .vrow { display: flex; gap: var(--dim-space-sm); }
+.vcard .vrow .btn { flex: 1; min-width: 0; }
+.vcard .vrow .btn:not(.primary):not(.tonal):not(.text) { border: 1px solid var(--ui-outline); }
+.vcard .vrow .btn.primary { border-color: transparent; }
+.vcard .vfoot { display: flex; align-items: center; justify-content: space-between; gap: var(--dim-space-sm); min-height: 24px; }
+.vcard .vcap { font-size: 12px; line-height: 16px; color: var(--ui-on-surface-variant); }
+.vcard .vfoot .btn.text { min-width: 0; height: var(--dim-touch-min); margin: -12px 0; padding: 0 var(--dim-space-md); font-weight: 500; }
+.vbar { height: 4px; border-radius: 2px; background: color-mix(in srgb, var(--ui-on-surface) 18%, transparent); overflow: hidden; }
+.vbar i { display: block; height: 100%; border-radius: 2px; background: var(--ui-on-surface); }
+.banner.hint { background: color-mix(in srgb, var(--ui-primary-container) 14%, var(--ui-surface-card, #FCFBF7)); }
+.banner.hint > .ic { color: var(--ui-primary-container); }
+.banner.hint .tx b { display: block; font-weight: 500; }
+.banner.hint > .btn { flex: 1 1 100%; margin-left: 0; }
+.banner.hint .tx span { display: block; color: var(--ui-on-surface-variant); }
+.banner .bx { position: relative; flex: none; width: 40px; height: 40px; margin: -6px -8px -6px 0; border: 0; background: none; color: var(--ui-on-surface); display: flex; align-items: center; justify-content: center; border-radius: 50%; cursor: pointer; }
+.banner .bx::before { content: ""; position: absolute; inset: -4px; }
+.vh-scrim { position: absolute; inset: 0; z-index: 8; background: var(--core-scrim); opacity: 0; pointer-events: none; transition: opacity .2s; }
+.vhelp { position: absolute; left: 0; right: 0; bottom: 0; z-index: 9; max-height: 96%; overflow-y: auto; background: var(--ui-surface-card); color: var(--ui-on-surface);
+  border-radius: var(--dim-radius-sheet) var(--dim-radius-sheet) 0 0; padding: 0 var(--dim-gutter) var(--dim-gutter); transform: translateY(100%); transition: transform .22s ease; visibility: hidden; }
+.desk.vhelp-open .vh-scrim { opacity: 1; pointer-events: auto; }
+.desk.vhelp-open .vhelp { transform: none; visibility: visible; }
+.vhelp .hd { display: grid; grid-template-columns: 1fr var(--dim-touch-min); align-items: center; min-height: var(--dim-touch-min); }
+.vhelp .hd .t { font-size: 20px; line-height: 24px; font-weight: 500; }
+.vhelp .hd .x { width: var(--dim-touch-min); height: var(--dim-touch-min); border: 0; background: none; color: inherit; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.vhelp .exs { display: flex; flex-wrap: wrap; gap: var(--dim-space-sm); }
+.vhelp .ex { display: inline-flex; align-items: center; gap: var(--dim-space-sm); min-height: var(--dim-touch-min); padding: 0 var(--dim-gutter) 0 var(--dim-space-md); border: 0; border-radius: 24px; background: color-mix(in srgb, var(--ui-on-surface) 7%, transparent); color: inherit; font: inherit; font-size: 16px; line-height: 22px; text-align: left; cursor: pointer; }
+  background: color-mix(in srgb, var(--ui-on-surface) 6%, transparent); color: inherit; font: inherit; font-size: 16px; line-height: 22px; text-align: left; cursor: pointer; }
+.vhelp .ex .ic { flex: none; width: 18px; height: 18px; color: var(--ui-primary-container); }
+.vhelp .ex:active { background: color-mix(in srgb, var(--ui-on-surface) 14%, transparent); }
+.vhelp .em { margin: var(--dim-space-sm) 0 var(--dim-space-md); font-size: 16px; line-height: 22px; }
+.vhelp .vrow { display: flex; gap: var(--dim-space-sm); }
+.vhelp .vrow .btn { flex: 1; min-width: 0; }
+
+#vsjump { position: fixed; top: 56px; left: 12px; z-index: 50; width: 252px; max-height: calc(100vh - 68px); overflow: auto; background: #FCFBF7; border: 1px solid #22261E1A; border-radius: 12px; padding: 8px 8px 10px; font: 13px/1.3 Inter, system-ui, sans-serif; color: #22261E; box-shadow: 0 4px 16px #0002; }
+#vsjump summary { cursor: pointer; font-weight: 600; padding: 4px 6px; }
+#vsjump .wzjt { margin: 10px 6px 4px; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: #787B6E; }
+#vsjump button { display: block; width: 100%; text-align: left; padding: 7px 8px; border-radius: 8px; font: inherit; cursor: pointer; } #vsjump button:hover { background: #2F7D5B1A; }
+#vsjump button[aria-pressed="true"] { background: #22261E; color: #FCFBF7; }
+#vsjump .vsn { margin: 6px 0 4px; padding: 8px 10px; border-radius: 10px; background: #2F7D5B14; }
+#vsjump .vsn b { display: block; font-weight: 600; margin-bottom: 2px; } #vsjump .vsn span { display: block; color: #4B4E44; }
+#vsjump .vsnav { display: flex; gap: 4px; margin-bottom: 2px; } #vsjump .vsnav button { width: auto; flex: 1; text-align: center; border: 1px solid #22261E1A; padding: 6px 4px; }
+.vempty { position: absolute; left: 0; right: 0; top: var(--dim-top-strip); bottom: 150px; z-index: 2; display: none; flex-direction: column; align-items: center; justify-content: center; gap: var(--dim-space-md); padding: var(--dim-gutter); text-align: center; color: var(--ui-on-surface); }
+.vempty .eic { display: flex; width: 56px; height: 56px; align-items: center; justify-content: center; border-radius: 50%; background: color-mix(in srgb, var(--ui-on-surface) 8%, transparent); }
+.vempty b { font-size: 20px; line-height: 24px; font-weight: 500; } .vempty span { color: var(--ui-on-surface-variant); }
+.desk.nodev:not(.edit) .grid, .desk.nodev:not(.edit) .dots-pager { visibility: hidden; }
+.desk.narrow .vempty .eic, .desk.narrow .vempty span, .desk.narrow .vempty .btn { display: none; }
+.desk.nodev:not(.edit):is(:not([data-screen]), [data-screen="desk"]) .vempty { display: flex; }
+.vhelp .hd { position: sticky; top: 0; z-index: 1; background: var(--ui-surface-card); padding-top: var(--dim-space-sm); box-sizing: content-box; }
+#sidecol { position: fixed; top: 12px; right: 12px; z-index: 50; width: 220px; max-height: calc(100vh - 24px); display: flex; flex-direction: column; gap: 8px; }
+#sidecol > details { position: static; width: auto; max-height: none; flex: 0 1 auto; min-height: 0; }
+#sidecol > details:not([open]) { flex-shrink: 0; }
+.vhelp .mfoot { display: flex; justify-content: center; margin-top: var(--dim-space-sm); position: sticky; bottom: calc(-1 * var(--dim-gutter)); padding-bottom: var(--dim-space-sm); background: var(--ui-surface-card); z-index: 1; }
+.vhelp .ftxt span.hw { color: var(--ui-on-surface); font-weight: 500; }
+.vhelp .mfoot .btn.text { min-width: 0; color: var(--ui-on-surface-variant); }
+.vhelp .vh2 { margin: var(--dim-space-sm) 0 var(--dim-space-xs, 4px); font-size: var(--font-name); line-height: var(--lh-name); font-weight: 500; color: var(--ui-on-surface-variant); }
+.vhelp .fstage { display: flex; flex-direction: column; align-items: center; text-align: center; padding-top: var(--dim-space-sm); }
+.vhelp .vfm { --lvl: 0; position: relative; width: 104px; height: 104px; display: flex; align-items: center; justify-content: center; }
+.vhelp .vfm .wv, .vhelp .vfm .rip, .vhelp .vfm .disc { position: absolute; left: 50%; top: 50%; border-radius: 50%; }
+.vhelp .vfm .wv { width: 64px; height: 64px; margin: -32px 0 0 -32px; border: 2px solid color-mix(in srgb, var(--ui-primary-container) 45%, transparent); animation: vwave 2.6s ease-out infinite; }
+.vhelp .vfm .wv.w2 { animation-delay: 1.3s; }
+@keyframes vwave { 0% { transform: scale(1); opacity: .8; } 100% { transform: scale(1.75); opacity: 0; } }
+.vhelp .vfm .rip { width: 64px; height: 64px; margin: -32px 0 0 -32px; background: color-mix(in srgb, var(--ui-primary-container) 20%, transparent); transform: scale(calc(1.12 + var(--lvl) * .55)); transition: transform .08s linear; }
+.vhelp .vfm .rip.r2 { background: color-mix(in srgb, var(--ui-primary-container) 11%, transparent); transform: scale(calc(1.3 + var(--lvl) * .45)); }
+.vhelp .vfm .disc { width: 64px; height: 64px; margin: -32px 0 0 -32px; background: color-mix(in srgb, var(--ui-primary-container) 18%, var(--ui-surface-card)); display: flex; align-items: center; justify-content: center; }
+.vhelp .vfm .flogo { width: 32px; height: 35px; transform: scale(calc(1 + var(--lvl) * .1)); transition: transform .08s linear; }
+.vhelp .flogo .fi { width: 100%; height: 100%; overflow: visible; }
+.vhelp .flogo .fi path { stroke: var(--ui-primary-container); stroke-width: 32; }
+.vhelp .vfm.vfm-off .wv, .vhelp .vfm.vfm-off .rip { display: none; }
+.vhelp .vfm.vfm-off .disc { background: color-mix(in srgb, var(--ui-on-surface) 8%, transparent); }
+.vhelp .vfm.vfm-off .flogo .fi path { stroke: var(--ui-on-surface-variant); opacity: .55; }
+.vhelp .ftxt b { display: block; font-size: 20px; line-height: 24px; font-weight: 500; }
+.vhelp .ftxt span { display: block; margin-top: 2px; color: var(--ui-on-surface-variant); font-size: var(--font-name); line-height: var(--lh-name); }
+.vhelp .fstage + .vrow { margin-top: var(--dim-space-md); }
+@media (prefers-reduced-motion: reduce) { .vhelp .vfm .wv { animation: none; opacity: .35; } }
 </style>
 <style id="map-css">
 /* Карта экранов и бейдж статуса: вспомогательные части прототипа, не часть продукта */
@@ -957,6 +1040,9 @@ window.SEVEN_SCREENS = {
     { id: 'ph-more',         group: 'Стол и меню', title: 'Меню «⋮» панели правки', status: 'stub', via: 'Правка → «⋮»' },
 
     { id: 'settings-voice',    group: 'Настройки', title: 'Голос и ответы', status: 'proto', via: 'Настройки → Голос и ответы' },
+    { id: 'voice-hint',        group: 'Голос (П6)', title: 'Баннер подсказки голоса', status: 'proto', via: 'Стол, после «Всё готово»' },
+    { id: 'voice-help',        group: 'Голос (П6)', title: 'Лист «Фиона»', status: 'proto', via: 'Стол → значок микрофона в верхней полосе' },
+    { id: 'voice-card',        group: 'Голос (П6)', title: 'Голосовая карточка: состояния', status: 'proto', via: 'Фраза после слова «Фиона»' },
     { id: 'settings-device',   group: 'Настройки', title: 'Экран и вид', status: 'proto', via: 'Настройки → Экран и вид' },
     { id: 'settings-data',     group: 'Настройки', title: 'Дополнительно', status: 'proto', via: 'Настройки → Дополнительно' },
     { id: 'dev-lang',          group: 'Настройки', title: 'Язык', status: 'done', via: 'Экран и вид → Язык' },
@@ -1446,7 +1532,7 @@ window.SEVEN_SCREENS = {
         <div class="room">Гостиная</div>
         <div class="spacer"></div>
         <div class="time">21:39</div>
-        <div class="hit" aria-label="Микрофон">
+        <div class="hit" aria-label="Фиона">
           <div class="mic" id="mic" data-state="off"><svg class="ic"><use href="#i-mic"/></svg></div>
         </div>
       </div>
@@ -1456,6 +1542,11 @@ window.SEVEN_SCREENS = {
       <div class="dots-pager" id="pager" aria-label="Экран 1 из 4"></div>
       <!-- Баннеры внизу стола (Main): предупреждения с действием -->
       <div class="banners" id="banners" role="region" aria-label="Предупреждения"></div>
+      <!-- Голосовая карточка (Seven / VoiceCard), лист «Попробуйте сказать» -->
+      <div class="vcard" id="vcard" role="status" aria-live="polite"></div>
+      <div class="vempty" id="vempty"><i class="eic"><svg class="ic"><use href="#i-devices"/></svg></i><b>Устройств пока нет</b><span>Подключите умный дом, и они появятся здесь</span><button class="btn primary" data-vh="connect">Подключить устройства</button></div>
+      <div class="vh-scrim"></div>
+      <div class="vhelp" id="vhelp" role="dialog" aria-label="Фиона"></div>
 
       <!-- Боковое меню -->
       <div class="scrim" id="scrim"></div>
@@ -2334,14 +2425,14 @@ function drawDrawer() {
 }
 /* баннеры внизу стола: что случилось и что нажать */
 const BANNERS = {
-  mic: ['err', 'Seven не слушает: нет доступа к микрофону', 'Разрешить', 'Откроется системный запрос доступа к микрофону.'],
+  mic: ['err', 'Фиона не слушает: нет доступа к микрофону', 'Разрешить', 'Откроется системный запрос доступа к микрофону.'],
   safe: ['err', 'Безопасный режим: несколько падений подряд. Прослушивание отключено', 'Включить прослушивание', 'Прослушивание включено.'],
   ctrl: ['warn', 'Нет связи с контроллерами 12 мин, проверьте сеть', 'Открыть настройки Wi-Fi', 'Откроются системные настройки Wi-Fi. В этот прототип не входят.'],
   broker: ['warn', 'Брокер «Wirenboard гостиная» недоступен', '', '']
 };
 state.banners = state.banners || [];
 function drawBanners() {
-  $('#banners').innerHTML = state.banners.map(k => { const [c, t, b] = BANNERS[k];
+  $('#banners').innerHTML = vHintHTML() + state.banners.map(k => { const [c, t, b] = BANNERS[k];
     return b ? `<div class="banner ${c}">${ICON('alert')}<span class="tx">${t}</span><button class="btn primary" data-bn="${k}">${b}</button></div>`
       : `<button class="banner ${c}" data-bn="${k}">${ICON('alert')}<span class="tx">${t}</span>${ICON('chev')}</button>`; }).join('');
 }
@@ -2351,6 +2442,274 @@ $('#banners').addEventListener('click', e => {
   if (k !== 'ctrl') { state.banners = state.banners.filter(x => x !== k); drawBanners(); }
   note(BANNERS[k][3]);
 });
+/* ───────── П6 «Сказать первую команду голосом»: карточка сессии, подсказка, лист «Попробуйте сказать» ─────────
+   Источник поведения: claude/voice-first-command-spec.md (проект «Seven assistant»). Тексты без точки в конце. */
+const V = { hw: 'a1', sel: '', timers: [], cd: null };
+/* что человек может сказать: фраза, понятая команда, итог */
+const VEX = {
+  on:   { say: 'включи свет',       under: 'Гостиная · свет · включить',      done: 'Свет в гостиной включён' },
+  off:  { say: 'выключи свет',      under: 'Гостиная · свет · выключить',     done: 'Свет в гостиной выключен' },
+  open: { say: 'открой шторы',      under: 'Гостиная · шторы · открыть',      done: 'Шторы в гостиной открыты' },
+  temp: { say: 'какая температура', under: 'Гостиная · температура · узнать', done: 'В гостиной 22 °C', q: true },
+  kino: { say: 'запусти кино',      under: 'Сценарий «Кино» · запустить',     done: 'Сценарий «Кино» запущен' }
+};
+/* варианты оборудования: А1, А2, А3 и Б из спецификации */
+const VHW = {
+  a1:  ['А1 · Свет, датчик, сценарий', ['on', 'off', 'temp', 'kino']],
+  a2s: ['А2 · Только шторы', ['open']],
+  a2t: ['А2 · Только датчик температуры', ['temp']],
+  a3:  ['А3 · Технические названия (K1)', ['on']],
+  b:   ['Б · Устройств нет', []]
+};
+const vPhrase = k => 'Фиона, ' + VEX[k].say + (VEX[k].q ? '?' : '');
+const vFirst = () => VHW[V.hw][1][0] || null;
+/* пример для карточек «Не расслышала» и «Не нашла»: тот же, что в подсказке (раздел 5 спецификации) */
+const vExample = () => vFirst() ? vPhrase(vFirst()) : null;
+function vStopCd() { clearInterval(V.cd); V.cd = null; }
+function vClearAll() { V.timers.forEach(clearTimeout); V.timers = []; V.hear = false; vStopCd(); }
+function vcHTML(k, o = {}) {
+  const H = (ic, t) => `<div class="vh">${ICON(ic)}<span>${t}</span></div>`;
+  const T = (a, b) => `<div class="vt">${a}</div>` + (b ? `<div class="vt2">${b}</div>` : '');
+  const btn = (cls, act, t) => `<button class="btn ${cls}" data-vc="${act}">${t}</button>`;
+  const row = (...b) => `<div class="vrow">${b.join('')}</div>`;
+  const cd = (cap, pct) => `<div class="vfoot"><span class="vcap">${cap}</span></div><div class="vbar"><i style="width:${pct}%"></i></div>`;
+  const ex = vExample();
+  switch (k) {
+    case 'listen': return H('mic', 'Слушаю') + T(o.text || 'Включи свет на кухне');
+    case 'proc':   return H('clock', 'Обрабатываю') + T(o.text || 'Кухня · свет · включить');
+    case 'done':   return H('check', 'Выполнено') + T(o.text || 'Свет на кухне включён') +
+      `<div class="vfoot"><span class="vcap">Можно отменить ещё ${o.n ?? 5} с</span>${btn('text', 'undo', 'Отменить')}</div><div class="vbar"><i style="width:${o.pct ?? 60}%"></i></div>`;
+    case 'answer': return H('info', 'Отвечаю') + T(o.text || 'В гостиной 22 °C');
+    case 'choice': return H('info', 'В какой комнате?') + T(o.text || 'Включи торшер') +
+      row(btn('', 'room:Гостиная', 'Гостиная'), btn('', 'room:Спальня', 'Спальня')) + cd(`До отмены · ${o.n ?? 8} с`, o.pct ?? 75);
+    case 'conf':   return H('info', 'Нужно подтверждение') + T('Выключить все устройства в гостиной?') +
+      row(btn('primary', 'yes', 'Да'), btn('', 'no', 'Нет')) + cd(`До отмены · ${o.n ?? 8} с`, o.pct ?? 75);
+    case 'nh1':    return H('alert', 'Не расслышала') + T('Повторите, пожалуйста') + row(btn('tonal', 'repeat', 'Повторить'));
+    case 'nh2':    return H('alert', 'Не расслышала') + T(ex ? 'Попробуйте так: ' + ex : 'Скажите «Фиона» и любую фразу') + row(btn('tonal', 'repeat', 'Повторить'));
+    case 'nfa':    return H('alert', 'Не нашла в этой комнате') + T('В комнате «Кухня» нет света') + row(btn('primary', 'add', 'Добавить устройство'));
+    case 'nfb':    return H('alert', 'Не нашла в этой комнате') + T('В комнате «Кухня» нет света', 'Свет есть в другой комнате') + row(btn('primary', 'open', 'Открыть устройства'));
+    case 'nfc':    return H('alert', 'Не нашла такое устройство') + T(ex ? 'Например: ' + ex : 'Подключите устройства, и я начну управлять') + row(btn('tonal', ex ? 'say' : 'connect', ex ? 'Попробуйте сказать' : 'Подключить устройства'));
+    case 'mc':     return H('mic', 'Я услышала') + T('«' + (o.text || 'Как меня слышно') + '»', 'Устройств пока нет, подключите их, и я начну управлять') + row(btn('primary', 'connect', 'Подключить устройства'));
+    case 'err':    return H('alert', 'Не удалось выполнить') + T('Нет связи со светом на кухне. Проверьте подключение');
+  }
+  return '';
+}
+function showVoice(k, o = {}, live = false) {
+  vStopCd();
+  const el = $('#vcard'); el.innerHTML = vcHTML(k, o); el.dataset.k = k; el.classList.add('show'); desk.classList.add('voicing');
+  if (k === 'done' && live) { V.cnt++; if (V.cnt >= 3) V.exp = true; }
+  if (live && (k === 'done' || k === 'choice' || k === 'conf')) vCountdown(k);
+}
+function hideVoice() {
+  vStopCd(); const el = $('#vcard'); el.classList.remove('show'); el.innerHTML = ''; desk.classList.remove('voicing');
+  if (V.sel !== 'hint' && V.sel !== 'sheet') V.sel = '';
+  syncControls();
+}
+function vCountdown(k) {
+  const sec = k === 'done' ? 5 : 8, el = $('#vcard'), cap = el.querySelector('.vcap'), bar = el.querySelector('.vbar i'); let n = sec;
+  const label = m => k === 'done' ? `Можно отменить ещё ${m} с` : `До отмены · ${m} с`;
+  cap.textContent = label(n); bar.style.transition = 'none'; bar.style.width = '100%'; bar.getBoundingClientRect();
+  bar.style.transition = `width ${sec}s linear`; bar.style.width = '0%';
+  V.cd = setInterval(() => { n--; if (n <= 0) { vStopCd(); hideVoice(); } else cap.textContent = label(n); }, 1000);
+}
+/* путь целиком: слушаю (слова появляются по одному) → обрабатываю (понятая команда) → выполнено */
+function vRun(key) {
+  const ex = VEX[key], words = (ex.say.charAt(0).toUpperCase() + ex.say.slice(1)).split(' '); let i = 0;
+  const inSheet = desk.classList.contains('vhelp-open') && vMs() === 'on'; vClearAll();
+  const tx = inSheet ? $('#vhelp .ftxt') : null; if (!inSheet) closeVHelp();
+  const done = () => { showVoice('proc', { text: ex.under });
+    V.timers.push(setTimeout(() => showVoice(ex.q ? 'answer' : 'done', { text: ex.done }, !ex.q), 1400)); };
+  const step = () => {
+    i++; const t = words.slice(0, i).join(' ');
+    if (tx) { V.hear = true; tx.innerHTML = `<b>Слышу вас</b><span class="hw">${t}</span>`; } else showVoice('listen', { text: t });
+    if (i < words.length) V.timers.push(setTimeout(step, 320));
+    else V.timers.push(setTimeout(tx ? () => { closeVHelp(); done(); } : done, 800));
+  };
+  step();
+}
+/* сценарий Б: проверка микрофона, ничего не исполняется */
+function vRunMc() {
+  const w = 'Как меня слышно'.split(' '); let i = 0; vClearAll(); closeVHelp();
+  const step = () => { i++; showVoice('listen', { text: w.slice(0, i).join(' ') });
+    if (i < w.length) V.timers.push(setTimeout(step, 320)); else V.timers.push(setTimeout(() => showVoice('mc', { text: w.join(' ') }), 800)); };
+  step();
+}
+function vConnect() { vClearAll(); hideVoice(); closeVHelp(); S.ctrl = ''; goPage('add-controller', false); }
+$('#vcard').addEventListener('click', e => {
+  const b = e.target.closest('[data-vc]'); if (!b) return; const a = b.dataset.vc;
+  if (a === 'undo') { vClearAll(); hideVoice(); return note('Действие отменено, свет вернулся в прежнее состояние'); }
+  if (a === 'no') { vClearAll(); hideVoice(); return note('Команда не выполнена'); }
+  if (a === 'yes') { vClearAll(); showVoice('proc', { text: 'Гостиная · все устройства · выключить' });
+    return void V.timers.push(setTimeout(() => showVoice('done', { text: 'Все устройства в гостиной выключены' }, true), 1200)); }
+  if (a.startsWith('room:')) { const r = a.slice(5), loc = { 'Гостиная': 'гостиной', 'Спальня': 'спальне' }[r]; vClearAll(); showVoice('proc', { text: r + ' · торшер · включить' });
+    return void V.timers.push(setTimeout(() => showVoice('done', { text: 'Торшер в ' + loc + ' включён' }, true), 1200)); }
+  if (a === 'repeat') return vFirst() ? vRun(vFirst()) : vRunMc();
+  if (a === 'add' || a === 'connect') return vConnect();
+  if (a === 'open') { vClearAll(); hideVoice(); S.cct = 'dev'; return goPage('cc', false); }
+  if (a === 'say') { vClearAll(); hideVoice(); V.ms = 'on'; return openVHelp({ hints: true }); }
+});
+/* баннер подсказки: после «Всё готово», один раз */
+function vHintHTML() {
+  if (!state.vhint || state.mic === 'no-permission') return '';
+  const close = `<button class="bx" data-vh="close" aria-label="Закрыть">${ICON('close')}</button>`;
+  if (state.vhint === 'mic') return `<div class="banner hint">${ICON('mic')}<span class="tx"><b>Проверим, как Фиона вас слышит</b><span>Скажите «Фиона» и любую фразу, я покажу, как вас услышала</span></span>${close}<button class="btn primary" data-vh="connect">Подключить устройства</button></div>`;
+  const f = vFirst() || 'on';
+  return `<div class="banner hint">${ICON('mic')}<span class="tx"><b>Управляйте домом голосом</b><span>Скажите: ${vPhrase(f)}</span></span>${close}</div>`;
+}
+$('#banners').addEventListener('click', e => {
+  const b = e.target.closest('[data-vh]'); if (!b) return;
+  if (b.dataset.vh === 'close') { state.vhint = ''; if (V.sel === 'hint') V.sel = ''; drawBanners(); syncControls(); }
+  if (b.dataset.vh === 'connect') vConnect();
+});
+/* лист «Попробуйте сказать»: только то, что сработает сейчас */
+/* лист микрофона: сначала состояние («слушает» или «не слышит»), примеры только новичку */
+Object.assign(V, { ms: 'on', exp: false, cnt: 0, force: false });
+const vMs = () => state.mic === 'no-permission' ? 'denied' : S.quiet ? 'off' : V.ms;
+const VWHY = { off: 'Включите слушание, чтобы управлять голосом', denied: 'Нет доступа к микрофону. Разрешите его в настройках системы', safe: 'Приложение несколько раз остановилось, поэтому слушание отключено', quiet: 'Сейчас тихие часы, они закончатся в 07:00' };
+const VBTN = { off: ['Включить слушание', 'micon'], denied: ['Разрешить', 'allow'], safe: ['Включить слушание', 'safeon'], quiet: ['Включить сейчас', 'quietoff'] };
+function vMicIcon() {
+  const m = $('#mic'), ms = vMs(), open = desk.classList.contains('vhelp-open');
+  m.dataset.state = (ms === 'denied' || ms === 'safe') ? 'no-permission' : (ms === 'on' && (open || state.mic === 'listening')) ? 'listening' : 'off';
+  if (ms === 'off' || ms === 'quiet') m.dataset.muted = 'true'; else m.removeAttribute('data-muted');
+}
+/* уровень звука: в прототипе имитация, в приложении берётся с микрофона (не чаще 15 раз в секунду, процессор слабый) */
+let vLvlT = null, vLvlV = 0;
+function vLvlStop() { clearInterval(vLvlT); vLvlT = null; }
+function vLvlStart() {
+  vLvlStop(); const el = $('#vhelp .vfm'); if (!el || matchMedia('(prefers-reduced-motion: reduce)').matches) return; let t = 0;
+  vLvlT = setInterval(() => { t += 66; const tg = Math.max(0, Math.min(1, (V.hear ? .55 : .3) + .5 * Math.sin(t / 380) * Math.sin(t / 1300) + Math.random() * .3 - .15)); vLvlV += (tg - vLvlV) * .5; el.style.setProperty('--lvl', vLvlV.toFixed(2)); }, 66);
+}
+function vHintsHTML() {
+  const ids = VHW[V.hw][1];
+  if (!ids.length) return `<p class="em">Подключите устройства, и здесь появятся примеры</p><div class="vrow"><button class="btn tonal" data-vh="mc">Проверить микрофон</button><button class="btn primary" data-vh="connect">Подключить устройства</button></div>`;
+  if (V.exp && !V.force) return '';
+  return `<div class="vh2">Попробуйте сказать</div><div class="exs">${ids.slice(0, V.force ? 4 : 3).map(k => `<button class="ex" data-vh="run:${k}">${ICON('mic')}<span>${vPhrase(k)}</span></button>`).join('')}</div>`;
+}
+function drawVHelp() {
+  const ms = vMs(), close = `<button class="x" data-vh="close" aria-label="Закрыть">${ICON('close')}</button>`;
+  const mark = on => `<div class="vfm${on ? '' : ' vfm-off'}"><i class="wv"></i><i class="wv w2"></i><i class="rip"></i><i class="rip r2"></i><div class="disc"><div class="flogo">${FIONA}</div></div></div>`;
+  let h = `<div class="hd"><div class="t">Фиона</div>${close}</div>`;
+  if (ms === 'on') {
+    h += `<div class="fstage">${mark(true)}<div class="ftxt"><b>Фиона слушает</b><span>${S.listen === 'always' ? 'Говорите команду' : 'Скажите «Фиона» и команду'}</span></div></div>` +
+      vHintsHTML() + `<div class="mfoot"><button class="btn text" data-vh="micoffbtn">Перестать слушать</button></div>`;
+  } else {
+    h += `<div class="fstage">${mark(false)}<div class="ftxt"><b>Фиона не слушает</b><span>${VWHY[ms]}</span></div></div><div class="vrow"><button class="btn primary" data-vh="${VBTN[ms][1]}">${VBTN[ms][0]}</button></div>`;
+  }
+  $('#vhelp').innerHTML = h;
+  ms === 'on' ? vLvlStart() : vLvlStop();
+}
+function openVHelp(o) { if (state.screen !== 'desk' || state.edit) return; vClearAll(); hideVoice(); V.force = !!(o && o.hints); drawVHelp(); desk.classList.add('vhelp-open'); vMicIcon(); }
+function closeVHelp() { desk.classList.remove('vhelp-open'); V.force = false; V.hear = false; vLvlStop(); vMicIcon(); if (V.sel === 'sheet') { V.sel = ''; syncControls(); } }
+$('#vhelp').addEventListener('click', e => {
+  const b = e.target.closest('[data-vh]'); if (!b) return; const a = b.dataset.vh;
+  if (a === 'close') return closeVHelp();
+  if (a === 'connect') return vConnect();
+  if (a === 'mc') return vRunMc();
+  const mic = (ms, msg) => { if (S.quiet) setQuiet(false); V.ms = ms; if (state.mic === 'no-permission') { state.mic = 'off'; } drawVHelp(); vMicIcon(); note(msg); };
+  if (a === 'micon') return mic('on', 'Фиона слушает');
+  if (a === 'allow') return mic('on', 'Откроется системный запрос доступа. В прототипе доступ сразу разрешён');
+  if (a === 'safeon') return mic('on', 'Прослушивание включено');
+  if (a === 'quietoff') return mic('on', 'Тихие часы отключены до завтра');
+  if (a === 'micoffbtn') return mic('off', 'Фиона не слушает');
+  if (a.startsWith('run:')) { note('В прототипе нажатие на пример запускает путь: слушаю, поняла, выполнено'); return vRun(a.slice(4)); }
+});
+$('.vh-scrim').addEventListener('click', closeVHelp);
+{ const mh = $('#mic').closest('.hit'); mh.setAttribute('aria-label', 'Фиона'); mh.addEventListener('click', () => openVHelp()); }
+/* панель справа: выбрать состояние */
+function vSet(v) {
+  vClearAll(); closeVHelp(); hideVoice(); state.vhint = '';
+  if (state.edit) setEdit(false); if (state.screen !== 'desk') setScreen('desk');
+  V.sel = v;
+  if (v === 'hint') state.vhint = V.hw === 'b' ? 'mic' : 'ctl';
+  else if (v === 'sheet') openVHelp();
+  else if (v === 'run') V.hw === 'b' ? vRunMc() : vRun(vFirst());
+  else showVoice(v);
+  if (v === 'sheet') V.sel = 'sheet';
+  drawBanners(); syncControls();
+}
+function vSetHw(v) {
+  V.hw = v; desk.classList.toggle('nodev', v === 'b'); const was = V.sel; if (state.screen !== 'desk') setScreen('desk');
+  if (was === 'hint' || was === 'sheet' || was === 'nh2' || was === 'nfc' || was === 'run') vSet(was === 'run' ? 'run' : was); else drawBanners();
+}
+
+/* ───────── П6: панель «Первый опыт с голосом» (по образцу «Сценариев мастера») ───────── */
+function vFinishWizard(hw) {
+  vClearAll(); closeVHelp(); hideVoice();
+  V.hw = hw || (S.wSkip ? 'b' : 'a1'); state.mic = 'off'; V.ms = 'on'; V.cnt = 0; V.exp = false; vMicIcon(); state.banners = [];
+  desk.classList.toggle('nodev', V.hw === 'b');
+  state.vhint = V.hw === 'b' ? 'mic' : 'ctl'; V.sel = 'hint';
+  if (state.edit) setEdit(false); setScreen('desk'); drawBanners(); syncControls();
+}
+$('#vempty').addEventListener('click', e => { if (e.target.closest('[data-vh="connect"]')) vConnect(); });
+function vReset(hw) {
+  vClearAll(); closeVHelp(); hideVoice(); state.vhint = ''; state.banners = []; state.mic = 'off'; V.ms = 'on'; vMicIcon(); V.sel = '';
+  if (hw) V.hw = hw; desk.classList.toggle('nodev', V.hw === 'b');
+  if (state.edit) setEdit(false); setScreen('desk'); drawBanners(); syncControls();
+}
+const vStage = (hw, k, o, live) => { vReset(hw); showVoice(k, o, live); };
+const VSG = [
+  ['Основной путь после мастера', [
+    ['m1', '1. Мастер закончился', 'Последний экран «Всё готово». Человек нажимает «Открыть мой дом»', () => { vReset('a1'); wzJump('done'); }],
+    ['m2', '2. Открылся стол', 'Внизу баннер «Управляйте домом голосом» с примером. Показывается один раз, закрывается ×. Вверху остаётся значок микрофона', () => vFinishWizard('a1')],
+    ['m3', '3. Нажать на значок', 'Лист «Фиона». Сначала состояние: Фиона слушает, вокруг логотипа волны. Новичку ниже примеры, нажатие на пример запускает путь', () => { vFinishWizard('a1'); state.vhint = ''; V.sel = 'sheet'; drawBanners(); openVHelp(); V.sel = 'sheet'; syncControls(); }],
+    ['m4', '4. Сказать команду', 'Слово «Фиона» принято, слова появляются на карточке по мере речи. Состояние «Слушаю» (S1)', () => vStage('a1', 'listen', { text: 'Включи свет' })],
+    ['m5', '5. Фиона поняла', 'Слова заменились понятой командой: комната, устройство, действие. Человек видит, что именно будет сделано (S2)', () => vStage('a1', 'proc', { text: 'Гостиная · свет · включить' })],
+    ['m6', '6. Готово', 'Свет включён. Пять секунд можно отменить (S3)', () => vStage('a1', 'done', { text: 'Свет в гостиной включён' }, true)],
+    ['m7', '7. Что осталось на столе', 'Карточка закрылась, баннер подсказки больше не показывается. Значок микрофона остаётся входом в «Попробуйте сказать»', () => vReset('a1')]
+  ]],
+  ['Лист «Фиона»', [
+    ['s1', 'Слушает, новичок', 'Сверху «Фиона слушает» и логотип с волнами: человек видит, что его слышат. Ниже «Попробуйте сказать» с примерами', () => { vReset('a1'); V.exp = false; openVHelp(); }],
+    ['s2', 'Слушает, опытный пользователь', 'После трёх удачных команд примеры не нужны. Остаётся только состояние', () => { vReset('a1'); V.exp = true; openVHelp(); }],
+    ['s3', 'Фиона не слушает', '«Фиона не слушает». Подсказок нет. Кнопка «Включить слушание» сразу включает его, и лист меняется на «слушает». То же состояние, что у плитки «Фиона» в шторке', () => { vReset('a1'); V.ms = 'off'; openVHelp(); }],
+    ['s4', 'Нет доступа к микрофону', 'Доступ не разрешён в системе. Кнопка «Разрешить» откроет системный запрос', () => { vReset('a1'); state.mic = 'no-permission'; openVHelp(); }],
+    ['s5', 'Безопасный режим', 'Слушание отключено после нескольких падений подряд. Кнопка «Включить слушание»', () => { vReset('a1'); V.ms = 'safe'; openVHelp(); }],
+    ['s6', 'Тихие часы', 'В тихие часы Фиона не слушает, как при выключенном слушании. Кнопка «Включить сейчас»', () => { vReset('a1'); V.ms = 'quiet'; openVHelp(); }]
+  ]],
+  ['Что подключено', [
+    ['c1', 'Есть свет (А1)', 'Свет в комнате панели. Пример в баннере: «Фиона, включи свет». В листе до четырёх примеров: свет, датчик, сценарий', () => vFinishWizard('a1')],
+    ['c2', 'Только шторы (А2)', 'Света нет, есть шторы. Пример берётся из того, что есть: «Фиона, открой шторы»', () => vFinishWizard('a2s')],
+    ['c3', 'Только датчик температуры (А2)', 'Управлять нечем, но можно спросить: «Фиона, какая температура?»', () => vFinishWizard('a2t')],
+    ['c4', 'Названия вроде K1 (А3)', 'Технические названия в примерах не показываются. Пример общий: «Фиона, включи свет»', () => vFinishWizard('a3')],
+    ['c5', 'Устройств нет (Б)', 'На столе «Устройств пока нет». Баннер «Проверим, как Фиона вас слышит»: нажмите на микрофон, затем «Проверить микрофон», и появится карточка «Я услышала»', () => vFinishWizard('b')],
+    ['c6', 'Устройств нет, потом подключили (Б→А)', 'Через пару секунд появится первое устройство: баннер проверки сменится баннером подсказки управления', () => { vFinishWizard('b'); V.timers.push(setTimeout(() => { vFinishWizard('a1'); vsCap('Подключили первое устройство', 'Баннер подсказки управления показывается один раз после появления первого управляемого свойства'); }, 2600)); }],
+    ['c7', 'Нет доступа: баннер на столе', 'Подсказок и проверки нет: сначала нужен доступ. Показывается обычный баннер «Нет доступа к микрофону»', () => { vReset('a1'); state.mic = 'no-permission'; $('#mic').dataset.state = 'no-permission'; state.banners = ['mic']; drawBanners(); }]
+  ]],
+  ['Если не вышло', [
+    ['f1', 'Не расслышала, 1-й раз', 'Слово «Фиона» было, дальше тишина или шум. Короткий ответ и кнопка «Повторить» (S5)', () => vStage('a1', 'nh1')],
+    ['f2', 'Не расслышала, 2-й раз', 'Второй раз к ответу добавляется пример из подсказки (S5)', () => vStage('a1', 'nh2')],
+    ['f3', 'Не расслышала, 3-й раз подряд', 'После третьей ошибки подряд карточка закрывается. Пример остаётся в «Попробуйте сказать»', () => { vStage('a1', 'nh2'); V.timers.push(setTimeout(() => { hideVoice(); vsCap('Карточка закрылась', 'Больше не переспрашиваем: пример остаётся в «Попробуйте сказать» по значку микрофона'); }, 2200)); }],
+    ['f4', 'Нет такого устройства: нет в доме', 'Комната найдена, света нет нигде. Кнопка «Добавить устройство» запускает мастер добавления оборудования (S6a)', () => vStage('a1', 'nfa')],
+    ['f5', 'Нет такого устройства: есть в другой комнате', 'Свет есть, но в другой комнате или без комнаты. Кнопка «Открыть устройства», там меняется «Место размещения» (S6b)', () => vStage('a1', 'nfb')],
+    ['f6', 'Нет такого устройства: ничего не найдено', 'Не нашли ни комнату, ни устройство. Пример и кнопка «Попробуйте сказать» (S6c)', () => vStage('a1', 'nfc')],
+    ['f7', 'Подходит несколько комнат', 'Устройство есть в двух комнатах, в фразе комнаты нет. Выберите кнопкой. Если не ответить за 8 секунд, карточка закроется и команда не выполнится (S4)', () => vStage('a1', 'choice', {}, true)],
+    ['f8', 'Нужно подтверждение', 'Опасные действия, много целей, крупное изменение. «Да» выполняет, «Нет» или время вышло отменяют (S8)', () => vStage('a1', 'conf', {}, true)],
+    ['f9', 'Нет связи с устройством', 'Цель найдена, но устройство не отвечает. Текст называет устройство и комнату (S7)', () => vStage('a1', 'err')],
+    ['f10', 'Фраза без «Фиона», цели нет', 'Ничего не происходит, карточка не открывается. Иначе обычный разговор в комнате открывал бы окна', () => vReset('a1')]
+  ]]
+];
+const VSI = Object.fromEntries(VSG.flatMap(([, l]) => l).map(i => [i[0], i]));
+const VMAIN = VSG[0][1].map(i => i[0]);
+V.step = '';
+function vsCap(t, d) { $('#vsn').innerHTML = `<b>${t}</b><span>${d}</span>`; }
+function vsGo(id) {
+  const it = VSI[id]; if (!it) return; V.step = id; it[3](); vsCap(it[1], it[2]);
+  document.querySelectorAll('#vsjump [data-vs]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.vs === id)));
+}
+(() => {
+  const d = document.createElement('details'); d.id = 'vsjump';
+  d.innerHTML = '<summary>Первый опыт с голосом</summary><div class="vsn" id="vsn"><b>Что здесь</b><span>Выберите шаг или ситуацию, стол слева покажет, что видит человек после мастера</span></div>' +
+    `<div class="vsnav"><button data-vs-nav="-1">‹ Назад</button><button data-vs-nav="1">Дальше ›</button><button data-vs-nav="auto">Пройти сам</button></div>` +
+    VSG.map(([t, l]) => `<div class="wzjt">${t}</div>` + l.map(([k, n]) => `<button data-vs="${k}" aria-pressed="false">${n}</button>`).join('')).join('');
+  d.addEventListener('click', e => {
+    const b = e.target.closest('[data-vs]'); if (b) return vsGo(b.dataset.vs);
+    const n = e.target.closest('[data-vs-nav]'); if (!n) return; const a = n.dataset.vsNav;
+    if (a === 'auto') { vsGo('m2'); vsCap('Пройти сам', 'Стол открылся, баннер показан. Через секунду Фиона получит команду «включи свет»'); V.timers.push(setTimeout(() => { vRun('on'); vsCap('Пройти сам', 'Слушаю, поняла, готово: путь целиком с реальными паузами'); }, 1400)); return; }
+    const i = VMAIN.indexOf(V.step), j = Math.min(VMAIN.length - 1, Math.max(0, (i < 0 ? (a > 0 ? -1 : 1) : i) + +a)); vsGo(VMAIN[j]);
+  });
+  const col = document.createElement('div'); col.id = 'sidecol'; col.appendChild(d); document.body.appendChild(col);
+  d.addEventListener('toggle', () => { const w = document.getElementById('wzjump'); if (d.open && w) w.open = false; });
+})();
+
 /* ───────── Настройки: страницы ───────── */
 const S = { pal: 'mint', tab: 'voice', voice: true, speak: true, listen: 'always', lang: 'ru', room: 'living', mqtt: false, broker: false,
   confirm: 8, cancel: 10, manage: true, dimAfter: 30, dimBright: 40, dim: 40, glass: 50,
@@ -2631,7 +2990,7 @@ Object.assign(PAGES, {
     `<div class="wzhero fin">${WART_DONE}
       <h1>Всё готово</h1><p>${S.wRestored ? 'Настройки перенесены · ' + plr(n, 'устройство', 'устройства', 'устройств') : plr(rs, 'комната', 'комнаты', 'комнат') + ' · ' + (S.wSkip ? 'устройств пока нет' : plr(n, 'устройство', 'устройства', 'устройств'))}</p>
       <div class="wzoff">${ICON('wifioff')}<span>Фиона работает и без интернета</span></div>${S.wLater ? `<div class="wzoff">${ICON('info')}<span>Регистрацию можно завершить позже в настройках</span></div>` : ''}
-      <button class="btn primary wzbtn" data-go="${S.wSkip ? 'wz6' : 'note:Здесь откроется «Мой дом»'}">Открыть мой дом</button></div>` }; },
+      <button class="btn primary wzbtn" data-go="wzhome">Открыть мой дом</button></div>` }; },
 });
 
 /* ───────── Мой дом ───────── */
@@ -2872,6 +3231,7 @@ $('#page').addEventListener('click', e => {
     S.fab = false; const p = pageStack.pop(); curPage = p || 'cc-conn'; drawPage(false); return note('Подключение сохранено');
   }
   if (g === 'jfil') { S.jFilters = !S.jFilters; return drawPage(); }
+  if (g === 'wzhome') return vFinishWizard();
   if (g.startsWith('note:')) return note(g.slice(5));
   goPage(g);
 });
@@ -3014,6 +3374,10 @@ const GROUPS = [
     opts: [['ph-more', 'Меню ⋮'], ['ph-profile', 'Профиль'], ['ph-se-action', 'Сценарий: действие'], ['ph-se-order', 'Сценарий: порядок'], ['ph-se-name', 'Сценарий: название'], ['ph-se-preview', 'Сценарий: просмотр'], ['ph-vd-suggest', 'Собрать из найденного'], ['ph-mqtt-tail', 'MQTT: хвост']] },
   { label: 'Пустые состояния',   get: () => S.empty ? 'empty' : 'full', set: v => { S.empty = v === 'empty'; if (state.screen === 'page') drawPage(false); },
     opts: [['full', 'Есть данные'], ['empty', 'Пусто']] },
+  { label: 'Голос', cls: 'grid3', get: () => state.screen === 'desk' ? V.sel : '', set: v => vSet(v),
+    opts: [['hint', 'Баннер подсказки'], ['sheet', 'Лист «Фиона»'], ['run', 'Путь целиком'], ['listen', 'Слушаю'], ['proc', 'Поняла'], ['done', 'Выполнено'], ['answer', 'Ответ на вопрос'], ['choice', 'Выбор комнаты'], ['conf', 'Подтверждение'], ['nh1', 'Не расслышала'], ['nh2', 'Не расслышала, 2-й раз'], ['nfa', 'Нет в доме'], ['nfb', 'Есть в другой комнате'], ['nfc', 'Не нашла ничего'], ['mc', 'Я услышала'], ['err', 'Не удалось выполнить']] },
+  { label: 'Оборудование (голос)', cls: 'grid3', get: () => V.hw, set: v => vSetHw(v), opts: Object.entries(VHW).map(([k, a]) => [k, a[0]]) },
+  { label: 'Опыт (голос)', get: () => V.exp ? 'exp' : 'new', set: v => { V.exp = v === 'exp'; V.cnt = V.exp ? 3 : 0; if (desk.classList.contains('vhelp-open')) drawVHelp(); }, opts: [['new', 'Новичок'], ['exp', 'Опытный пользователь']] },
   { label: 'Экран стола', get: () => String(cur), set: v => { const n = +v; if (n !== cur) { cur = n; tiles = pagesData[cur]; undoStack = []; hideSnack(); render(); updateDots(); } }, opts: [['0', '1'], ['1', '2'], ['2', '3'], ['3', '4']] },
 ];
 const G = label => GROUPS.find(g => g.label === label);
@@ -3128,8 +3492,9 @@ function setPanelDev(v) {
 /* точки статуса на кнопках списка экранов справа */
 const BTN_ID = { 'Экран': { kbd: 'apps', tile: 'tile-form', custom: 'tile-form', states: 'tile-form', pick: 'tile-form', gallery: 'ph-gallery', move: 'ph-move' }, 'Мастера': { 'add-controller-m': 'add-controller' },
   'Мой дом': { loc: 'cc-loc', conn: 'cc-conn', 'conn-fab': 'cc-conn', grp: 'cc-vdlist', dev: 'cc-dev', wid: 'cc-wid', dlg: 'cc-loc', dlgpick: 'cc-loc' } };
+BTN_ID['Голос'] = Object.fromEntries(['hint', 'sheet', 'run', 'listen', 'proc', 'done', 'answer', 'choice', 'conf', 'nh1', 'nh2', 'nfa', 'nfb', 'nfc', 'mc', 'err'].map(k => [k, k === 'hint' ? 'voice-hint' : k === 'sheet' ? 'voice-help' : 'voice-card']));
 GROUPS.forEach(g => {
-  if (!['Экран', 'Настройки', 'Мастера', 'Мой дом', 'Не проработаны (заглушки)'].includes(g.label)) return;
+  if (!['Экран', 'Настройки', 'Мастера', 'Мой дом', 'Голос', 'Не проработаны (заглушки)'].includes(g.label)) return;
   g.opts.forEach(([val], i) => {
     let id = (BTN_ID[g.label] || {})[val] || val;
     if (g.label === 'Настройки' && ['voice', 'device', 'conn', 'security', 'data'].includes(val)) id = 'settings-' + val;
@@ -3140,7 +3505,7 @@ GROUPS.forEach(g => {
 
 /* единый список экранов со статусом словами; исходные группы кнопок прячутся, настройки просмотра уходят в «Параметры просмотра» */
 (function () {
-  const SCR = [['Экран', 'Стол и меню'], ['Настройки', 'Настройки'], ['Мой дом', 'Мой дом'], ['Мастера', 'Мастера'], ['Не проработаны (заглушки)', 'Не проработаны, макета нет']];
+  const SCR = [['Экран', 'Стол и меню'], ['Настройки', 'Настройки'], ['Мой дом', 'Мой дом'], ['Голос', 'Голос (П6)'], ['Мастера', 'Мастера'], ['Не проработаны (заглушки)', 'Не проработаны, макета нет']];
   const TXT = { done: 'Проработан', proto: 'В прототипе', stub: 'Не проработан' };
   const host = document.createElement('div'); host.className = 'scrl';
   const rowsAll = [];
@@ -3246,7 +3611,8 @@ function wzJump(k) {
   d.innerHTML = '<summary>Сценарии мастера</summary><label class="wzos"><input type="checkbox" id="wzos"> После приветствия показывать экран «Язык»</label>' + G.map(([t, l]) => `<div class="wzjt">${t}</div>` + l.map(([k, n]) => `<button data-wz="${k}">${n}</button>`).join('')).join('');
   d.addEventListener('click', e => { const b = e.target.closest('[data-wz]'); if (b) wzJump(b.dataset.wz); });
   d.querySelector('#wzos').addEventListener('change', e => { S.wOsRu = !e.target.checked; });
-  document.body.appendChild(d);
+  const col = document.getElementById('sidecol'); col.insertBefore(d, col.firstChild);
+  d.addEventListener('toggle', () => { const v = document.getElementById('vsjump'); if (d.open && v) v.open = false; });
 })();
 </script>
 </body>
