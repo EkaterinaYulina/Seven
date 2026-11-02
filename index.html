@@ -1173,8 +1173,8 @@ window.SEVEN_SCREENS = {
 .dropbox.no { border-color: var(--ui-error); background: color-mix(in srgb, var(--ui-error) 10%, transparent); }
 
 /* перенос по кнопке «Переместить» */
-.desk.moving .tile { opacity: .45; pointer-events: none; }
-.desk.moving .tile.tgt { opacity: .85; pointer-events: auto; cursor: pointer; outline: 2px dashed var(--ui-primary-container); outline-offset: -2px; }
+.desk.moving .grid .tile { opacity: .45; pointer-events: none; }
+.desk.moving .grid .tile.tgt { opacity: .85; pointer-events: auto; cursor: pointer; outline: 2px dashed var(--ui-primary-container); outline-offset: -2px; }
 .desk.moving .tile.lifted { opacity: 1; pointer-events: none; }
 .desk.edit .tile:not(.drag):not(.pressing) { transition: transform .16s ease; }
 .desk.moving .tile.lifted { opacity: 1; box-shadow: 0 6px 16px #0003; }
@@ -1886,7 +1886,7 @@ function bindSlider(slider, t) {
 function setEdit(on) {
   if (state.edit === on) return;
   state.edit = on;
-  if (!on) { undoStack = []; hideSnack(); state.move = null; }
+  if (!on) { undoStack = []; hideSnack(); state.move = null; desk.classList.remove('moving'); }
   render();
   note(on ? 'Правка: нажмите плитку, чтобы настроить, или потяните, чтобы переместить. «+» в пустой клетке добавляет плитку.' : '');
 }
@@ -2024,7 +2024,7 @@ function setScreen(v) {
   if (v === 'page' && !curPage) { goPage('voice', false); return; }
   if (v !== 'page') { curPage = null; pageStack = []; }
   if (v !== 'tile' && v !== 'custom') form = null;
-  if (v === 'page' || v === 'drawer' || v === 'apps' || v === 'kbd' || v === 'shade') state.move = null;
+  if (v === 'page' || v === 'drawer' || v === 'apps' || v === 'kbd' || v === 'shade') { state.move = null; desk.classList.remove('moving'); }
   state.screen = v; desk.dataset.screen = v; if (v !== 'page') desk.classList.remove('kb');
   if (v === 'kbd') $('#appSearch').focus(); else $('#appSearch').blur();
   if (v !== 'apps' && v !== 'kbd') { $('#appSearch').value = ''; drawApps(); }
@@ -3393,7 +3393,7 @@ const GROUPS = [
       if (v === 'gallery') { setEdit(true); addTarget = null; return goPage('ph-gallery', false); }
       if (v === 'move') { setEdit(true); const t = tiles[0]; return t && startMove(t.id); }
       if (v === 'states' || v === 'pick') { setEdit(true); const t = tiles.find(x => x.type === 'value'); if (!t) return; openTile(t.id, true); form.view = v; return drawForm(); }
-      state.move = null; setScreen(v);
+      state.move = null; desk.classList.remove('moving'); setScreen(v);
     },
     opts: [['desk', 'Стол'], ['drawer', 'Меню'], ['apps', 'Приложения'], ['kbd', 'Поиск + клавиатура'], ['shade', 'Панель'], ['gallery', 'Добавить плитку'], ['tile', 'Плитка'], ['custom', 'Своя плитка'], ['states', 'Цвет по значению'], ['pick', 'Что показывать'], ['move', 'Перенос']] },
   { label: 'Настройки', cls: 'grid3', get: () => state.screen === 'page' ? (curPage === 'settings' ? S.tab : curPage) : '', set: v => goPage(v, false),
