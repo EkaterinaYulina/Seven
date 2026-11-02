@@ -62,7 +62,7 @@
   --ui-on-surface: var(--core-ink); --ui-on-surface-variant: var(--core-ink-2);
   --ui-outline: var(--core-ink-3);  --ui-outline-subtle: var(--core-ink-10);
   --ui-slot-fill: var(--core-cream-40);
-  --ui-error: var(--core-red-700); --ui-on-error: var(--core-cream);
+  --ui-error: var(--core-red-700);
   /* Seven / Button, Primary: в светлой — primary-container (по Button.png) */
   --btn-primary-bg: var(--ui-primary-container); --btn-primary-fg: var(--ui-on-primary-container);
 }
@@ -78,7 +78,7 @@
   --ui-on-surface: var(--core-paper); --ui-on-surface-variant: var(--core-stone);
   --ui-outline: var(--core-ink-3);  --ui-outline-subtle: var(--core-paper-14);
   --ui-slot-fill: var(--core-ink-40);
-  --ui-error: var(--core-red-300); --ui-on-error: var(--core-graphite);
+  --ui-error: var(--core-red-300);
   /* в Button.png тёмный Primary залит светлым (ui/primary), а не olive: следуем компоненту */
   --btn-primary-bg: var(--ui-primary-container); --btn-primary-fg: var(--ui-on-primary-container);
 }
@@ -620,9 +620,10 @@ button.banner > .ic:last-child { transform: rotate(-90deg); color: var(--ui-on-s
 .film { position: absolute; inset: 0; }                /* «плёнка»: гасит нажатия на содержимое */
 .badge-hit { position: absolute; top: 0; right: 0; width: var(--dim-touch-min); height: var(--dim-touch-min);
   display: flex; align-items: center; justify-content: center; }
-.badge { width: var(--badge); height: var(--badge); border-radius: 50%; background: var(--ui-error); color: var(--ui-on-error); box-shadow: 0 1px 3px #0003; display: flex; align-items: center; justify-content: center; }
+.badge { width: var(--badge); height: var(--badge); border-radius: 50%; background: none; color: var(--ui-error); box-shadow: inset 0 0 0 1.5px var(--ui-error); display: flex; align-items: center; justify-content: center; }
 .badge .ic { width: var(--badge); height: var(--badge); stroke-width: 2.2; }
-.tile .badge svg.ic { color: var(--ui-on-error); }   /* общее правило значков плитки не должно красить значок бейджа */
+.tile .badge svg.ic, .btn .badge svg.ic { color: var(--ui-error); stroke-width: 2.2; }
+.btn .badge { flex: none; }   /* общее правило значков плитки не должно красить значок бейджа */
 .slot { position: absolute; border-radius: var(--dim-radius-tile); background: var(--ui-slot-fill);
   border: 1px solid var(--ui-outline-subtle); color: var(--ui-outline);
   display: flex; align-items: center; justify-content: center; cursor: pointer; }
@@ -760,8 +761,8 @@ button.banner > .ic:last-child { transform: rotate(-90deg); color: var(--ui-on-s
 /* карточки выбора палитры в «Оформлении»: превью — свой градиент и кремовые плитки, не зависит от текущей палитры */
 .pal-opts { display: grid; grid-template-columns: 1fr 1fr; gap: var(--dim-space-md); padding: 0 var(--dim-gutter) var(--dim-gutter); }
 .pal { border-radius: 18px; padding: 6px 6px 0; text-align: left; box-shadow: inset 0 0 0 1px var(--ui-outline-subtle); background: var(--menu-tile); }
-.pal[aria-checked="true"] { box-shadow: inset 0 0 0 2px var(--c-select, var(--core-blue-700)); }
-[data-theme="dark"] .pal[aria-checked="true"] { box-shadow: inset 0 0 0 2px var(--core-blue-300); }
+.pal[aria-checked="true"] { box-shadow: inset 0 0 0 2px var(--ui-primary-container); }
+[data-theme="dark"] .pal[aria-checked="true"] { box-shadow: inset 0 0 0 2px var(--ui-primary-container); }
 .pal .pv { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; height: 88px; padding: 10px; border-radius: 14px; align-content: end; }
 .pal .pv i { height: 32px; border-radius: 8px; background: #FCFBF7; }
 .pal .pv.mint { background: linear-gradient(135deg, #E9F3E1 0%, #CDE7D3 55%, #A9D6C4 100%); }
@@ -1172,8 +1173,8 @@ window.SEVEN_SCREENS = {
 .dropbox.no { border-color: var(--ui-error); background: color-mix(in srgb, var(--ui-error) 10%, transparent); }
 
 /* перенос по кнопке «Переместить» */
-.desk.moving .tile { opacity: .45; pointer-events: none; }
-.desk.moving .tile.tgt { opacity: .85; pointer-events: auto; cursor: pointer; outline: 2px dashed var(--ui-primary-container); outline-offset: -2px; }
+.desk.moving .grid .tile { opacity: .45; pointer-events: none; }
+.desk.moving .grid .tile.tgt { opacity: .85; pointer-events: auto; cursor: pointer; outline: 2px dashed var(--ui-primary-container); outline-offset: -2px; }
 .desk.moving .tile.lifted { opacity: 1; pointer-events: none; }
 .desk.edit .tile:not(.drag):not(.pressing) { transition: transform .16s ease; }
 .desk.moving .tile.lifted { opacity: 1; box-shadow: 0 6px 16px #0003; }
@@ -1441,8 +1442,10 @@ window.SEVEN_SCREENS = {
 #wzjump .wzvar { display: flex; gap: 4px; padding: 0 6px 4px; } #wzjump .wzvar button { width: auto; padding: 6px 10px; border: 1px solid #22261E1A; }
 
 /* ── Баннер в мастере: тот же компонент, что на столе ── */
-.wzbn { margin: 0 var(--dim-gutter) var(--dim-space-sm); }
-.wzbn.hint > .ic { color: var(--ui-primary-container); }
+.wzbn { margin: 0 var(--dim-gutter) var(--dim-space-sm); font-weight: 400; }
+.banner.info { background: color-mix(in srgb, var(--ui-primary-container) 14%, var(--ui-surface-card, #FCFBF7)); }
+.banner.info > .ic { color: var(--ui-primary-container); }
+.wzbn .tx { font-weight: 400; }
 /* ── Поля ввода: одна схема цветов. Эталон: экран «Цвет по значению» (заливка c-tile), рамка и фокус по токенам ──
    покой: заливка field-fill, рамка 1 px field-line (≥3:1); фокус: 2 px field-focus; ошибка: 2 px ui-error; недоступно: приглушено.
    Касается TextField, SearchField, выпадающего списка, полей «Цвет по значению» и полей в диалогах. */
@@ -1456,6 +1459,22 @@ html .dlg :is(.tf input:focus, .fld:focus-within, .dd:focus-visible) {
 html .desk > :is(.page, .form, .launcher, .sheet) :is(.tf.bad input, .tf.bad input:focus, .fld.bad, .fld.bad:focus-within),
 html .dlg :is(.tf.bad input, .tf.bad input:focus, .fld.bad, .fld.bad:focus-within) {
   border-color: transparent; box-shadow: inset 0 0 0 2px var(--ui-error); }
+html .desk > .form.tscr .dd, html .desk > .form.tscr .search3 { background: var(--field-fill); border: 0; box-shadow: inset 0 0 0 1px var(--field-line); }
+html .desk > .form.tscr .dd:focus-visible, html .desk > .form.tscr .search3:focus-within { box-shadow: inset 0 0 0 2px var(--field-focus); }
+/* подпись поля: фон под ней той же заливки, у вариантов с подписью внутри и у недоступного поля фона нет (иначе виден «пластырь») */
+html .tf span { background: var(--field-fill); }
+html .tf.m span, html .tf input:disabled + span { background: transparent; }
+/* ── Чекбокс и радио в строках .opt (согласие в мастере и др.): зелёные, как в списках настроек ── */
+.opt .mk.c, .opt .mk.r { border-color: var(--ui-primary-container); }
+.opt[aria-checked="true"] .mk.c { background: var(--ui-primary-container); }
+.opt .mk.c svg { stroke: var(--ui-on-primary-container); }
+.opt[aria-checked="true"] .mk.r::after { background: var(--ui-primary-container); }
+/* радио выбора палитры: зелёное, как остальные */
+.pal .pn .mk { border-color: var(--ui-primary-container); }
+.pal[aria-checked="true"] .pn .mk::after { background: var(--ui-primary-container); }
+/* системные флажки обвязки прототипа (панель сценариев мастера, «зоны касания») тоже зелёные */
+input[type="checkbox"] { accent-color: var(--core-green-600); }
+[data-theme="dark"] input[type="checkbox"] { accent-color: var(--core-green-300); }
 html .tf.bad span { color: var(--ui-error); }
 html .desk > :is(.page, .form, .launcher, .sheet) :is(.tf input:disabled, .fld:has(input:disabled)),
 html .dlg :is(.tf input:disabled) {
@@ -1867,7 +1886,7 @@ function bindSlider(slider, t) {
 function setEdit(on) {
   if (state.edit === on) return;
   state.edit = on;
-  if (!on) { undoStack = []; hideSnack(); state.move = null; }
+  if (!on) { undoStack = []; hideSnack(); state.move = null; desk.classList.remove('moving'); }
   render();
   note(on ? 'Правка: нажмите плитку, чтобы настроить, или потяните, чтобы переместить. «+» в пустой клетке добавляет плитку.' : '');
 }
@@ -2005,7 +2024,7 @@ function setScreen(v) {
   if (v === 'page' && !curPage) { goPage('voice', false); return; }
   if (v !== 'page') { curPage = null; pageStack = []; }
   if (v !== 'tile' && v !== 'custom') form = null;
-  if (v === 'page' || v === 'drawer' || v === 'apps' || v === 'kbd' || v === 'shade') state.move = null;
+  if (v === 'page' || v === 'drawer' || v === 'apps' || v === 'kbd' || v === 'shade') { state.move = null; desk.classList.remove('moving'); }
   state.screen = v; desk.dataset.screen = v; if (v !== 'page') desk.classList.remove('kb');
   if (v === 'kbd') $('#appSearch').focus(); else $('#appSearch').blur();
   if (v !== 'apps' && v !== 'kbd') { $('#appSearch').value = ''; drawApps(); }
@@ -2209,7 +2228,7 @@ function mainHTML() {
   } else if (type === 'placeholder') {
     secs += `<p class="gd2">Для этой плитки других настроек пока нет</p>`;
   }
-  const bar = f.isNew ? '' : `<div class="tbar"><button class="btn tonal" data-f="move">${ICON('move')}Переместить</button><button class="btn tonal" data-f="copy"><svg class="ic" aria-hidden="true" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>Копировать</button><button class="btn tonal danger" data-f="remove">${ICON('minus')}Убрать</button></div>`;
+  const bar = f.isNew ? '' : `<div class="tbar"><button class="btn tonal" data-f="move">${ICON('move')}Переместить</button><button class="btn tonal" data-f="copy"><svg class="ic" aria-hidden="true" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>Копировать</button><button class="btn tonal danger" data-f="remove"><span class="badge">${ICON('minus')}</span>Убрать</button></div>`;
   const sizes = sizesOf(pt).map(([w, h]) => {
     const ok = sizeOk(w, h);
     return `<button class="szb2${ok ? '' : ' no'}" data-f="size" data-w="${w}" data-h="${h}" aria-pressed="${d.w === w && d.h === h}">${w}×${h}</button>`;
@@ -2891,7 +2910,7 @@ const wDlg = () => { let h = dlgHtml(); if (!h || h.includes('Значок ко�
   if (S.wEditRoom) h = h.replace('<button class="btn primary" id="dlgOk"', '<button class="btn tonal wzdel" data-go="wzdelroom">Удалить</button><button class="btn primary" id="dlgOk"');
   return h; };
 /* плашки мастера: тот же Banner, что на столе. Нет связи: янтарная (warn), ошибка: красная (err), сведение: мятная (hint) */
-const WZK = { offline: 'warn', nowan: 'warn', server: 'warn', voffline: 'warn', vserver: 'warn', saveerr: 'err', outdated: 'hint', badfile: 'err', lang: 'hint' };
+const WZK = { offline: 'warn', nowan: 'warn', server: 'warn', voffline: 'warn', vserver: 'warn', saveerr: 'err', outdated: 'info', badfile: 'err', lang: 'info' };
 const wzBanner = (k, ic, t) => `<div class="banner ${WZK[k]} wzbn" role="${WZK[k] === 'err' ? 'alert' : 'status'}">${ICON(ic)}<span class="tx">${t}</span></div>`;
 function wzResetState() { S.wLater = false; S.wHelp = false; S.wCase = ''; S.wSheetAll = ''; S.wKey = ''; S.wEmail = ''; S.wCode = ''; S.dev.wCons = false; S.wpanel = ''; S.wCustom = []; S.wSheet = ''; S.wOpen = ''; S.wEdit = ''; S.wEditRoom = ''; S.wFile = false; S.wRestored = false; Object.keys(S).filter(k => k.startsWith('wexp_') || k.startsWith('wa_')).forEach(k => delete S[k]); S.wbOn = true; S.z2mOn = true; S.wSkip = false; S.wHome = false; S.dev.g1 = S.dev.g2 = true; S.dlg = false; S.rName = ''; }
 const wRadio = (g, v, cur, label) => `<button class="gr ls wz1l" role="radio" aria-checked="${v === cur}" data-radio="${g}" data-v="${v}">${v ? `<span class="li">${ICON('r-' + roomIconFor(v))}</span>` : ''}<span class="tx"><span class="rt">${label || v}</span></span>${v && S.wCustom.includes(v) ? `<span class="wzpen" role="button" aria-label="Изменить комнату" data-go="wzeditroom:${v}">${ICON('pencil')}</span>` : ''}<span class="mk"></span></button>`;
@@ -3374,7 +3393,7 @@ const GROUPS = [
       if (v === 'gallery') { setEdit(true); addTarget = null; return goPage('ph-gallery', false); }
       if (v === 'move') { setEdit(true); const t = tiles[0]; return t && startMove(t.id); }
       if (v === 'states' || v === 'pick') { setEdit(true); const t = tiles.find(x => x.type === 'value'); if (!t) return; openTile(t.id, true); form.view = v; return drawForm(); }
-      state.move = null; setScreen(v);
+      state.move = null; desk.classList.remove('moving'); setScreen(v);
     },
     opts: [['desk', 'Стол'], ['drawer', 'Меню'], ['apps', 'Приложения'], ['kbd', 'Поиск + клавиатура'], ['shade', 'Панель'], ['gallery', 'Добавить плитку'], ['tile', 'Плитка'], ['custom', 'Своя плитка'], ['states', 'Цвет по значению'], ['pick', 'Что показывать'], ['move', 'Перенос']] },
   { label: 'Настройки', cls: 'grid3', get: () => state.screen === 'page' ? (curPage === 'settings' ? S.tab : curPage) : '', set: v => goPage(v, false),
