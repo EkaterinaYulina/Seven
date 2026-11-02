@@ -1469,6 +1469,9 @@ html .tf.m span, html .tf input:disabled + span { background: transparent; }
 .opt[aria-checked="true"] .mk.c { background: var(--ui-primary-container); }
 .opt .mk.c svg { stroke: var(--ui-on-primary-container); }
 .opt[aria-checked="true"] .mk.r::after { background: var(--ui-primary-container); }
+/* системные флажки обвязки прототипа (панель сценариев мастера, «зоны касания») тоже зелёные */
+input[type="checkbox"] { accent-color: var(--core-green-600); }
+[data-theme="dark"] input[type="checkbox"] { accent-color: var(--core-green-300); }
 html .tf.bad span { color: var(--ui-error); }
 html .desk > :is(.page, .form, .launcher, .sheet) :is(.tf input:disabled, .fld:has(input:disabled)),
 html .dlg :is(.tf input:disabled) {
