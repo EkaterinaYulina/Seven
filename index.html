@@ -898,6 +898,7 @@ input::placeholder { color: var(--a11y-ph); opacity: 1; }
 .desk.voicing .banners { display: none !important; }
 .vcard .vh { display: flex; align-items: center; gap: var(--dim-space-sm); font-size: var(--font-name); line-height: var(--lh-name); font-weight: 500; }
 .vcard .vh .ic { flex: none; width: 20px; height: 20px; }
+.vcard .vh .fi-ic { flex: none; display: flex; width: 24px; height: 24px; margin: -2px; } .vcard .vh .fi { --fi-ink: currentColor; --fi-acc: var(--ui-primary-container); }
 .vcard .vt { font-size: 16px; line-height: 22px; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .vcard .vt2 { font-size: var(--font-name); line-height: var(--lh-name); color: var(--ui-on-surface-variant); margin-top: -4px; }
 .vcard .vrow { display: flex; gap: var(--dim-space-sm); }
@@ -2541,18 +2542,18 @@ const vExample = () => vFirst() ? vPhrase(vFirst()) : null;
 function vStopCd() { clearInterval(V.cd); V.cd = null; }
 function vClearAll() { V.timers.forEach(clearTimeout); V.timers = []; V.hear = false; vStopCd(); }
 function vcHTML(k, o = {}) {
-  const H = (ic, t) => `<div class="vh">${ICON(ic)}<span>${t}</span></div>`;
+  const H = (ic, t) => `<div class="vh">${ic.startsWith('fi:') ? `<span class="fi-ic">${FIONA(ic.slice(3))}</span>` : ICON(ic)}<span>${t}</span></div>`;
   const T = (a, b) => `<div class="vt">${a}</div>` + (b ? `<div class="vt2">${b}</div>` : '');
   const btn = (cls, act, t) => `<button class="btn ${cls}" data-vc="${act}">${t}</button>`;
   const row = (...b) => `<div class="vrow">${b.join('')}</div>`;
   const cd = (cap, pct) => `<div class="vfoot"><span class="vcap">${cap}</span></div><div class="vbar"><i style="width:${pct}%"></i></div>`;
   const ex = vExample();
   switch (k) {
-    case 'listen': return H('mic', 'Слушаю') + T(o.text || 'Включи свет на кухне');
+    case 'listen': return H('fi:listen', 'Слушаю') + T(o.text || 'Включи свет на кухне');
     case 'proc':   return H('clock', 'Обрабатываю') + T(o.text || 'Кухня · свет · включить');
-    case 'done':   return H('check', 'Выполнено') + T(o.text || 'Свет на кухне включён') +
+    case 'done':   return H('fi:done', 'Выполнено') + T(o.text || 'Свет на кухне включён') +
       `<div class="vfoot"><span class="vcap">Можно отменить ещё ${o.n ?? 5} с</span>${btn('text', 'undo', 'Отменить')}</div><div class="vbar"><i style="width:${o.pct ?? 60}%"></i></div>`;
-    case 'answer': return H('info', 'Отвечаю') + T(o.text || 'В гостиной 22 °C');
+    case 'answer': return H('fi:speak', 'Отвечаю') + T(o.text || 'В гостиной 22 °C');
     case 'choice': return H('info', 'В какой комнате?') + T(o.text || 'Включи торшер') +
       row(btn('', 'room:Гостиная', 'Гостиная'), btn('', 'room:Спальня', 'Спальня')) + cd(`До отмены · ${o.n ?? 8} с`, o.pct ?? 75);
     case 'conf':   return H('info', 'Нужно подтверждение') + T('Выключить все устройства в гостиной?') +
@@ -2569,7 +2570,9 @@ function vcHTML(k, o = {}) {
 }
 function showVoice(k, o = {}, live = false) {
   vStopCd();
-  const el = $('#vcard'); el.innerHTML = vcHTML(k, o); el.dataset.k = k; el.classList.add('show'); desk.classList.add('voicing');
+  const el = $('#vcard');
+  if (k === 'listen' && el.dataset.k === 'listen' && el.classList.contains('show') && el.querySelector('.vt')) { el.querySelector('.vt').textContent = o.text || 'Включи свет на кухне'; return; }
+  el.innerHTML = vcHTML(k, o); el.dataset.k = k; el.classList.add('show'); desk.classList.add('voicing');
   if (k === 'done' && live) { V.cnt++; if (V.cnt >= 3) V.exp = true; }
   if (live && (k === 'done' || k === 'choice' || k === 'conf')) vCountdown(k);
 }
