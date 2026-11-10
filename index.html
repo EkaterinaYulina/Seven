@@ -1480,6 +1480,8 @@ window.SEVEN_SCREENS = {
 @media (prefers-reduced-motion: reduce) { .au { animation: none; opacity: .38 } .au .ab, .au .ab i { animation: none } }
 /* лист «слушает»: свет поднимается от нижнего края и дышит с голосом (--lvl, --g1, --g2 ставит vLvlStart), знак без круга */
 .vhelp { --glow: 47, 154, 115; } [data-theme="dark"] .vhelp { --glow: 143, 211, 174; }
+.vhelp { height: min(458px, 96%); display: flex; flex-direction: column; } .vhelp > * { flex: none; } /* фиксированная высота: плашка не прыгает между «слушает» и «не слушает» */
+.vhelp .fstage.fst-off { flex: 1 1 auto; justify-content: center; padding-top: 0; } .vhelp .fstage.fst-off + .vrow { margin-bottom: var(--dim-space-sm); }
 .vhelp.vl .mfoot { background: transparent; } .vhelp.vl .mfoot .btn.text { color: var(--ui-on-surface); }
 .vhelp.vl { --lvl: 0; --g1: 0; --g2: 0; background:
   radial-gradient(ellipse calc(357px + var(--lvl) * 69px) calc(208px + var(--lvl) * 90px) at calc(50% + var(--g1) * 16%) 100%, rgba(var(--glow), calc(.7 + var(--lvl) * .25)), transparent 72%),
@@ -2685,7 +2687,7 @@ function drawVHelp() {
     h += `<div class="fstage">${mark(true)}<div class="ftxt"><b>Фиона слушает</b><span>${S.listen === 'always' ? 'Говорите команду' : 'Скажите «Фиона» и команду'}</span></div></div>` +
       vHintsHTML() + `<div class="mfoot"><button class="btn text" data-vh="micoffbtn">Перестать слушать</button></div>`;
   } else {
-    h += `<div class="fstage">${mark(false)}<div class="ftxt"><b>Фиона не слушает</b><span>${VWHY[ms]}</span></div></div><div class="vrow"><button class="btn primary" data-vh="${VBTN[ms][1]}">${VBTN[ms][0]}</button></div>`;
+    h += `<div class="fstage fst-off">${mark(false)}<div class="ftxt"><b>Фиона не слушает</b><span>${VWHY[ms]}</span></div></div><div class="vrow"><button class="btn primary" data-vh="${VBTN[ms][1]}">${VBTN[ms][0]}</button></div>`;
   }
   $('#vhelp').innerHTML = h; $('#vhelp').classList.toggle('vl', ms === 'on');
   ms === 'on' ? vLvlStart() : vLvlStop();
